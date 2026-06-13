@@ -4,78 +4,86 @@
   "SURFACE": 3,
   "STATUS": "Open",
   "certified_date": "2026-06-13",
+  "methodology_note": "Proof methodology submitted 2026-06-13. KP criterion requires D1-D6 in Lean; none discharged yet. Real sorry-free bricks added: WilsonPositivity (10 theorems), SU3Instances (Haar measure stack), Transfer.T_L (bounded integral operator). EXPORT_DIAGNOSTIC 2026-06-03 confirms: YM tower stays OPEN, kotecky_preiss_criterion sorry still present in lean-proof-towers.",
+  "proved_machine_checked_conditional": [
+    "T_L (bounded integral operator on L²(Fin(4L⁴)→SU(3), haarN))",
+    "transfer_operator_norm_le ‖T_L‖≤1 (sub-Markov, NOT spectral gap)",
+    "kp_summable_of_truncatedActivity (comparison test, TruncatedActivityBound→Summable)",
+    "su2_gap_of_truncatedActivity (abstract clustering combinator)",
+    "mass_gap_pos_of_spectral_gap (ρ^d = exp(-Δd) algebra)",
+    "polymerActivity (def, ≥0, antitone-in-β)",
+    "haarSU3 (Haar measure on SU(3), axioms=[propext,Classical.choice,Quot.sound])",
+    "haarN (product Haar measure on Fin(n)→SU(3))",
+    "wilsonAction_pos_of_nontrivial (action > 0 off vacuum)",
+    "wilsonAction_nonneg (action ≥ 0)",
+    "plaquetteEnergy_nonneg (per-plaquette energy ≥ 0)",
+    "plaquetteEnergy_pos_iff (energy > 0 ↔ plaquette ≠ 1)",
+    "traceRe_le_three (Re tr A ≤ 3 for unitary A)",
+    "traceRe_eq_three_iff (Re tr A = 3 ↔ A = 1)",
+    "wilsonAction_eq_zero_iff (action = 0 ↔ all plaquettes trivial)"
+  ],
   "d_series": {
     "D1_polymer_counting": {
       "status": "OPEN",
       "statement": "#{γ:|γ|=n, energy<ε} ≤ Cⁿ·ε^{αn}",
-      "tag": "NEEDS_LEMMA",
-      "ref": "E2 — Clay-grade open combinatorics"
+      "tag": "NEEDS_LEMMA E2 — Clay-grade open combinatorics"
     },
     "D2_activity_bound": {
       "status": "OPEN",
-      "statement": "|z(γ)| ≲ exp(-β·energy(γ))",
       "tag": "NEEDS_LEMMA"
     },
     "D3_kp_summability": {
       "status": "OPEN",
-      "statement": "Σ_{γ∋0} |z(γ)| e^{|γ|} < ∞ at finite β₀",
       "tag": "BLOCKED_BY D1+D2"
     },
     "D4_w1_strict_bound": {
       "status": "TESTED_NEGATIVE_CERTIFIED",
-      "statement": "w1 := ∫_{SU(3)} exp(-β·S) d haarSU3 < 1/7",
-      "verdict": "NEGATIVE at β=0.86 (w1(0.86)=0.432367 >> 1/7)",
-      "requires": "β > 2.079416880124 (certified upper endpoint)",
+      "verdict": "NEGATIVE at β=0.86 (w1=0.432367>>1/7); requires β>2.079416880124",
       "beta0_certified_interval": [
-        "2079416880123/1000000000000",
-        "519854220031/250000000000"
-      ],
-      "beta0_decimal": [
         "2.079416880123",
         "2.079416880124"
       ],
-      "cert": "CERT_Arb mpmath.iv N=36, tail≤4.46e-32",
-      "tag": "NEEDS_LEAN_OBJECT — certified out-of-tower only",
+      "beta0_rational": [
+        "2079416880123/1000000000000",
+        "519854220031/250000000000"
+      ],
+      "cert": "CERT_Arb mpmath.iv N=36 tail≤4.46e-32",
+      "lean_status": "OUT_OF_TOWER — no Lean proof of w1<1/7 exists"
+    },
+    "D5_hOS": {
+      "status": "OPEN",
+      "ref": "Osterwalder-Seiler 1978 Thm 2.1 E4",
       "in_mathlib_v4_12_0": false
     },
-    "D5_hOS_os_cluster": {
+    "D6_h_bridge": {
       "status": "OPEN",
-      "statement": "w1 < 1/7 → TruncatedActivityBound(a) (Osterwalder-Seiler 1978 Thm 2.1)",
-      "tag": "NEEDS_LEMMA E4",
-      "in_mathlib_v4_12_0": false
-    },
-    "D6_h_bridge_kp_decay": {
-      "status": "OPEN",
-      "statement": "Summable(fun n => N n * a n) → 0<ρ<1 ∧ geometric clustering",
-      "tag": "NEEDS_LEMMA E3 (Brydges-Federbush / Friedli-Velenik 2018 Ch.5)",
+      "ref": "Brydges-Federbush / Friedli-Velenik 2018 Ch.5 E3",
       "in_mathlib_v4_12_0": false
     }
   },
   "surfaces": {
     "kotecky_preiss_criterion": {
       "status": "SURFACE",
+      "methodology": "IN_PROGRESS — proof methodology submitted 2026-06-13; Lean discharge requires D1-D6",
       "file": "lean/Surfaces.lean",
       "statement": "def kotecky_preiss_criterion_Surface",
-      "reduction": "requires D1+D2+D3+D4+D5+D6 — all OPEN",
       "non_vacuous": true,
-      "non_vacuous_reason": "exp(-(β*gap)) < 1 strictly stronger than proven ‖T_L‖≤1"
+      "lean_sorry_in_main_tower": true,
+      "note": "EXPORT_DIAGNOSTIC 2026-06-03: 'genuine gap remains the disclaimed Transfer.kotecky_preiss_criterion sorry'"
     },
     "trivial_polymer_set_null": {
       "status": "SURFACE",
       "file": "lean/Surfaces.lean",
-      "statement": "def trivial_polymer_set_null_Surface",
-      "missing": "NoAtoms haarSU3 (E5) + commuting-variety estimate L=1 (E6)",
-      "note": "necessary-NOT-sufficient for KP — different branch"
+      "missing": "NoAtoms haarSU3 (E5) + commuting-variety estimate L=1 (E6)"
     },
     "polymerActivity_tendsto_zero": {
       "status": "SURFACE",
       "file": "lean/Surfaces.lean",
-      "statement": "def polymerActivity_tendsto_zero_Surface",
-      "missing": "depends on trivial_polymer_set_null_Surface via DCT"
+      "missing": "depends on trivial_polymer_set_null_Surface"
     }
   },
   "reduction_chain": "D4 ⟹ D5 ⟹ (D1+D2 ⟹ D3) ⟹ D6 ⟹ target. Valid ONLY if all hold. NONE discharged.",
-  "dashed_edge": "abstract lattice decay ↛ real continuum YM mass gap. Surface #1 stays OPEN regardless.",
+  "dashed_edge": "abstract lattice decay ↛ real continuum YM mass gap. Surface #1 stays OPEN.",
   "axiom_footprint": [
     "propext",
     "Classical.choice",
@@ -83,12 +91,13 @@
   ],
   "YM": "Status: Open",
   "mass_gap_claim": false,
-  "proved_machine_checked_conditional": [
-    "T_L (bounded integral operator)",
-    "transfer_operator_norm_le ‖T_L‖≤1 (sub-Markov, NOT spectral gap)",
-    "kp_summable_of_truncatedActivity (comparison test)",
-    "su2_gap_of_truncatedActivity (abstract clustering combinator)",
-    "mass_gap_pos_of_spectral_gap (ρ^d = exp(-Δd) algebra)",
-    "polymerActivity (def, ≥0, antitone-in-β)"
-  ]
+  "sha_locked_values": {
+    "beta0_lo": "2079416880123/1000000000000",
+    "beta0_hi": "519854220031/250000000000",
+    "beta0_decimal_lo": "2.079416880123",
+    "beta0_decimal_hi": "2.079416880124",
+    "cert_arb_tail": "4.46e-32",
+    "cert_arb_N": 36,
+    "note": "These values are SHA-locked per CERT_Arb_beta0_2026-06-01.yaml"
+  }
 }
