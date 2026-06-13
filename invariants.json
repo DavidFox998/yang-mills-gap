@@ -5,24 +5,9 @@
   "STATUS": "Open",
   "certified_date": "2026-06-13",
   "surfaces": {
-    "kotecky_preiss_criterion": {
-      "status": "SURFACE",
-      "file": "lean/Surfaces.lean",
-      "statement": "def kotecky_preiss_criterion_Surface",
-      "missing": "cluster-entropy Peierls bound #{γ : |γ|=n, energy<ε} ≤ Cⁿ·ε^{α·n}"
-    },
-    "trivial_polymer_set_null": {
-      "status": "SURFACE",
-      "file": "lean/Surfaces.lean",
-      "statement": "def trivial_polymer_set_null_Surface",
-      "missing": "NoAtoms haarSU3 + Measure.pi marginal / regular-element argument"
-    },
-    "polymerActivity_tendsto_zero": {
-      "status": "SURFACE",
-      "file": "lean/Surfaces.lean",
-      "statement": "def polymerActivity_tendsto_zero_Surface",
-      "missing": "depends on trivial_polymer_set_null_Surface via DCT"
-    }
+    "kotecky_preiss_criterion": "SURFACE",
+    "trivial_polymer_set_null": "SURFACE",
+    "polymerActivity_tendsto_zero": "SURFACE"
   },
   "axiom_footprint": [
     "propext",
@@ -30,6 +15,5 @@
     "Quot.sound"
   ],
   "YM": "Status: Open",
-  "mass_gap_claim": false,
-  "notes": "All OPEN content threaded as explicit named-Prop hypotheses (*_Surface). No sorry. No sorryAx. No admit. Surface #1 stays OPEN."
+  "mass_gap_claim": false
 }
