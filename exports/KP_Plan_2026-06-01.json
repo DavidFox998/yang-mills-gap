@@ -1,0 +1,51 @@
+{
+  "plan": {
+    "id": "kp-surface-discharge-decomposition",
+    "objective": "DECOMPOSE (not discharge) kotecky_preiss_criterion_Surface for the real integral operator T_L",
+    "mode": "BUILD",
+    "output_type": "plan_only",
+    "exported_as": "KP_Plan_2026-06-01.json",
+    "export_date": "2026-06-01",
+    "code_changes": false,
+    "honesty_locks": {
+      "discharges_surface": false,
+      "mass_gap_proven": false,
+      "m_gt_0_claimed": false,
+      "surface_1_status": "OPEN",
+      "ym_tower_status": "OPEN",
+      "hw1_constraint": "Requires beta > 2.079416880124",
+      "hw1_constraint_source": "CERT_Arb_beta0 (VERIFIED_OUT_OF_TOWER); beta0 certified in [2.079416880123, 2.079416880124] under repo action S=(3-Re tr U)/3",
+      "terminal_inputs_all_open": true
+    },
+    "target_surface": {
+      "name": "kotecky_preiss_criterion_Surface",
+      "statement": "exists beta0>0, forall beta>beta0, exists gap>0, forall L f, (integral f=0) -> ||T_L L beta f|| <= exp(-(beta*gap)) * ||f||",
+      "non_vacuous": true,
+      "non_vacuous_reason": "exp(-(beta*gap))<1 for gap>0,beta>0 => STRICTLY stronger than proven ||T_L||<=1",
+      "scope": "uniform-in-L, FIXED-beta LATTICE spectral gap on vacuum-orthogonal sector",
+      "NOT_in_scope": "continuum limit, lattice-spacing->0, OS reconstruction, Clay continuum mass gap"
+    }
+  },
+  "open_inputs": {
+    "D1": {"statement": "#{gamma:|gamma|=n, energy<eps} <= C^n * eps^(alpha*n)", "status": "OPEN", "tag": "NEEDS_LEMMA E2"},
+    "D2": {"statement": "|z(gamma)| ≲ exp(-beta*energy(gamma))", "status": "OPEN"},
+    "D3": {"statement": "sum_{gamma in 0} |z(gamma)| e^{|gamma|} < inf at FINITE beta0", "status": "OPEN", "derivation": "D1+D2"},
+    "D4": {"statement": "w1 < 1/7 for beta>beta0", "status": "TESTED_NEGATIVE_CERTIFIED",
+           "verdict": "NEGATIVE at beta=0.86 (w1=0.432367>>1/7); requires beta>2.079416880124",
+           "beta0_certified": "[2.079416880123, 2.079416880124]",
+           "method": "CERT_Arb mpmath.iv N=36 tail<=4.46e-32"},
+    "D5": {"statement": "w1<1/7 -> TruncatedActivityBound(a)", "status": "OPEN", "ref": "Osterwalder-Seiler 1978 Thm 2.1 E4"},
+    "D6": {"statement": "Summable(N*a) -> rho<1 geometric clustering", "status": "OPEN", "ref": "Brydges-Federbush / Friedli-Velenik 2018 Ch.5 E3"}
+  },
+  "reduction_chain": "D4 => D5 => (D1+D2 => D3 KP-summable) => D6 => target. Valid ONLY if all D1..D6 hold; NONE discharged.",
+  "branch_warning": {
+    "surface": "trivial_polymer_set_null_Surface",
+    "relation_to_KP": "necessary-NOT-sufficient, DIFFERENT branch",
+    "note": "single polymer beta->inf limit does NOT close KP (KP needs uniform SUM at finite beta0)"
+  },
+  "termination": {
+    "closes_surface": false,
+    "blocking_leaves": ["D1","D2","D3","D4_lean_object","D5","D6","NoAtoms_haarSU3","E2","E3","E4","E6"],
+    "conclusion": "EVERY leaf is open research or OUT-OF-TOWER. Surface #1 and YM tower stay OPEN. No mass-gap claim."
+  }
+}

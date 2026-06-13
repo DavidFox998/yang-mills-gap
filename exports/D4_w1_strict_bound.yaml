@@ -1,0 +1,36 @@
+plan:
+  id: D4-w1-strict-bound
+  date: "2026-06-01"
+  status: VERIFIED_OUT_OF_TOWER_NEGATIVE
+  closes_D4: false
+  closes_mass_gap: false
+  surface_1_status: OPEN
+  ym_tower_status: OPEN
+computation:
+  method: "deterministic Weyl integration over SU(3) maximal torus + Monte-Carlo validation"
+  action_normalization:
+    formula: "S(U) = plaquetteEnergy(U) = (3 - Re tr U)/3 = 1 - (Re tr U)/3"
+    source: "Towers/YM/WilsonPositivity.lean:27; Towers/YM/WilsonAction.lean:134"
+  grid: "n=2400 (self-normalized)"
+  mc_validation: "2e6 Haar-SU(3) draws; MC w1(0.86)=0.4324 agrees with quadrature 0.432367"
+  normalization_check: "w1(0)=1.000000"
+table:
+  - {beta: 0.86,    w1: 0.432367, lt_1_7: false}
+  - {beta: 1.00,    w1: 0.378821, lt_1_7: false}
+  - {beta: 1.50,    w1: 0.238739, lt_1_7: false}
+  - {beta: 2.00,    w1: 0.153058, lt_1_7: false}
+  - {beta: 2.07942, w1: 0.142857, lt_1_7: "boundary (= 1/7)"}
+  - {beta: 2.50,    w1: 0.099908, lt_1_7: true}
+  - {beta: 3.00,    w1: 0.066441, lt_1_7: true}
+source_corrections:
+  beta0_value: {previously_drafted: 0.85, corrected: 2.07942,
+    reason: "0.85 was for UN-normalized action (3 - Re tr); repo uses /3-normalized S, threshold ~3x"}
+  submitted_value_0p0540459: {verdict: "reproduced by NO tested normalization; withdrawn"}
+termination:
+  closes_leaf_D4: false
+  d4_verdict: TESTED_NEGATIVE_CERTIFIED
+  beta0_certified_interval: [2.079416880123, 2.079416880124]
+  safe_constraint: "beta > 2.079416880124 (upper endpoint — conservative formal requirement)"
+  conclusion: >
+    D4 not closed. w1(0.86)=0.4324 >> 1/7 rigorously enclosed by CERT_Arb (mpmath.iv N=36).
+    hw1 stays OPEN. KP surface, Surface #1, and the YM tower stay OPEN. No mass-gap claim.

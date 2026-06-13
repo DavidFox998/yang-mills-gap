@@ -1,0 +1,70 @@
+# CERT_Arb_beta0 — rigorous interval enclosure (mpmath.iv, 2026-06-01)
+plan:
+  id: CERT_Arb_beta0_enclosure
+  parent_plan: kp-surface-discharge-decomposition
+  parent_leaf: D4_w1_strict_bound
+  date: "2026-06-01"
+  scope: OUT_OF_TOWER_NUMERICAL
+  status: VERIFIED_OUT_OF_TOWER
+  beta0_certified_interval: ["2.079416880123", "2.079416880124"]
+tooling:
+  python_fractions: exact
+  mpmath_version: "1.4.1"
+  iv_dps: 80
+  method: >
+    exact rational moment series via Weyl/constant-term extraction over SU(3) torus
+    + rigorous factorial tail bound |R_N| <= beta^(N+1)/(N+1)! * 1/(1-beta/(N+2))
+    + mpmath.iv interval arithmetic (outward rounding)
+  series_terms_N: 36
+  tail_upper_bound_at_2p07943: "4.46e-32"
+quantity:
+  w1: "integral_{SU(3)} exp(-beta*S) d haar ; S=(3-Re tr U)/3"
+  threshold: "1/7"
+exact_moments:
+  m0: "1"
+  m1: "0"
+  m2: "1/2"
+  m3: "1/4"
+  m6: "65/32"
+  note: "computed exactly by constant-term extraction over SU(3) maximal torus (Weyl integration)"
+certified_enclosures:
+  w1_0p86:    { interval: "[0.43236749209090.., 0.43236749209090..]", verdict: "gt", note: "D4 FAILS CERTIFIED" }
+  w1_2p07941: { interval: "[0.14285799366961.., 0.14285799366961..]", verdict: "gt" }
+  w1_2p07942: { interval: "[0.14285675704762.., 0.14285675704762..]", verdict: "lt" }
+  w1_2p07943: { interval: "[0.14285552043738.., 0.14285552043738..]", verdict: "lt" }
+results:
+  D4_at_0p86: "w1(0.86) > 1/7 CERTIFIED -> D4 FAILS (negative verdict, rigorous)"
+  refined_certified_bracket:
+    lo: "2079416880123/1000000000000"
+    hi:  "519854220031/250000000000"
+    lo_decimal: "2.079416880123"
+    hi_decimal: "2.079416880124"
+  safe_formal_requirement: "beta > 2.079416880124 (upper endpoint — conservative)"
+  planning_shorthand: "2.07941688 (rounded lower-bound label, NOT a safe strict bound)"
+closed_form:
+  formula: "w1(beta) = e^{-beta} * sum_{k in Z} det[I_{(i-j)+k}(beta/3)]_{i,j=0,1,2}"
+  derivation: >
+    w1 = E[exp(-(beta/3)(3 - Re tr U))] = e^{-beta} * E[exp((beta/3) Re tr U)].
+    SU(3) Haar average of exp(g Re tr U) is the winding sum of U(3)
+    Gross-Witten Toeplitz-Bessel determinant det[I_{i-j}(g)] summed over
+    det-charge k to project U(3)->SU(3).
+  verification: "agrees with grid quadrature and CERT_Arb to < 1e-4"
+  wrong_forms_recorded:
+    - "I_1(2b)*I_0(2b)/b^2 — off by ~9x; not SU(3)"
+    - "exp(-3b)*det[I_{i-j}(2b)]/b^2 — wrong argument, spurious /b^2"
+monotonicity:
+  argument: "w1 = Laplace transform of law of S>=0 (non-degenerate) => strictly decreasing => unique 1/7 crossing"
+  rigorous: true
+honesty_locks:
+  produces_lean_object: false
+  trio_clean: false
+  closes_D4: false
+  closes_mass_gap: false
+  mass_gap_proven: false
+  m_gt_0_claimed: false
+  surface_1_status: OPEN
+  ym_tower_status: OPEN
+  note: >
+    Interval-certified numerics are NOT a formal proof. Supplies only the out-of-tower
+    numerical constraint; hw1 stays OPEN in Lean. KP surface, Surface #1, and the YM
+    tower stay OPEN. No mass-gap / mu>0 / Clay / RH / GRH / C05 claim.

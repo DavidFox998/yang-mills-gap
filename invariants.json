@@ -4,18 +4,68 @@
   "SURFACE": 3,
   "STATUS": "Open",
   "certified_date": "2026-06-13",
+  "d_series": {
+    "D1_polymer_counting": {
+      "status": "OPEN",
+      "statement": "#{γ:|γ|=n, energy<ε} ≤ Cⁿ·ε^{αn}",
+      "tag": "NEEDS_LEMMA",
+      "ref": "E2 — Clay-grade open combinatorics"
+    },
+    "D2_activity_bound": {
+      "status": "OPEN",
+      "statement": "|z(γ)| ≲ exp(-β·energy(γ))",
+      "tag": "NEEDS_LEMMA"
+    },
+    "D3_kp_summability": {
+      "status": "OPEN",
+      "statement": "Σ_{γ∋0} |z(γ)| e^{|γ|} < ∞ at finite β₀",
+      "tag": "BLOCKED_BY D1+D2"
+    },
+    "D4_w1_strict_bound": {
+      "status": "TESTED_NEGATIVE_CERTIFIED",
+      "statement": "w1 := ∫_{SU(3)} exp(-β·S) d haarSU3 < 1/7",
+      "verdict": "NEGATIVE at β=0.86 (w1(0.86)=0.432367 >> 1/7)",
+      "requires": "β > 2.079416880124 (certified upper endpoint)",
+      "beta0_certified_interval": [
+        "2079416880123/1000000000000",
+        "519854220031/250000000000"
+      ],
+      "beta0_decimal": [
+        "2.079416880123",
+        "2.079416880124"
+      ],
+      "cert": "CERT_Arb mpmath.iv N=36, tail≤4.46e-32",
+      "tag": "NEEDS_LEAN_OBJECT — certified out-of-tower only",
+      "in_mathlib_v4_12_0": false
+    },
+    "D5_hOS_os_cluster": {
+      "status": "OPEN",
+      "statement": "w1 < 1/7 → TruncatedActivityBound(a) (Osterwalder-Seiler 1978 Thm 2.1)",
+      "tag": "NEEDS_LEMMA E4",
+      "in_mathlib_v4_12_0": false
+    },
+    "D6_h_bridge_kp_decay": {
+      "status": "OPEN",
+      "statement": "Summable(fun n => N n * a n) → 0<ρ<1 ∧ geometric clustering",
+      "tag": "NEEDS_LEMMA E3 (Brydges-Federbush / Friedli-Velenik 2018 Ch.5)",
+      "in_mathlib_v4_12_0": false
+    }
+  },
   "surfaces": {
     "kotecky_preiss_criterion": {
       "status": "SURFACE",
       "file": "lean/Surfaces.lean",
       "statement": "def kotecky_preiss_criterion_Surface",
-      "missing": "cluster-entropy Peierls bound #{γ : |γ|=n, energy<ε} ≤ Cⁿ·ε^{α·n}"
+      "reduction": "requires D1+D2+D3+D4+D5+D6 — all OPEN",
+      "non_vacuous": true,
+      "non_vacuous_reason": "exp(-(β*gap)) < 1 strictly stronger than proven ‖T_L‖≤1"
     },
     "trivial_polymer_set_null": {
       "status": "SURFACE",
       "file": "lean/Surfaces.lean",
       "statement": "def trivial_polymer_set_null_Surface",
-      "missing": "NoAtoms haarSU3 + Measure.pi marginal / regular-element argument"
+      "missing": "NoAtoms haarSU3 (E5) + commuting-variety estimate L=1 (E6)",
+      "note": "necessary-NOT-sufficient for KP — different branch"
     },
     "polymerActivity_tendsto_zero": {
       "status": "SURFACE",
@@ -24,6 +74,8 @@
       "missing": "depends on trivial_polymer_set_null_Surface via DCT"
     }
   },
+  "reduction_chain": "D4 ⟹ D5 ⟹ (D1+D2 ⟹ D3) ⟹ D6 ⟹ target. Valid ONLY if all hold. NONE discharged.",
+  "dashed_edge": "abstract lattice decay ↛ real continuum YM mass gap. Surface #1 stays OPEN regardless.",
   "axiom_footprint": [
     "propext",
     "Classical.choice",
@@ -31,5 +83,12 @@
   ],
   "YM": "Status: Open",
   "mass_gap_claim": false,
-  "notes": "All OPEN content threaded as explicit named-Prop hypotheses (*_Surface). No sorry. No sorryAx. No admit. Surface #1 stays OPEN."
+  "proved_machine_checked_conditional": [
+    "T_L (bounded integral operator)",
+    "transfer_operator_norm_le ‖T_L‖≤1 (sub-Markov, NOT spectral gap)",
+    "kp_summable_of_truncatedActivity (comparison test)",
+    "su2_gap_of_truncatedActivity (abstract clustering combinator)",
+    "mass_gap_pos_of_spectral_gap (ρ^d = exp(-Δd) algebra)",
+    "polymerActivity (def, ≥0, antitone-in-β)"
+  ]
 }
