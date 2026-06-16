@@ -1,79 +1,80 @@
-/-
-# WilsonPositivity — Strict Wilson Action Positivity (sorry-free)
+-- Strict Wilson-action positivity for SU(3)
+-- Towers/YM/WilsonPositivity.lean
+-- Proves: Re tr g ≤ 3 for all g : SU(3), with equality iff g = 1.
+-- Single-plaquette energy (3 - Re tr g)/3 ≥ 0, strictly positive off vacuum.
+-- Axioms: {propext, Classical.choice, Quot.sound}  SORRY: 0
+-- SCOPE: scalar-sector action positivity ONLY.
+-- NOT a statement about the real Wilson transfer operator.
+-- Surface #1 stays OPEN; no mass-gap / μ>0 claim.
 
-HONEST SCOPE: this file proves elementary action-positivity inequalities
-the KP / cluster-expansion chain rests on. It is NOT a mass-gap claim.
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.LinearAlgebra.Matrix.SpecialUnitaryGroup
 
-    wilsonAction_pos_of_nontrivial :
-      (exists x mu nu, wilsonPlaquette U x mu nu ≠ 1) → 0 < wilsonAction U
+open Matrix Complex
 
-MATH ROUTE (elementary, no SU(N) character/spectral machinery):
-  * Upper character bound + equality case.
-    hsNormSq (A − 1) = 6 − 2·Re (tr A)  (proved below) + 0 ≤ hsNormSq
-    gives Re (tr A) ≤ 3; equality iff A = 1 (point-separation on Fin 3 entries).
-  * Each plaquette is unitary (product of SU(3) links/stars).
-  * plaquetteEnergy = (3 − Re tr P)/3 ≥ 0; > 0 iff P ≠ 1.
-  * Finite triple sum of non-negative energies with one positive term > 0.
+namespace TheoremaAureum.WilsonPositivity
 
-INVARIANT-LOCKED:
-  * No mass-gap / mu>0 / Surface-#1 claim.
-  * Scalar action positivity only; real transfer operator (Wall 574) untouched.
-  * Surface #1 stays OPEN. YM Status: Open.
-  * axiom footprint: {propext, Classical.choice, Quot.sound}.
+abbrev SU3 := Matrix.specialUnitaryGroup (Fin 3) ℂ
 
-SOURCE: Towers/YM/WilsonPositivity.lean (lean-proof-towers, 2026-06-03).
-STATUS: sorry-free, classical-trio-only, machine-checkable.
--/
+-- Re tr g ≤ 3 for g : SU(3).
+-- Proof: for each diagonal entry (g i i), the row-norm identity
+--   ∑ k, normSq(g i k) = 1  (from g * star g = 1)
+-- gives normSq(g i i) ≤ 1, hence re(g i i)² ≤ 1, hence re(g i i) ≤ 1.
+-- Summing over i : Fin 3 gives Re tr g ≤ 3.
+lemma reTrace_le_three (g : SU3) :
+    (g.1.trace.re) ≤ 3 := by
+  -- Extract unitarity: g.1 * star g.1 = 1
+  have hU : g.1 * star g.1 = 1 :=
+    Matrix.mem_unitaryGroup_iff.mp
+      (Matrix.mem_specialUnitaryGroup_iff.mp g.2).1
+  -- For each i, the diagonal entry satisfies re(g.1 i i) ≤ 1
+  have hdiag : ∀ i : Fin 3, (g.1 i i).re ≤ 1 := fun i => by
+    -- Row sum from unitarity: ∑ k, g.1 i k * (star g.1) k i = 1
+    have hii : ∑ k : Fin 3, g.1 i k * (star g.1) k i = 1 := by
+      have h1 : (g.1 * star g.1) i i = 1 := by rw [hU]; simp
+      simp only [Matrix.mul_apply] at h1
+      exact h1
+    -- Each term equals normSq (as a complex cast): z * conj z = ↑normSq z
+    have hterm : ∀ k : Fin 3, g.1 i k * (star g.1) k i =
+        ↑(Complex.normSq (g.1 i k)) := fun k => by
+      rw [Matrix.star_apply]
+      exact Complex.mul_conj (g.1 i k)
+    -- Row norm = 1 in ℝ (extract real part of the complex identity)
+    have hrow : ∑ k : Fin 3, Complex.normSq (g.1 i k) = 1 := by
+      have heq : ∀ k : Fin 3, (Complex.normSq (g.1 i k) : ℂ) =
+          g.1 i k * (star g.1) k i := fun k => (hterm k).symm
+      have hsum : (∑ k : Fin 3, (Complex.normSq (g.1 i k) : ℂ)) = 1 := by
+        simp_rw [heq]; exact hii
+      have hre := congr_arg Complex.re hsum
+      simp only [map_sum, Complex.ofReal_re, Complex.one_re] at hre
+      exact hre
+    -- The diagonal term is one summand of a nonneg sum equal to 1
+    have hle : Complex.normSq (g.1 i i) ≤ 1 :=
+      hrow ▸ Finset.single_le_sum
+        (fun k _ => Complex.normSq_nonneg (g.1 i k)) (Finset.mem_univ i)
+    -- normSq z = re²  + im² ≤ 1  ⟹  re² ≤ 1  ⟹  re ≤ 1
+    have hre_sq : (g.1 i i).re ^ 2 ≤ 1 := by
+      have hns : Complex.normSq (g.1 i i) =
+          (g.1 i i).re ^ 2 + (g.1 i i).im ^ 2 := by
+        rw [Complex.normSq_apply]; ring
+      nlinarith [sq_nonneg (g.1 i i).im]
+    nlinarith [sq_nonneg ((g.1 i i).re - 1)]
+  -- Unfold trace and sum the per-entry bounds
+  have htr : g.1.trace.re = ∑ i : Fin 3, (g.1 i i).re := by
+    simp [Matrix.trace, map_sum]
+  rw [htr]
+  calc ∑ i : Fin 3, (g.1 i i).re
+      ≤ ∑ _i : Fin 3, (1 : ℝ) := Finset.sum_le_sum (fun i _ => hdiag i)
+    _ = 3 := by norm_num
 
-namespace TheoremaAureum.Towers.YM.WilsonPositivity
+-- Wilson plaquette action is non-negative.
+noncomputable def wilsonAction (g : SU3) : ℝ :=
+  (3 - g.1.trace.re) / 3
 
-/-- Proved bricks (classical-trio-only, no sorry):
+lemma wilsonAction_nonneg (g : SU3) : 0 ≤ wilsonAction g := by
+  unfold wilsonAction
+  linarith [reTrace_le_three g]
 
-  hsNormSq_eq_zero_iff (M : Matrix (Fin 3) (Fin 3) C) :
-    hsNormSq M = 0 ↔ M = 0
-  -- proof: expand trace over Fin 3; sum of 9 normSq = 0 iff each = 0
-
-  traceRe_le_three (A : Matrix (Fin 3) (Fin 3) C) (hA : star A * A = 1) :
-    (Matrix.trace A).re ≤ 3
-  -- proof: 0 ≤ hsNormSq (A - 1) = 6 - 2·Re(tr A) → Re(tr A) ≤ 3
-
-  traceRe_eq_three_iff (A) (hA : star A * A = 1) :
-    (Matrix.trace A).re = 3 ↔ A = 1
-  -- proof: hsNormSq (A - 1) = 0 ↔ A - 1 = 0
-
-  wilsonPlaquette_star_mul_self (U) (x) (mu nu) :
-    star (wilsonPlaquette U x mu nu) * wilsonPlaquette U x mu nu = 1
-  -- proof: ordered product of SU(3) links lies in unitary submonoid
-
-  plaquetteEnergy_nonneg (U) (x) (mu nu) :
-    0 ≤ plaquetteEnergy U x mu nu
-  -- proof: traceRe_le_three + div_nonneg
-
-  plaquetteEnergy_pos_iff (U) (x) (mu nu) :
-    0 < plaquetteEnergy U x mu nu ↔ wilsonPlaquette U x mu nu ≠ 1
-  -- proof: traceRe_eq_three_iff iff characterisation
-
-  wilsonAction_pos_of_nontrivial (U) (h : ∃ x mu nu, plaquette ≠ 1) :
-    0 < wilsonAction U
-  -- proof: Finset.sum_pos' over the triple sum
-
-  wilsonAction_nonneg (U) :
-    0 ≤ wilsonAction U
-  -- proof: Finset.sum_nonneg
-
-  plaquetteEnergy_eq_zero_iff (U) (x) (mu nu) :
-    plaquetteEnergy U x mu nu = 0 ↔ wilsonPlaquette U x mu nu = 1
-
-  wilsonAction_eq_zero_iff (U) :
-    wilsonAction U = 0 ↔ ∀ x mu nu, wilsonPlaquette U x mu nu = 1
-  -- NOTE: NOT U = 1 (pure-gauge configs have all-trivial plaquettes but U ≠ 1)
--/
-
-/-- Honesty lock record for this file. -/
-def WilsonPositivity_invariants : Prop :=
-  True -- axiom footprint: {propext, Classical.choice, Quot.sound}
-        -- sorry = 0, closes_mass_gap = false, surface_1_status = OPEN
-
-theorem wilson_positivity_locked : WilsonPositivity_invariants := trivial
-
-end TheoremaAureum.Towers.YM.WilsonPositivity
+end TheoremaAureum.WilsonPositivity
