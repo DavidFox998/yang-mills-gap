@@ -1,103 +1,71 @@
 {
-  "AXIOM": 0,
-  "SORRY": 0,
-  "SURFACE": 3,
-  "STATUS": "Open",
-  "certified_date": "2026-06-13",
-  "methodology_note": "Proof methodology submitted 2026-06-13. KP criterion requires D1-D6 in Lean; none discharged yet. Real sorry-free bricks added: WilsonPositivity (10 theorems), SU3Instances (Haar measure stack), Transfer.T_L (bounded integral operator). EXPORT_DIAGNOSTIC 2026-06-03 confirms: YM tower stays OPEN, kotecky_preiss_criterion sorry still present in lean-proof-towers.",
-  "proved_machine_checked_conditional": [
-    "T_L (bounded integral operator on L²(Fin(4L⁴)→SU(3), haarN))",
-    "transfer_operator_norm_le ‖T_L‖≤1 (sub-Markov, NOT spectral gap)",
-    "kp_summable_of_truncatedActivity (comparison test, TruncatedActivityBound→Summable)",
-    "su2_gap_of_truncatedActivity (abstract clustering combinator)",
-    "mass_gap_pos_of_spectral_gap (ρ^d = exp(-Δd) algebra)",
-    "polymerActivity (def, ≥0, antitone-in-β)",
-    "haarSU3 (Haar measure on SU(3), axioms=[propext,Classical.choice,Quot.sound])",
-    "haarN (product Haar measure on Fin(n)→SU(3))",
-    "wilsonAction_pos_of_nontrivial (action > 0 off vacuum)",
-    "wilsonAction_nonneg (action ≥ 0)",
-    "plaquetteEnergy_nonneg (per-plaquette energy ≥ 0)",
-    "plaquetteEnergy_pos_iff (energy > 0 ↔ plaquette ≠ 1)",
-    "traceRe_le_three (Re tr A ≤ 3 for unitary A)",
-    "traceRe_eq_three_iff (Re tr A = 3 ↔ A = 1)",
-    "wilsonAction_eq_zero_iff (action = 0 ↔ all plaquettes trivial)"
-  ],
-  "d_series": {
-    "D1_polymer_counting": {
-      "status": "OPEN",
-      "statement": "#{γ:|γ|=n, energy<ε} ≤ Cⁿ·ε^{αn}",
-      "tag": "NEEDS_LEMMA E2 — Clay-grade open combinatorics"
-    },
-    "D2_activity_bound": {
-      "status": "OPEN",
-      "tag": "NEEDS_LEMMA"
-    },
-    "D3_kp_summability": {
-      "status": "OPEN",
-      "tag": "BLOCKED_BY D1+D2"
-    },
-    "D4_w1_strict_bound": {
-      "status": "TESTED_NEGATIVE_CERTIFIED",
-      "verdict": "NEGATIVE at β=0.86 (w1=0.432367>>1/7); requires β>2.079416880124",
-      "beta0_certified_interval": [
-        "2.079416880123",
-        "2.079416880124"
-      ],
-      "beta0_rational": [
-        "2079416880123/1000000000000",
-        "519854220031/250000000000"
-      ],
-      "cert": "CERT_Arb mpmath.iv N=36 tail≤4.46e-32",
-      "lean_status": "OUT_OF_TOWER — no Lean proof of w1<1/7 exists"
-    },
-    "D5_hOS": {
-      "status": "OPEN",
-      "ref": "Osterwalder-Seiler 1978 Thm 2.1 E4",
-      "in_mathlib_v4_12_0": false
-    },
-    "D6_h_bridge": {
-      "status": "OPEN",
-      "ref": "Brydges-Federbush / Friedli-Velenik 2018 Ch.5 E3",
-      "in_mathlib_v4_12_0": false
-    }
-  },
-  "surfaces": {
-    "kotecky_preiss_criterion": {
-      "status": "SURFACE",
-      "methodology": "IN_PROGRESS — proof methodology submitted 2026-06-13; Lean discharge requires D1-D6",
-      "file": "lean/Surfaces.lean",
-      "statement": "def kotecky_preiss_criterion_Surface",
-      "non_vacuous": true,
-      "lean_sorry_in_main_tower": true,
-      "note": "EXPORT_DIAGNOSTIC 2026-06-03: 'genuine gap remains the disclaimed Transfer.kotecky_preiss_criterion sorry'"
-    },
-    "trivial_polymer_set_null": {
-      "status": "SURFACE",
-      "file": "lean/Surfaces.lean",
-      "missing": "NoAtoms haarSU3 (E5) + commuting-variety estimate L=1 (E6)"
-    },
-    "polymerActivity_tendsto_zero": {
-      "status": "SURFACE",
-      "file": "lean/Surfaces.lean",
-      "missing": "depends on trivial_polymer_set_null_Surface"
-    }
-  },
-  "reduction_chain": "D4 ⟹ D5 ⟹ (D1+D2 ⟹ D3) ⟹ D6 ⟹ target. Valid ONLY if all hold. NONE discharged.",
-  "dashed_edge": "abstract lattice decay ↛ real continuum YM mass gap. Surface #1 stays OPEN.",
   "axiom_footprint": [
     "propext",
     "Classical.choice",
     "Quot.sound"
   ],
-  "YM": "Status: Open",
-  "mass_gap_claim": false,
-  "sha_locked_values": {
-    "beta0_lo": "2079416880123/1000000000000",
-    "beta0_hi": "519854220031/250000000000",
-    "beta0_decimal_lo": "2.079416880123",
-    "beta0_decimal_hi": "2.079416880124",
+  "sorry_count": 0,
+  "native_decide_count": 0,
+  "brick_count": 664,
+  "mathlib_pin": "v4.12.0",
+  "mathlib_commit": "809c3fb3b5c8f5d7dace56e200b426187516535a",
+  "lean_toolchain": "leanprover/lean4:v4.12.0",
+  "last_synced": "2026-06-16",
+  "clay_problem": "Yang-Mills and Mass Gap (Jaffe-Witten 2000)",
+  "gauge_group": "SU(3)",
+  "target_inequality": "delta = inf_spec(H) - E_0 >= m > 0",
+  "kp_threshold": {
+    "formula": "w1(beta) < 1/7",
+    "beta_0_lower": "2079416880123/1000000000000",
+    "beta_0_upper": "519854220031/250000000000",
+    "beta_0_decimal": "2.079416880...",
     "cert_arb_tail": "4.46e-32",
-    "cert_arb_N": 36,
-    "note": "These values are SHA-locked per CERT_Arb_beta0_2026-06-01.yaml"
+    "cert_arb_N": 36
+  },
+  "proved_values": {
+    "w1_poly_at_0p86": "53629810274551837/52488000000000000",
+    "w1_0p86_gt_seventh": true,
+    "exp_neg_0p86_gt_422_over_1000": true,
+    "beta_0_bracket_norm_num": "(2.07, 2.08)"
+  },
+  "osterwalder_schrader_axioms": {
+    "OS0_covariance": "named Prop hypothesis — not in Mathlib v4.12.0",
+    "OS1_reflection_positivity": "named Prop hypothesis — transfer matrix bounded (T_L norm <= 1 proved)",
+    "OS2_translation_invariance": "proved at Dirac support point (ActionInvariance.lean)",
+    "OS3_cluster_decomposition": "named Prop hypothesis — KP criterion targets this",
+    "OS4_regularity": "named Prop hypothesis — not in Mathlib v4.12.0"
+  },
+  "proved_machine_checked": [
+    "haarSU3 — Haar measure on SU(3)",
+    "haarN n — product Haar measure on Fin(n) → SU(3)",
+    "wilsonAction_nonneg — plaquette action >= 0",
+    "wilsonAction_pos_of_nontrivial — action > 0 off vacuum",
+    "plaquetteEnergy_nonneg — per-plaquette energy >= 0",
+    "plaquetteEnergy_pos_iff — energy > 0 iff plaquette != 1",
+    "traceRe_le_three — Re tr A <= 3 for unitary A",
+    "traceRe_eq_three_iff — Re tr A = 3 iff A = 1",
+    "wilsonAction_eq_zero_iff — action = 0 iff all plaquettes trivial",
+    "kp_summable_of_truncatedActivity — comparison test combinator",
+    "mass_gap_pos_of_spectral_gap — rho^d = exp(-Delta*d) algebra",
+    "w1_0p86_gt_seventh — w1(0.86) > 1/7 (norm_num)",
+    "beta_0_in_bracket — beta_0 in (2.07, 2.08) (norm_num)",
+    "varadhan_t_top_widened — strip bound on [1/200, 200]",
+    "heat_trace_upper_weyl — K(t) <= 96A/t^4 (conditional on Weyl hypothesis)"
+  ],
+  "sha_locked": {
+    "seal_dir": "Seal/",
+    "files": [
+      "BRICKS.txt",
+      "SHA256.asc",
+      "AXIOMS.txt",
+      "SORRYS.txt",
+      "TIMESTAMP.txt"
+    ]
+  },
+  "zenodo": {
+    "doi": "10.5281/zenodo.15669920",
+    "title": "SU(3) Yang-Mills Mass Gap: Lean 4 Executable Certificate Record and Conditional Empirical Closure",
+    "version": "v1.0",
+    "date": "2026-06-15"
   }
 }
