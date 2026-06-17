@@ -1,0 +1,82 @@
+name: Lean CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: "lake build (Mathlib v4.12.0)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            -sSf | sh -s -- -y --default-toolchain leanprover/lean4:v4.12.0
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Cache Lean toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-v4.12.0-${{ hashFiles('lean-toolchain') }}
+          restore-keys: elan-${{ runner.os }}-v4.12.0-
+
+      - name: lake update
+        run: lake update
+
+      - name: Get Mathlib olean cache
+        run: lake exe cache get || true
+
+      - name: lake build
+        run: lake build
+
+      - name: Check: zero sorry
+        run: |
+          FOUND=$(grep -rn --include='*.lean' '\bsorry\b' Towers/ KP/ RH/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "FAIL: sorry found:"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "PASS: no sorry"
+
+      - name: Generate FOR_CERN.txt
+        run: |
+          python3 - <<'PYEOF'
+          import hashlib, os, glob
+          lines = ["# FOR_CERN.txt  —  SHA-256 manifest of key chain files", ""]
+          roots = [
+              "Towers/YM/YMCollection.lean",
+              "Towers/YM/BesselBounds.lean",
+              "Towers/YM/W1Toeplitz.lean",
+              "Towers/YM/KP_Closure.lean",
+              "Towers/YM/Wall256_MassGapConditional.lean",
+              "Towers/YM/Wall256_Beta0Bridge.lean",
+              "Towers/YM/Wall256_Scaffold.lean",
+              "Towers/RH/Chain/C10_MainTheorem.lean",
+              "KP/Main.lean",
+              "lakefile.lean",
+          ]
+          for p in roots:
+              if os.path.exists(p):
+                  h = hashlib.sha256(open(p,"rb").read()).hexdigest()
+                  lines.append(f"{h}  {p}")
+          for p in sorted(glob.glob("Towers/YM/*.lean")):
+              if p not in roots:
+                  h = hashlib.sha256(open(p,"rb").read()).hexdigest()
+                  lines.append(f"{h}  {p}")
+          open("FOR_CERN.txt","w").write("\n".join(lines)+"\n")
+          print(f"Wrote FOR_CERN.txt ({len(lines)} lines)")
+          PYEOF
+
+      - name: Upload FOR_CERN.txt
+        uses: actions/upload-artifact@v4
+        with:
+          name: FOR_CERN
+          path: FOR_CERN.txt
