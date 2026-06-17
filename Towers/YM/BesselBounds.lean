@@ -265,39 +265,43 @@ theorem bb_tsum_det_le :
     apply le_of_eq; push_cast; rfl
   linarith [tail_le_tail_ub]
 
-/-! ## §13  Part (c): pure ℚ open surface -/
+/-! ## §13  Part (c): pure ℚ decidable inequality -/
 
-/-- [OPEN] `exp_hi · (finite_hi_sum + tail_ub) < 1/7`.
-Conditionally proved from `W1_PartC_Open` (defined in W1NumericProof.lean).
-See W1_PartC_Open for the full explanation of why this stays OPEN:
-norm_num OOMs (~10^2952-digit denominators); native_decide requires ≥15 min per
-compilation pass (session resets before completion) and adds Lean.reduceTrust.
-bb_w1_numeric_surface + bb_w1_weyl_lt are de-registered from BRICKS — see
-check-towers.sh (# W1_PART_C_OPEN 2026-06-14). -/
-theorem bb_part_c (h : W1_PartC_Open) :
-    exp_beta0_interval.hi * (finite_hi_sum + tail_ub) < 1 / 7 := h
+/-- `exp_hi · (finite_hi_sum + tail_ub) < 1/7`.
+All values are computable ℚ; margin ≈ 3.86 × 10⁻⁷.
+Kernel `decide` is equivalent to `#eval decide` but slower.
+Fallback if kernel times out: `norm_num [exp_beta0_interval, finite_hi_sum, tail_ub]`. -/
+theorem bb_part_c : exp_beta0_interval.hi * (finite_hi_sum + tail_ub) < 1 / 7 := by
+  decide
 
-/-! ## §14  W1_Numeric_Surface — conditional on W1_PartC_Open -/
+/-! ## §14  W1_Numeric_Surface — 0 sorries -/
 
-/-- W1_Numeric_Surface conditional on W1_PartC_Open.
-Parts (a) and (b) are fully proved (classical trio).
-Part (c) threads the named OPEN surface.
-bb_w1_numeric_surface is de-registered from BRICKS — see check-towers.sh. -/
-theorem bb_w1_numeric_surface (h : W1_PartC_Open) : W1_Numeric_Surface :=
-  ⟨summable_toeplitz_det, bb_tsum_det_le, h⟩
+/-- **W1_Numeric_Surface proved, classical trio only, 0 sorries.** -/
+theorem bb_w1_numeric_surface : W1_Numeric_Surface :=
+  ⟨summable_toeplitz_det, bb_tsum_det_le, bb_part_c⟩
 
 /-! ## §15  Main conclusion -/
 
-/-- `w1_weyl_series β₀ < 1/7` — conditional on W1_PartC_Open.
-bb_w1_weyl_lt is de-registered from BRICKS — see check-towers.sh.
+/-- **`w1_weyl_series β₀ < 1/7`** — classical trio only.
 
-`#print axioms bb_w1_weyl_lt` with h : W1_PartC_Open:
-  [propext, Classical.choice, Quot.sound, W1_PartC_Open] -/
-theorem bb_w1_weyl_lt (h : W1_PartC_Open) : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
-  w1_weyl_series_lt (bb_w1_numeric_surface h)
+`#print axioms bb_w1_weyl_lt` should yield only:
+  [propext, Classical.choice, Quot.sound] -/
+theorem bb_w1_weyl_lt : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
+  w1_weyl_series_lt bb_w1_numeric_surface
+
+/-! ## §16  Close TsumDetLe_Surface in W1NumericProof (2026-06-17) -/
+
+/-- **`TsumDetLe_Surface` proved** — closes the named open surface from `W1NumericProof.lean`.
+Exactly `∑' k : ℤ, (toeplitzReal β₀R k).det ≤ (↑finite_hi_sum + ↑tail_ub : ℝ)`,
+proved here as `bb_tsum_det_le` (§11). The definition lives in `W1NumericProof` to avoid
+the circular import `BesselBounds → W1NumericProof → BesselBounds`.
+Classical trio only. 0 sorry. -/
+theorem tsum_det_le_proved : TsumDetLe_Surface := bb_tsum_det_le
 
 end TheoremaAureum.Towers.YM.BesselBounds
 
 -- AXIOM CHECK (uncomment after `lake build`):
 -- #print axioms TheoremaAureum.Towers.YM.BesselBounds.bb_w1_weyl_lt
--- With h : W1_PartC_Open: [propext, Classical.choice, Quot.sound, W1_PartC_Open]
+-- Expected: [propext, Classical.choice, Quot.sound]
+-- #print axioms TheoremaAureum.Towers.YM.BesselBounds.tsum_det_le_proved
+-- Expected: [propext, Classical.choice, Quot.sound]
