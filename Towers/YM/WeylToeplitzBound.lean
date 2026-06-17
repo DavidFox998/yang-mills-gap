@@ -111,9 +111,7 @@ theorem besselI_series_le_exp_bound (n : ℕ) (x : ℝ) (hx : 0 ≤ x) :
         tsum_le_tsum hterm hsumm hsumm_dom
     _ = (x / 2) ^ n * ∑' k : ℕ, ((x / 2) ^ 2) ^ k / ↑k.factorial := tsum_mul_left
     _ = (x / 2) ^ n * Real.exp ((x / 2) ^ 2) := by
-        congr 1; symm
-        rw [Real.exp_eq_exp_ℝ]
-        exact congr_fun (NormedSpace.exp_eq_tsum_div (𝕂 := ℝ) (𝔸 := ℝ)) _
+        congr 1; exact (Real.exp_eq_tsum _).symm
 
 /-! ## §3  Finite sum upper bound (trio-proved) -/
 
@@ -191,7 +189,6 @@ def W1_Numeric_Surface : Prop :=
 
 /-! ## §7  Main conditional theorem (trio-proved given W1_Numeric_Surface) -/
 
-set_option maxHeartbeats 0 in
 /-- **MAIN THEOREM (trio-proved, conditional on W1_Numeric_Surface).**
 
 Proof chain:
@@ -209,38 +206,26 @@ theorem w1_weyl_series_lt (h : W1_Numeric_Surface) :
   -- step: exp(-β₀) ≤ exp_hi  (trio; from IntervalExp chain)
   have hexp_le : Real.exp (-(β₀_rat : ℝ)) ≤ (exp_beta0_interval.hi : ℝ) :=
     exp_le_beta0_hi
+  -- step: 0 ≤ finite_hi_sum + tail_ub  (both are nonneg rationals)
+  have hpos : (0 : ℝ) ≤ (↑finite_hi_sum + ↑tail_ub : ℝ) := by
+    have h1 : (0 : ℝ) ≤ (tail_ub : ℝ) := by norm_num [tail_ub]
+    have h2 : (0 : ℝ) ≤ (finite_hi_sum : ℝ) := by
+      apply Rat.cast_nonneg.mpr
+      apply Finset.sum_nonneg
+      intro i _
+      exact le_trans (besselIn_beta0_lo_nonneg _) (besselIn_beta0_interval _).isLE
+    linarith
   -- step: cast the ℚ bound to ℝ
-  -- Term-mode: Rat.cast_lt.mpr gives ↑X < ↑(1/7:ℚ).
-  -- simp only [Rat.cast_mul, Rat.cast_add] unfolds ↑X to ↑a*(↑b+↑c).
-  -- norm_num confirms ↑(1/7:ℚ) = 1/7:ℝ. linarith chains all three.
-  -- NO exact_mod_cast / push_cast / norm_cast (all three can hang on this shape).
   have hbound : (exp_beta0_interval.hi : ℝ) * (↑finite_hi_sum + ↑tail_ub) < 1 / 7 := by
-    have h2 : (↑(exp_beta0_interval.hi * (finite_hi_sum + tail_ub)) : ℝ) < ↑(1 / 7 : ℚ) :=
-      Rat.cast_lt.mpr hfinal
-    have h3 : (↑(1 / 7 : ℚ) : ℝ) = 1 / 7 := by norm_num
-    have h1 : (exp_beta0_interval.hi : ℝ) * (↑finite_hi_sum + ↑tail_ub) =
-              ↑(exp_beta0_interval.hi * (finite_hi_sum + tail_ub)) := by
-      simp only [Rat.cast_mul, Rat.cast_add]
-    linarith
-  -- main bound: case split on sign of (finite_hi_sum + tail_ub) to avoid
-  -- an expensive full-expansion norm_num for nonnegativity.
-  -- Positive case: standard two-step monotonicity chain.
-  -- Negative case: the product exp_hi*(fs+tu) ≤ 0 < 1/7 is immediate.
+    exact_mod_cast hfinal
+  -- chain
   unfold w1_weyl_series
-  by_cases hsgn : (0 : ℝ) ≤ ↑finite_hi_sum + ↑tail_ub
-  · calc Real.exp (-(β₀_rat : ℝ)) * ∑' k : ℤ, (toeplitzReal (β₀_rat : ℝ) k).det
-        ≤ Real.exp (-(β₀_rat : ℝ)) * (↑finite_hi_sum + ↑tail_ub) :=
-            mul_le_mul_of_nonneg_left htsum_le (Real.exp_pos _).le
-      _ ≤ (exp_beta0_interval.hi : ℝ) * (↑finite_hi_sum + ↑tail_ub) :=
-            mul_le_mul_of_nonneg_right hexp_le hsgn
-      _ < 1 / 7 := hbound
-  · push_neg at hsgn
-    have hstep1 : Real.exp (-(β₀_rat : ℝ)) * ∑' k : ℤ, (toeplitzReal (β₀_rat : ℝ) k).det
-        ≤ Real.exp (-(β₀_rat : ℝ)) * (↑finite_hi_sum + ↑tail_ub) :=
-        mul_le_mul_of_nonneg_left htsum_le (Real.exp_pos _).le
-    have hstep2 : Real.exp (-(β₀_rat : ℝ)) * (↑finite_hi_sum + ↑tail_ub) ≤ 0 :=
-        mul_nonpos_of_nonneg_of_nonpos (Real.exp_pos _).le hsgn.le
-    linarith
+  calc Real.exp (-(β₀_rat : ℝ)) * ∑' k : ℤ, (toeplitzReal (β₀_rat : ℝ) k).det
+      ≤ Real.exp (-(β₀_rat : ℝ)) * (↑finite_hi_sum + ↑tail_ub) :=
+          mul_le_mul_of_nonneg_left htsum_le (Real.exp_pos _).le
+    _ ≤ (exp_beta0_interval.hi : ℝ) * (↑finite_hi_sum + ↑tail_ub) :=
+          mul_le_mul_of_nonneg_right hexp_le hpos
+    _ < 1 / 7 := hbound
 
 /-! ## §8  Connection to Hw1_Surface — the ONE remaining equality -/
 
