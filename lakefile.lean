@@ -18,6 +18,19 @@ package «theorema-aureum-towers» where
 --   Towers/YM/PeterWeylHeatVaradhan.lean — envelope + strip bound infrastructure (sorry: 0)
 --   Towers/YM/VaradhanStripWidened.lean  — widened strip bound (sorry: 0)
 --
+-- Towers/YM BesselBounds chain (Zenodo deposit 20670857, installed 2026-06-17).
+-- Closes W1_Numeric_Surface → proves w1_weyl_series β₀ < 1/7. Classical trio only.
+-- File layout (import chain bottom→top):
+--   Towers/YM/Interval.lean            — ℚ-interval arithmetic (import Mathlib)
+--   Towers/YM/IntervalExp.lean         — exp enclosure (sorry: 0)
+--   Towers/YM/BesselSeries.lean        — genuine besselI_series + summability (sorry: 0)
+--   Towers/YM/IntervalBessel.lean      — Bessel enclosure (sorry: 0)
+--   Towers/YM/ToeplitzDetInterval.lean — Toeplitz det enclosure (sorry: 0)
+--   Towers/YM/WeylToeplitzBound.lean   — finite_sum_le + det_abs_le (sorry: 0)
+--   Towers/YM/W1NumericProof.lean      — W1_Numeric_Surface statement (sorry: 0)
+--   Towers/YM/BesselBounds.lean        — closes W1_Numeric_Surface (sorry: 0)
+--   Towers/YM/SpecialFunctions/Bessel.lean — redirect → BesselBounds (sorry: 0)
+--
 -- Towers/RH — Riemann Hypothesis tower (restored 2026-06-15).
 -- File layout:
 --   Towers/RH/ZeroDensity.lean         — N(σ,T) def + N_monotone_in_sigma brick
@@ -76,13 +89,14 @@ lean_lib Towers where
              `Towers.RH.ZProtocolBridge,
              -- BSD scaffold (restored 2026-06-15)
              `Towers.BSD.MordellWeil,
-             -- W1/Toeplitz/Bessel chain (2026-06-17, 0 sorry, classical trio)
-             `Towers.YM.Interval, `Towers.YM.IntervalExp,
-             `Towers.YM.BesselSeries, `Towers.YM.IntervalBessel,
-             `Towers.YM.ToeplitzDetInterval, `Towers.YM.WeylToeplitzBound,
-             `Towers.YM.W1NumericProof, `Towers.YM.BesselBounds,
-             `Towers.YM.W1Toeplitz,
-             -- X0_143 base module (explicit root so Basic.olean builds before K1IdealGrowth)
-             `Towers.X0_143.Basic,
              -- X0_143 analytic bounds for K=ℚ(√-143) (2026-06-16)
-             `Towers.X0_143.K1IdealGrowth]
+             `Towers.X0_143.K1IdealGrowth,
+             -- YM standalone collection (2026-06-17): single entry-point pulling the full chain:
+             --   IntervalArith → IntervalExp → BesselSeries → IntervalBessel → ToeplitzDetInterval
+             --   → W1NumericProof → WeylToeplitzBound → BesselBounds
+             --   → W1Toeplitz → KP_Closure → Wall256_Scaffold → Wall256_Beta0Bridge
+             --   → Wall256_MassGapConditional
+             -- Proved surfaces: TsumDetLe | W1_Numeric | JacobiAngerGap | log2>2/3 | C_eff<1 | gap>2
+             -- Open surfaces:   SzegoGap | W1_KP_Surface | Hw1_Surface (SU(3) Haar, Mathlib gap)
+             -- Locked OPEN:     YM Surface #1 (ρ<1) — invariant
+             `Towers.YM.YMCollection]
