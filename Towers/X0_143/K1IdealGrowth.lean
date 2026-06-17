@@ -16,8 +16,7 @@
     Takes K1_ClassNumber_OPEN and K1_IdealCounting_OPEN as EXPLICIT hypotheses.
     Axiom footprint of k1_ideal_growth_law itself: classical trio only.
 -/
-import Towers.RH.JorgensonKramer.X0_143.Basic
-import Towers.RH.JorgensonKramer.X0_143.Discriminant143
+import Towers.X0_143.Basic
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Log.Basic

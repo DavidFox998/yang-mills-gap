@@ -76,5 +76,13 @@ lean_lib Towers where
              `Towers.RH.ZProtocolBridge,
              -- BSD scaffold (restored 2026-06-15)
              `Towers.BSD.MordellWeil,
+             -- W1/Toeplitz/Bessel chain (2026-06-17, 0 sorry, classical trio)
+             `Towers.YM.Interval, `Towers.YM.IntervalExp,
+             `Towers.YM.BesselSeries, `Towers.YM.IntervalBessel,
+             `Towers.YM.ToeplitzDetInterval, `Towers.YM.WeylToeplitzBound,
+             `Towers.YM.W1NumericProof, `Towers.YM.BesselBounds,
+             `Towers.YM.W1Toeplitz,
+             -- X0_143 base module (explicit root so Basic.olean builds before K1IdealGrowth)
+             `Towers.X0_143.Basic,
              -- X0_143 analytic bounds for K=ℚ(√-143) (2026-06-16)
              `Towers.X0_143.K1IdealGrowth]
