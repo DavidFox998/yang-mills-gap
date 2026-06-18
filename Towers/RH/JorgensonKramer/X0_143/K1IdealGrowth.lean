@@ -22,6 +22,7 @@ import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.RingTheory.ClassGroup
+import Mathlib.NumberTheory.NumberField.ClassNumber
 
 namespace Towers.RH.JorgensonKramer.X0_143
 
@@ -37,7 +38,7 @@ open Real NumberField
     STATUS: OPEN. Do NOT prove with `decide`, `norm_num`, `native_decide`,
     `sorry`, or `trivial`. -/
 def K1_ClassNumber_OPEN : Prop :=
-  Fintype.card (ClassGroup (𝓞 K)) = 10
+  NumberField.classNumber K = 10
 
 /-- K1_IdealCounting_OPEN: Landau's ideal-counting theorem for ζ_K.
     #{𝔞 ⊆ 𝓞 K : N(𝔞) ≤ X} = κ·X + O(√X·log X).
