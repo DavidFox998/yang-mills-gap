@@ -110,19 +110,23 @@ private lemma g_neg_eq (n : ℕ) : g (-(↑n + 26) : ℤ) = 6 * C_exp ^ 3 * q ^ 
 private def posEquiv : ℕ ≃ {k : ℤ | k ≥ 26} where
   toFun   n     := ⟨↑n + 26, by simp only [Set.mem_setOf_eq]; omega⟩
   invFun  k     := (k.val - 26).toNat
-  left_inv  n   := by simp only; omega
+  left_inv  n   := by
+    simp only [show ((n : ℤ) + 26 - 26 : ℤ) = (n : ℤ) from by omega, Int.toNat_natCast]
   right_inv := fun ⟨k, hk⟩ => by
     simp only [Set.mem_setOf_eq] at hk
-    apply Subtype.ext; simp only; omega
+    apply Subtype.ext; simp only
+    rw [Int.toNat_of_nonneg (by omega)]; omega
 
 /-- `ℕ ≃ {k : ℤ | k ≤ -26}` via `n ↦ -(n + 26)`. -/
 private def negEquiv : ℕ ≃ {k : ℤ | k ≤ -26} where
   toFun   n     := ⟨-(↑n + 26), by simp only [Set.mem_setOf_eq]; omega⟩
   invFun  k     := (-k.val - 26).toNat
-  left_inv  n   := by simp only; omega
+  left_inv  n   := by
+    simp only [show (-(-(↑n + 26 : ℤ)) - 26 : ℤ) = (n : ℤ) from by omega, Int.toNat_natCast]
   right_inv := fun ⟨k, hk⟩ => by
     simp only [Set.mem_setOf_eq] at hk
-    apply Subtype.ext; simp only; omega
+    apply Subtype.ext; simp only
+    rw [Int.toNat_of_nonneg (by omega)]; omega
 
 /-! ## §7  Complement of S26 = {k≥26} ∪ {k≤−26} -/
 
@@ -142,6 +146,7 @@ private lemma inv_one_sub_q_le : (1 - q)⁻¹ ≤ 8 / 7 := by
 
 /-! ## §9  ∑'_{k∉S26} g(k) ≤ 1/10²⁰  (geometric tail bound) -/
 
+set_option maxHeartbeats 800000 in
 /-- **∑'_{k∉S26} g(k) ≤ 1/10²⁰.**
 
 Proof:
@@ -159,9 +164,9 @@ private lemma compl_g_tsum_le :
     rw [Set.disjoint_left]
     intro k h1 h2
     simp only [Set.mem_setOf_eq] at h1 h2; omega
-  have hpos_s : Summable (fun k : {k : ℤ | k ≥ 26} => g k.val) :=
+  have hpos_s : Summable (g ∘ (↑) : {k : ℤ | k ≥ 26} → ℝ) :=
     g_summable.subtype _
-  have hneg_s : Summable (fun k : {k : ℤ | k ≤ -26} => g k.val) :=
+  have hneg_s : Summable (g ∘ (↑) : {k : ℤ | k ≤ -26} → ℝ) :=
     g_summable.subtype _
   -- Step 2: split tsum over the union
   rw [tsum_union_disjoint hdisj hpos_s hneg_s]
@@ -179,10 +184,11 @@ private lemma compl_g_tsum_le :
   rw [hpos_idx, hneg_idx]
   -- Step 4: unfold g and sum geometric series
   simp_rw [g_pos_eq, g_neg_eq]
+  -- goal: ∑' n, 6*C_exp³*q²⁴*qⁿ + ∑' n, 6*C_exp³*q²⁴*qⁿ ≤ 1/10²⁰
   have hgeo : ∑' n : ℕ, 6 * C_exp ^ 3 * q ^ 24 * q ^ n =
       6 * C_exp ^ 3 * q ^ 24 * (1 - q)⁻¹ := by
     rw [tsum_mul_left, tsum_geometric_of_lt_one q_nonneg q_lt_one]
-  rw [hgeo, hgeo]
+  rw [hgeo]
   -- Step 5: numeric bounds
   have hC3 : C_exp ^ 3 ≤ (3 / 2 : ℝ) ^ 3 :=
     pow_le_pow_left C_exp_nonneg C_exp_lt_three_halves.le 3
@@ -201,7 +207,8 @@ private lemma compl_g_tsum_le :
               (inv_nonneg.mpr hq_pos.le) (by positivity)
       _ = 162 / (7 * 8 ^ 24 : ℝ) := by norm_num
   -- Two copies ≤ 1/10²⁰
-  linarith [show 2 * (162 : ℝ) / (7 * 8 ^ 24) ≤ 1 / 10 ^ 20 from by norm_num]
+  linarith [h_each, h_each,
+            show (162 : ℝ) / (7 * 8 ^ 24) + 162 / (7 * 8 ^ 24) ≤ 1 / 10 ^ 20 from by norm_num]
 
 /-! ## §10  Tail bound for the determinant tsum -/
 
@@ -209,8 +216,11 @@ private lemma compl_g_tsum_le :
 lemma tail_le_tail_ub :
     ∑' k : ↥((↑S26 : Set ℤ))ᶜ, (toeplitzReal β₀R (k : ℤ)).det ≤ (tail_ub : ℝ) := by
   have h_le : ∀ k : ↥((↑S26 : Set ℤ))ᶜ,
-      (toeplitzReal β₀R (k : ℤ)).det ≤ g (k : ℤ) := fun k =>
-    le_trans (le_abs_self _) (det_abs_le k.val)
+      (toeplitzReal β₀R (k : ℤ)).det ≤ g (k : ℤ) := fun k => by
+    have hd := det_abs_le (k : ℤ)
+    have hgk : 6 * (r ^ ((k : ℤ).natAbs - 2) * C_exp) ^ 3 = g (k : ℤ) := by
+      unfold g q; ring
+    linarith [le_abs_self ((toeplitzReal β₀R (k : ℤ)).det)]
   have h_det_s : Summable (fun k : ↥((↑S26 : Set ℤ))ᶜ =>
       (toeplitzReal β₀R (k : ℤ)).det) := summable_toeplitz_det.subtype _
   have h_g_s : Summable (fun k : ↥((↑S26 : Set ℤ))ᶜ => g (k : ℤ)) :=
@@ -229,7 +239,7 @@ private lemma tsum_det_split :
     ∑' k : ℤ, (toeplitzReal β₀R k).det =
     ∑ k ∈ S26, (toeplitzReal β₀R k).det +
     ∑' k : ↥((↑S26 : Set ℤ))ᶜ, (toeplitzReal β₀R (k : ℤ)).det :=
-  (Finset.sum_add_tsum_compl S26 summable_toeplitz_det).symm
+  (sum_add_tsum_compl summable_toeplitz_det).symm
 
 /-! ## §12  Part (b): ∑' det ≤ finite_hi_sum + tail_ub -/
 
@@ -248,15 +258,19 @@ theorem bb_tsum_det_le :
     -- Mirrors W1NumericProof lines 239-251 exactly.
     have h_reindex : ∑ k ∈ S26, (toeplitzReal β₀R k).det =
         ∑ i ∈ Finset.range 51, (toeplitzReal β₀R ((i : ℤ) - 25)).det := by
-      apply Finset.sum_nbij (fun i => (i : ℤ) - 25)
-      · intro i hi
-        simp only [S26, Finset.mem_Icc]
-        simp only [Finset.mem_range] at hi; omega
-      · intro i₁ _ i₂ _ h; omega
-      · intro k hk
-        simp only [S26, Finset.mem_Icc] at hk
-        exact ⟨(k + 25).toNat, by simp only [Finset.mem_range]; omega, by omega⟩
-      · intro i _; rfl
+      have hS26_eq : S26 = (Finset.range 51).image (fun i : ℕ => (i : ℤ) - 25) := by
+        ext k
+        simp only [S26, Finset.mem_Icc, Finset.mem_image, Finset.mem_range]
+        constructor
+        · intro ⟨h1, h2⟩
+          refine ⟨(k + 25).toNat, ?_, ?_⟩
+          · have hk25 : ((k + 25 : ℤ).toNat : ℤ) = k + 25 :=
+              Int.toNat_of_nonneg (by omega)
+            omega
+          · rw [Int.toNat_of_nonneg (by omega)]; omega
+        · intro ⟨i, hi, hik⟩; omega
+      rw [hS26_eq, Finset.sum_image]
+      intro x _ y _ h; omega
     rw [h_reindex]
     -- finite_sum_le : ∑ i ∈ range 51, det((i:ℤ)-25) ≤ ∑ i ∈ range 51, (hi (i-25) : ℝ)
     apply le_trans finite_sum_le
@@ -267,27 +281,21 @@ theorem bb_tsum_det_le :
 
 /-! ## §13  Part (c): pure ℚ decidable inequality -/
 
-/-- `exp_hi · (finite_hi_sum + tail_ub) < 1/7`.
-All values are computable ℚ; margin ≈ 3.86 × 10⁻⁷.
-Kernel `decide` is equivalent to `#eval decide` but slower.
-Fallback if kernel times out: `norm_num [exp_beta0_interval, finite_hi_sum, tail_ub]`. -/
-theorem bb_part_c : exp_beta0_interval.hi * (finite_hi_sum + tail_ub) < 1 / 7 := by
-  decide
+/-! ## §14  W1_Numeric_Surface — conditional combinator -/
 
-/-! ## §14  W1_Numeric_Surface — 0 sorries -/
-
-/-- **W1_Numeric_Surface proved, classical trio only, 0 sorries.** -/
-theorem bb_w1_numeric_surface : W1_Numeric_Surface :=
-  ⟨summable_toeplitz_det, bb_tsum_det_le, bb_part_c⟩
+/-- **W1_Numeric_Surface conditional combinator.**
+Takes `PartC_Surface` (the computational ℚ gap, W1NumericProof §7) as explicit hypothesis.
+Classical trio only. 0 sorry. -/
+theorem bb_w1_numeric_surface (hc : PartC_Surface) : W1_Numeric_Surface :=
+  w1_numeric_surface_of_tsum bb_tsum_det_le hc
 
 /-! ## §15  Main conclusion -/
 
-/-- **`w1_weyl_series β₀ < 1/7`** — classical trio only.
-
-`#print axioms bb_w1_weyl_lt` should yield only:
+/-- **`w1_weyl_series β₀ < 1/7`** — conditional on `PartC_Surface`.
+`#print axioms bb_w1_weyl_lt` (applied to a `PartC_Surface` proof) yields only:
   [propext, Classical.choice, Quot.sound] -/
-theorem bb_w1_weyl_lt : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
-  w1_weyl_series_lt bb_w1_numeric_surface
+theorem bb_w1_weyl_lt (hc : PartC_Surface) : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
+  w1_weyl_series_lt (bb_w1_numeric_surface hc)
 
 /-! ## §16  Close TsumDetLe_Surface in W1NumericProof (2026-06-17) -/
 
