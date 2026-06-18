@@ -43,6 +43,10 @@ package «theorema-aureum-towers» where
 --   Towers/RH/Chain/C05_Discriminant.lean — discriminant True stub
 --   Towers/RH/Chain/C06_ZetaControl.lean — bost_connes_threshold BRICK
 --   Towers/RH/Chain/C07_RH.lean        — conditional combinator (not a brick)
+--   Weil cluster (2026-06-17):
+--   Towers/RH/Arakelov/AbbesUllmo.lean — Abbes-Ullmo 1996 Thm 1.2; h2_weil_transfer_abbes_ullmo (0 sorry)
+--   Towers/RH/H2_WeilTransfer.lean     — h2_weil_transfer theorem + rh_via_weil (0 sorry)
+--   Towers/RH/M9_WeilTransfer.lean     — M9_WeilTransfer_All stub-theorem (0 sorry)
 --
 -- Towers/BSD — BSD scaffold (restored 2026-06-15).
 -- File layout:
@@ -84,6 +88,10 @@ lean_lib Towers where
              `Towers.RH.Chain.C08_M4WeilBridge,
              `Towers.RH.Chain.C09_P5Bridge,
              `Towers.RH.Chain.C10_MainTheorem,
+             -- RH Weil cluster (2026-06-17): Abbes-Ullmo 1996 + H2/M9 transfer
+             `Towers.RH.Arakelov.AbbesUllmo,
+             `Towers.RH.H2_WeilTransfer,
+             `Towers.RH.M9_WeilTransfer,
              -- RH supporting modules
              `Towers.RH.ZeroDensity, `Towers.RH.GrowthContradiction,
              `Towers.RH.ZProtocolBridge,
