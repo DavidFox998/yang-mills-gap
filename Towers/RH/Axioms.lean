@@ -22,6 +22,7 @@
   Namespace: TheoremaAureum.
 -/
 import Towers.RH.Chain.C01_Arakelov
+import Towers.RH.Chain.C14_BC6SpectralGap
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Data.Complex.Basic
@@ -30,15 +31,10 @@ namespace TheoremaAureum
 
 /-! ### Supporting opaque stubs (not in mathlib v4.12.0) -/
 
-/-- First nonzero eigenvalue of the Laplacian on X₀(N).
-    Not in mathlib v4.12.0.  Spectral gap axiom bounds this below. -/
-opaque lambda_1 (N : ℕ) : ℝ
-
 /-- Weil explicit-formula partial sum for X₀(143).  Placeholder. -/
 opaque S_weil_143 : ℝ → ℝ
 
-/-- C_S14_143 = Σ_{p ∈ S₁₄} log(p)/(p − 1) = 8.62925199 (BC95 S₁₄ value). -/
-noncomputable def C_S14_143 : ℝ := 8.62925199
+/-  lambda_1 and C_S14_143 are imported from Towers.RH.Chain.C14_BC6SpectralGap. -/
 
 /-- BC6 surface (OPEN): two-hypothesis form of Bost-Connes Thm 6. -/
 def BC6_SelbergTrace_Surface_143 : Prop :=
