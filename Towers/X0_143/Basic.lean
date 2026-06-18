@@ -3,7 +3,7 @@
   K = ℚ(√-143) as AdjoinRoot(X^2 + 143 : ℚ[X]).
 
   Instance chain (Mathlib v4.12.0):
-    Field K       — AdjoinRoot.instField [Fact (Irreducible f)]
+    Field K       — via AdjoinRoot.instField (requires Fact (Irreducible f))
                     (RingTheory/AdjoinRoot.lean:346)
     NumberField K — anonymous instance [Fact (Irreducible f)]
                     (NumberTheory/NumberField/Basic.lean:344)
@@ -12,10 +12,15 @@
     AdjoinRoot.numberField _ / AdjoinRoot.charZero _
     IsIntegralClosure.adjoinRoot_of_mod_four_eq_one
     discr_eq_discr_basis   (real API: discr_eq_discr with a Basis argument)
+
+  Note: K is declared as `abbrev` (not `def`) so it is transparent to the
+  instance-synthesis engine. With a plain `def`, Field K / NumberField K
+  would require explicit unfolding before inferInstance can fire.
 -/
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.Analysis.SpecialFunctions.Sqrt
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 namespace Towers.RH.JorgensonKramer.X0_143
 
@@ -29,7 +34,7 @@ open Polynomial Real
     Sage: PolynomialRing(QQ,'x')(x^2+143).is_irreducible() → True. -/
 theorem X_sq_add_143_irred : Irreducible (X ^ 2 + C (143 : ℚ)) := by
   have hmonic : (X ^ 2 + C (143 : ℚ)).Monic :=
-    monic_X_pow_add (degree_C_le.trans_lt (by norm_cast; norm_num))
+    monic_X_pow_add (degree_C_le.trans_lt (by norm_cast))
   have hne1 : X ^ 2 + C (143 : ℚ) ≠ 1 := by
     intro h
     have h2 := congr_arg (coeff · 2) h
@@ -58,10 +63,12 @@ private instance : Fact (Irreducible (X ^ 2 + C (143 : ℚ))) :=
 
 /-! ### Field K = ℚ(√-143) -/
 
-/-- K := AdjoinRoot(X^2 + 143 : ℚ[X]). -/
-def K : Type _ := AdjoinRoot (X ^ 2 + C (143 : ℚ))
+/-- K := AdjoinRoot(X^2 + 143 : ℚ[X]).
+    Declared as `abbrev` so Field K / NumberField K instances resolve
+    via the AdjoinRoot family without explicit `show`. -/
+abbrev K : Type _ := AdjoinRoot (X ^ 2 + C (143 : ℚ))
 
-noncomputable instance K_field : Field K := AdjoinRoot.instField _
+noncomputable instance K_field : Field K := inferInstance
 noncomputable instance K_numberField : NumberField K := inferInstance
 
 /-! ### Generator α with α^2 = -143 -/
@@ -85,8 +92,9 @@ lemma α_sq : α ^ 2 = -(143 : K) := by linear_combination α_eval_zero
 
 /-- κ = 10π/√143 ≈ 2.624.
     Formula: κ = 2πh/(w√|disc|), h = h(K) = 10, w = 2, disc(K) = -143. -/
-noncomputable def κ : ℝ := 10 * π / Real.sqrt 143
+noncomputable def κ : ℝ := 10 * Real.pi / Real.sqrt 143
 
-lemma κ_pos : 0 < κ := by unfold κ; positivity
+lemma κ_pos : 0 < κ :=
+  div_pos (mul_pos (by norm_num) Real.pi_pos) (Real.sqrt_pos_of_pos (by norm_num))
 
 end Towers.RH.JorgensonKramer.X0_143
