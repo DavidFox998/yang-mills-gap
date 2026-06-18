@@ -54,23 +54,30 @@ import Towers.RH.Chain.C13_ArakelovToRH
 
 namespace TheoremaAureum
 
-/-- **C11: Riemann Hypothesis via four-step Arakelov chain.**
+/-- **C11: Riemann Hypothesis via five open surfaces (classical trio).**
 
     Thin wrapper over `C13_RH_four_step`.
 
     Chain:
-      arakelov_pairing_pos              → 0 < (ω,ω)_Ar           [axiom: JK + Ogg]
-      bc6_explicit_formula_control (...) → ∀T>1, |S(T)| ≤ C·T/logT [theorem via BC6]
-      langlands_descent_143a1 (...)      → GRH_E_143a1            [Converse Thm]
-      grh_to_rh_descent (...)            → RiemannHypothesis       [theorem; RH := True]
+      h_ar      : Arakelov_Pairing_OPEN          [open surface: JK + Ogg]
+      h_lang    : Langlands_Descent_OPEN         [open surface: Converse Thm]
+      h_ks      : KimSarnak_OPEN                [open surface: Kim-Sarnak 2003]
+      h_bc6     : BC6SelbergTrace_OPEN           [open surface: BC95 Thm 6]
+      hbridge   : GRH_to_RH_Descent_143_OPEN    [open surface: GRH→RH descent]
+      ────────────────────────────────────────────────────────────────────
+      C13_RH_four_step h_ar h_lang h_ks h_bc6 hbridge : RiemannHypothesis
 
     Axiom footprint:
-      {propext, Classical.choice, Quot.sound,
-       arakelov_pairing_pos, kim_sarnak_squarefree,
-       bc6_selberg_trace, langlands_descent_143a1}
+      {propext, Classical.choice, Quot.sound}   (classical trio only)
 
-    SORRY: 0.  No trivial in axioms.  No native_decide. -/
-theorem C11_RH_via_WeilTransfer : _root_.RiemannHypothesis :=
-  C13_RH_four_step
+    SORRY: 0.  No native_decide.  NOT a Clay claim.  RH: OPEN. -/
+theorem C11_RH_via_WeilTransfer
+    (h_ar    : Arakelov_Pairing_OPEN)
+    (h_lang  : Langlands_Descent_OPEN)
+    (h_ks    : KimSarnak_OPEN)
+    (h_bc6   : BC6SelbergTrace_OPEN)
+    (hbridge : GRH_to_RH_Descent_143_OPEN) :
+    _root_.RiemannHypothesis :=
+  C13_RH_four_step h_ar h_lang h_ks h_bc6 hbridge
 
 end TheoremaAureum
