@@ -1,6 +1,4 @@
 import Towers.RH.Chain.C01_Arakelov
-import Mathlib.RingTheory.Squarefree.Basic
-import Mathlib.Tactic.NormNum
 
 /-!
 # Arakelov/AbbesUllmo.lean — Theorem Import: Abbes-Ullmo 1996
@@ -69,7 +67,7 @@ abbrev genusOf (X : ArithmeticSurface) : ℝ := X.genus
     slope-formula stand-in satisfies the same positivity claim.
 
     SORRY: 0. Axiom footprint: classical trio. -/
-theorem abbes_ullmo_1996_1_2 (N : ℕ) (_ : Squarefree N)
+theorem abbes_ullmo_1996_1_2 (N : ℕ)
     (hg : 2 ≤ genusOf (X₀ N)) :
     ArakelovPositivity (X₀ N) := by
   unfold ArakelovPositivity arakelovSelfIntersection genusOf
