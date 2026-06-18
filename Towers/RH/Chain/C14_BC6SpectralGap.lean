@@ -71,13 +71,23 @@ theorem two_sqrt13_lt_8_bc6 : 2 * Real.sqrt 13 < 8 :=
   by linarith [sqrt13_lt_4_bc6]
 
 theorem sqrt13_lt_370_bc6 : Real.sqrt 13 < 3.7 := by
-  have hnn  : (0 : ℝ) ≤ 13       := by norm_num
-  have hsq  : Real.sqrt 13 ^ 2 = 13 := Real.sq_sqrt hnn
-  have hpos : 0 ≤ Real.sqrt 13   := Real.sqrt_nonneg 13
-  nlinarith [sq_nonneg (3.7 - Real.sqrt 13)]
+  have h37 : (3.7 : ℝ) = Real.sqrt (3.7 ^ 2) :=
+    (Real.sqrt_sq (by norm_num : (0 : ℝ) ≤ 3.7)).symm
+  rw [h37]
+  apply Real.sqrt_lt_sqrt (by norm_num : (0 : ℝ) ≤ 13)
+  norm_num
 
-theorem two_sqrt13_lt_74_bc6 : 2 * Real.sqrt 13 < 7.4 :=
-  by linarith [sqrt13_lt_370_bc6]
+theorem two_sqrt13_lt_74_bc6 : 2 * Real.sqrt 13 < 7.4 := by
+  -- √52 < √(7.4²) since 52 < 54.76
+  have lhs : 2 * Real.sqrt 13 = Real.sqrt 52 := by
+    rw [show (52 : ℝ) = 2 ^ 2 * 13 from by norm_num,
+        Real.sqrt_mul (by norm_num : (0 : ℝ) ≤ 2 ^ 2),
+        Real.sqrt_sq (by norm_num : (0 : ℝ) ≤ 2)]
+  have rhs : (7.4 : ℝ) = Real.sqrt (7.4 ^ 2) :=
+    (Real.sqrt_sq (by norm_num : (0 : ℝ) ≤ 7.4)).symm
+  rw [lhs, rhs]
+  apply Real.sqrt_lt_sqrt (by norm_num : (0 : ℝ) ≤ 52)
+  norm_num
 
 theorem C_S4_143_gt_8 : (8 : ℝ) < C_S4_143 := by
   unfold C_S4_143; norm_num
