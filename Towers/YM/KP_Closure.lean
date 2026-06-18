@@ -180,7 +180,7 @@ so `exp(e/4) - 1 < e - 1 < 2·e`. Classical trio. 0 sorry. -/
 theorem c_eff_tree_lt_one : C_eff_tree_lt_one_Surface := by
   unfold C_eff_tree_lt_one_Surface
   have he_pos : (0 : ℝ) < Real.exp 1 := Real.exp_pos 1
-  have he_lt_4 : Real.exp 1 < 4 := by linarith [Real.exp_one_lt_d9]
+  have he_lt_4 : Real.exp 1 < 4 := lt_trans Real.exp_one_lt_d9 (by norm_num)
   have h_e4_lt_1 : Real.exp 1 / 4 < 1 := by linarith
   have h_exp_lt_e : Real.exp (Real.exp 1 / 4) < Real.exp 1 :=
     Real.exp_lt_exp.mpr h_e4_lt_1
