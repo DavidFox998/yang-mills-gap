@@ -16,25 +16,22 @@ h2_weil_transfer_abbes_ullmo : ArakelovPositivity (X₀ 143)
   [AbbesUllmo.lean, linarith from genus = 13 ≥ 2]
 h2_weil_transfer : ArakelovPositivity (X₀ 143)
   [alias]
-C07_RH_of_Arakelov h2_weil_transfer (fun _ => trivial)
-  [C07 combinator; _root_.RiemannHypothesis = True in Mathlib v4.12.0]
-rh_via_weil : _root_.RiemannHypothesis
-  [QED — vacuously True]
+rh_via_weil (hbridge : AP → RH) : _root_.RiemannHypothesis
+  [C07 combinator applied to h2_weil_transfer and hbridge; OPEN surface]
 ```
 
 ## Honesty note
 
-`_root_.RiemannHypothesis` is `True` in Mathlib v4.12.0 (a placeholder stub).
-The proof `rh_via_weil` is vacuously correct: the chain threads real
-Arakelov geometry (slope-formula stand-in) through the C07 combinator to
-conclude `True`. **This does NOT prove the Riemann Hypothesis.**
+`_root_.RiemannHypothesis` in Mathlib v4.12.0 is the **real** Clay statement
+(`∀ s : ℂ, ...`), NOT `True`.  The theorems `rh_via_weil` and `main_theorem`
+are **conditional** on `hbridge : ArakelovPositivity (X₀ 143) →
+_root_.RiemannHypothesis` (= `C07_ArakelovBridge_OPEN`), which is the named
+OPEN surface capturing the genuine analytic descent gap (GRH for L(s, X₀(143))
+and the ζ-descent).  **This does NOT prove the Riemann Hypothesis.**
 
-The named open surface `C07_ArakelovBridge_OPEN` (= `ArakelovPositivity
-(X₀ 143) → _root_.RiemannHypothesis`) is discharged here only because
-`_root_.RiemannHypothesis = True`; the genuine analytic content (GRH
-for L(s, X₀(143)) and the ζ-descent) remains open.
+The chain is: proved h2_weil_transfer + OPEN hbridge → RH.
 
-## Axiom debt: [] (classical trio only — via True stub)
+## Axiom debt: [] (classical trio only — conditional on C07_ArakelovBridge_OPEN)
 ## Sorry count: 0
 
 Prior version: `axiom h2_weil_transfer : ArakelovPositivity (X₀ 143)`.
@@ -59,28 +56,34 @@ namespace TheoremaAureum
 theorem h2_weil_transfer : ArakelovPositivity (X₀ 143) :=
   h2_weil_transfer_abbes_ullmo
 
-/-- **rh_via_weil**: The Riemann Hypothesis (Mathlib v4.12.0 stub = True).
+/-- **rh_via_weil**: The Riemann Hypothesis, conditional on the Arakelov bridge.
 
     Proof chain:
       h2_weil_transfer : ArakelovPositivity (X₀ 143)   [theorem, 0 sorry]
-      (fun _ => trivial) : ArakelovPositivity → True    [True bridge]
-      C07_RH_of_Arakelov h2_weil_transfer (fun _ => trivial)
-        → _root_.RiemannHypothesis                      [QED; = True]
+      hbridge : ArakelovPositivity (X₀ 143) →            [OPEN surface = C07_ArakelovBridge_OPEN]
+                _root_.RiemannHypothesis
+      C07_RH_of_Arakelov h2_weil_transfer hbridge
+        → _root_.RiemannHypothesis                      [QED given hbridge]
 
-    HONESTY: `_root_.RiemannHypothesis = True` in Mathlib v4.12.0.
-    This closes the chain vacuously. NOT a Clay proof of RH.
+    HONESTY: `_root_.RiemannHypothesis` is the real Clay statement in Mathlib
+    v4.12.0, NOT `True`.  The bridge `hbridge` (= `C07_ArakelovBridge_OPEN`)
+    captures the genuine analytic descent gap (GRH for L(s, X₀(143)) + ζ-descent)
+    and remains OPEN.  This is a conditional: Arakelov positivity + bridge → RH.
 
-    SORRY: 0. Axiom debt: []. -/
-theorem rh_via_weil : _root_.RiemannHypothesis :=
-  C07_RH_of_Arakelov h2_weil_transfer (fun _ => trivial)
+    SORRY: 0. Axiom debt: []. Open surface: C07_ArakelovBridge_OPEN. -/
+theorem rh_via_weil
+    (hbridge : ArakelovPositivity (X₀ 143) → _root_.RiemannHypothesis) :
+    _root_.RiemannHypothesis :=
+  C07_RH_of_Arakelov h2_weil_transfer hbridge
 
-/-- **main_theorem**: Explicit implication form.
-    Given `h : ArakelovPositivity (X₀ 143)`, derives `_root_.RiemannHypothesis`.
-    With `h2_weil_transfer` now a theorem, the hypothesis is dischargeable
-    by `h2_weil_transfer` and the conclusion follows.
+/-- **main_theorem**: Implication form, conditional on the Arakelov bridge.
+    Given both `h : ArakelovPositivity (X₀ 143)` and the open bridge
+    `hbridge`, derives `_root_.RiemannHypothesis`.
 
-    SORRY: 0. Axiom debt: []. -/
-theorem main_theorem (h : ArakelovPositivity (X₀ 143)) : _root_.RiemannHypothesis :=
-  C07_RH_of_Arakelov h (fun _ => trivial)
+    SORRY: 0. Axiom debt: []. Open surface: C07_ArakelovBridge_OPEN. -/
+theorem main_theorem (h : ArakelovPositivity (X₀ 143))
+    (hbridge : ArakelovPositivity (X₀ 143) → _root_.RiemannHypothesis) :
+    _root_.RiemannHypothesis :=
+  C07_RH_of_Arakelov h hbridge
 
 end TheoremaAureum
