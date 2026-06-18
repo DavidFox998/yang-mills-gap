@@ -44,7 +44,10 @@ lemma ω_sq_eq : ω_val ^ 2 - ω_val + 36 = 0 := by
 
 /-- Power basis for K/ℚ from the defining polynomial X^2 + C 143. -/
 private noncomputable def pb_Kℚ : PowerBasis ℚ K :=
-  AdjoinRoot.powerBasis (show (X ^ 2 + C (143 : ℚ)) ≠ 0 from by norm_num)
+  AdjoinRoot.powerBasis (show (X ^ 2 + C (143 : ℚ)) ≠ 0 from by
+    intro h
+    have := congr_arg (Polynomial.coeff · 2) h
+    simp [Polynomial.coeff_add, Polynomial.coeff_X_pow, Polynomial.coeff_C] at this)
 
 /-- finrank ℚ K = 2. -/
 theorem finrank_K_Q : FiniteDimensional.finrank ℚ K = 2 := by
