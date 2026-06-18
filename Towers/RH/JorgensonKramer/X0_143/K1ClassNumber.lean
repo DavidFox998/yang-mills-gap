@@ -28,6 +28,7 @@ import Mathlib.NumberTheory.NumberField.Discriminant
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.RingTheory.ClassGroup
+import Mathlib.NumberTheory.NumberField.ClassNumber
 import Towers.RH.JorgensonKramer.X0_143.Discriminant143
 
 namespace Towers.RH.JorgensonKramer.X0_143
@@ -39,19 +40,21 @@ open Real FiniteDimensional
 
 private lemma no_real_embedding (φ : K →+* ℂ) : ¬ IsReal φ := by
   intro hreal
-  -- Use the real embedding hreal.embedding : K →+* ℝ directly
   have hα : hreal.embedding α ^ 2 = -(143 : ℝ) := by
     have h := congr_arg hreal.embedding α_sq
-    simp [map_pow, map_neg, map_natCast] at h
-    exact h
+    simp only [map_pow, map_neg] at h
+    have h143 : hreal.embedding (143 : K) = (143 : ℝ) := by
+      have := map_natCast hreal.embedding (143 : ℕ)
+      simp only [Nat.cast_ofNat] at this
+      exact this
+    linarith [h, h143]
   linarith [sq_nonneg (hreal.embedding α), hα]
 
 /-- PROVED: NrRealPlaces K = 0. -/
 theorem nrRealPlaces_zero : NrRealPlaces K = 0 := by
-  -- NrRealPlaces K unfolds to Fintype.card { w // w.IsReal } which is transparent
   simp only [Fintype.card_eq_zero_iff, isEmpty_subtype]
   intro w hw
-  exact no_real_embedding w.embedding hw
+  exact no_real_embedding w.embedding (NumberField.InfinitePlace.isReal_iff.mp hw)
 
 /-! ### Step 2: NrComplexPlaces K = 1 -/
 
@@ -135,21 +138,12 @@ lemma norm_form_no_norm_128 (a b : ℤ) : a ^ 2 + a * b + 36 * b ^ 2 ≠ 128 := 
   have hb1 : b ^ 2 ≤ 3 := by nlinarith [sq_nonneg (2 * a + b)]
   have hble : b ≤ 1 := by nlinarith [sq_nonneg (b - 2)]
   have hbge : -1 ≤ b := by nlinarith [sq_nonneg (b + 2)]
-  interval_cases b
-  · simp only [mul_zero, add_zero] at h
-    have ha_le : a ≤ 11 := by nlinarith [sq_nonneg (a - 12)]
-    have ha_ge : -11 ≤ a := by nlinarith [sq_nonneg (a + 12)]
-    interval_cases a <;> simp_all
-  · ring_nf at h
-    have h' : a ^ 2 + a - 92 = 0 := by linarith
-    have ha_le : a ≤ 9 := by nlinarith [sq_nonneg (a - 10)]
-    have ha_ge : -10 ≤ a := by nlinarith [sq_nonneg (a + 10)]
-    interval_cases a <;> omega
-  · ring_nf at h
-    have h' : a ^ 2 - a - 92 = 0 := by linarith
-    have ha_le : a ≤ 10 := by nlinarith [sq_nonneg (a - 10)]
-    have ha_ge : -9 ≤ a := by nlinarith [sq_nonneg (a + 10)]
-    interval_cases a <;> omega
+  have h_bnd : (2 * a + b) ^ 2 ≤ 512 := by nlinarith [sq_nonneg b]
+  have h_le : 92 * a ≤ 1087 := by nlinarith [sq_nonneg (2 * a + b - 23), h_bnd, hbge]
+  have ha_le : a ≤ 11 := by omega
+  have h_ge : -1087 ≤ 92 * a := by nlinarith [sq_nonneg (2 * a + b + 23), h_bnd, hble]
+  have ha_ge : -11 ≤ a := by omega
+  interval_cases b <;> interval_cases a <;> norm_num at h
 
 /-- No a b : ℤ satisfy a² + ab + 36b² = 512. -/
 lemma norm_form_no_norm_512 (a b : ℤ) : a ^ 2 + a * b + 36 * b ^ 2 ≠ 512 := by
@@ -193,11 +187,11 @@ lemma norm_form_no_norm_512 (a b : ℤ) : a ^ 2 + a * b + 36 * b ^ 2 ≠ 512 := 
 /-- K1_ClassNumber_Upper_OPEN: h(K) ≤ 10.
     Uses Fintype.card (ClassGroup (𝓞 K)) as the class number.
     STATUS: OPEN. Do NOT discharge with sorry/native_decide/trivial. -/
-def K1_ClassNumber_Upper_OPEN : Prop := Fintype.card (ClassGroup (𝓞 K)) ≤ 10
+def K1_ClassNumber_Upper_OPEN : Prop := NumberField.classNumber K ≤ 10
 
 /-- K1_ClassNumber_Lower_OPEN: 10 ≤ h(K).
     STATUS: OPEN. Do NOT discharge with sorry/native_decide/trivial. -/
-def K1_ClassNumber_Lower_OPEN : Prop := 10 ≤ Fintype.card (ClassGroup (𝓞 K))
+def K1_ClassNumber_Lower_OPEN : Prop := 10 ≤ NumberField.classNumber K
 
 /-- K1_ClassNumber_Certificate: h(K) = 10.
     COMBINATOR (0 sorry, classical trio only): given the two open surfaces as
@@ -205,7 +199,7 @@ def K1_ClassNumber_Lower_OPEN : Prop := 10 ≤ Fintype.card (ClassGroup (𝓞 K)
 theorem K1_ClassNumber_Certificate
     (h_upper : K1_ClassNumber_Upper_OPEN)
     (h_lower : K1_ClassNumber_Lower_OPEN) :
-    Fintype.card (ClassGroup (𝓞 K)) = 10 :=
+    NumberField.classNumber K = 10 :=
   Nat.le_antisymm h_upper h_lower
 
 end Towers.RH.JorgensonKramer.X0_143
