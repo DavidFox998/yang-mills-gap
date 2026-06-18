@@ -30,18 +30,7 @@ import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 namespace TheoremaAureum
 
-/-! ### Step 1: 143 is squarefree -/
-
-lemma sq_free_143 : Squarefree (143 : ℕ) := by
-  intro k hk
-  -- k * k ∣ 143 → IsUnit k (i.e. k = 1 in ℕ)
-  have hk_le : k ≤ 11 := by
-    have h2 : k * k ≤ 143 := Nat.le_of_dvd (by norm_num) hk
-    have h2i : (k : ℤ) * k ≤ 143 := by exact_mod_cast h2
-    have hki : (k : ℤ) ≤ 11 := by nlinarith [sq_nonneg ((k : ℤ) - 12)]
-    exact_mod_cast hki
-  simp only [Nat.isUnit_iff]
-  interval_cases k <;> (first | rfl | norm_num at hk)
+-- sq_free_143 is proved in Towers.RH.Chain.C14_BC6SpectralGap (imported via Axioms).
 
 /-! ### Step 2: λ₁(X₀(143)) > 0 (from Kim-Sarnak + squarefreeness) -/
 
