@@ -70,7 +70,7 @@ abbrev genusOf (X : ArithmeticSurface) : ℝ := X.genus
 theorem abbes_ullmo_1996_1_2 (N : ℕ)
     (hg : 2 ≤ genusOf (X₀ N)) :
     ArakelovPositivity (X₀ N) := by
-  unfold ArakelovPositivity arakelovSelfIntersection genusOf
+  unfold ArakelovPositivity arakelovSelfIntersection
   apply div_pos
   · linarith
   · linarith
