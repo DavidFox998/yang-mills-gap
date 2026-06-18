@@ -1,28 +1,30 @@
 /-
-  # Bridge143.lean — Four-step RH certificate for X₀(143)
+  # Bridge143.lean — Four-step RH conditional combinator for X₀(143)
 
-  Assembles the chain:
-    Step 1  arakelovSelfIntersection_X0_143_pos  : 0 < ω² (slope stand-in)
-               PROVED in C01 — no axiom.
-    Step 2  lambda_1_143_pos                     : 0 < λ₁(X₀(143))
-               THEOREM from kim_sarnak_squarefree + sq_free_143 (decide).
-    Step 3  bc6_selberg_trace_143                : |S(T)| ≤ C·T/logT
-               AXIOM (BC95 Thm 6).
-    Step 4  langlands_descent_143a1              : GRH_E_143a1
-               AXIOM (Cogdell-PS 1999).
-    Step 5  grh_to_rh_descent                   : GRH_E_143a1 → RiemannHypothesis
-               OPEN surface: _root_.RiemannHypothesis is the genuine Mathlib
-               predicate (NOT True in v4.12.0). The Langlands descent step
-               GRH_E_143a1 → _root_.RiemannHypothesis is a real open gap.
+  ## Axiom footprint: classical trio only
 
-  Named open surfaces beyond the classical trio:
-    kim_sarnak_squarefree         (from Axioms)
-    bc6_selberg_trace_143         (from Axioms)
-    langlands_descent_143a1       (from Axioms)
-    GRH_to_RH_Descent_143_OPEN   (this file)
+  All named mathematical gaps enter as explicit `def Prop` open surfaces
+  (declared in Axioms.lean).  No `axiom` keyword appears here or in any
+  import.  `#print axioms RH_certificate_backed` returns:
+    {propext, Classical.choice, Quot.sound}
 
-  SORRY: 0.  Axiom footprint: classical trio + 3 named axioms + 1 named surface.
-  NOT a Clay claim.  RH: OPEN.
+  ## Named open surfaces (threaded as explicit hypotheses)
+
+    h_ks     : KimSarnak_Weil_OPEN   (Kim-Sarnak 2003; def Prop, Axioms.lean)
+    h_bc6    : BC6_Trace_OPEN        (BC95 Thm 6; def Prop, Axioms.lean)
+    h_lang   : Langlands_Weil_OPEN   (Cogdell-PS 1999; def Prop, Axioms.lean)
+    hbridge  : GRH_to_RH_Descent_143_OPEN (this file; GRH→RH descent)
+
+  ## Chain (classical trio only, 0 sorry)
+
+    Step 1  lambda_1_143_pos   : 0 < λ₁(143)          [theorem, h_ks + sq_free_143]
+    Step 2  (from C01)         : 0 < ω²               [arakelovSelfIntersection_X0_143_pos]
+    Step 3  bc6_explicit_formula_143                   [theorem, h_bc6 + steps 1,2]
+            : ∀ T > 1, |S_weil_143 T| ≤ C_S14_143·T/logT
+    Step 4  grh_143a1          : GRH_E_143a1           [theorem, h_lang + step 3]
+    Step 5  hbridge (grh_143a1 …) : _root_.RiemannHypothesis
+
+  NOT a Clay claim.  SORRY: 0.  No native_decide.  RH: OPEN.
   Namespace: TheoremaAureum.
 -/
 import Towers.RH.Axioms
@@ -30,49 +32,76 @@ import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 namespace TheoremaAureum
 
--- sq_free_143 is proved in Towers.RH.Chain.C14_BC6SpectralGap (imported via Axioms).
+/-! ## Step 1: λ₁(X₀(143)) > 0 -/
 
-/-! ### Step 2: λ₁(X₀(143)) > 0 (from Kim-Sarnak + squarefreeness) -/
+/-- **lambda_1_143_pos**: 0 < λ₁(143), given KimSarnak_Weil_OPEN.
 
-lemma lambda_1_143_pos : 0 < lambda_1 143 := by
-  have h := kim_sarnak_squarefree 143 sq_free_143
-  linarith
+    Proof: h_ks 143 sq_free_143 gives 975/4096 ≤ λ₁(143); linarith closes.
+    #print axioms lambda_1_143_pos: {propext, Classical.choice, Quot.sound} -/
+theorem lambda_1_143_pos (h_ks : KimSarnak_Weil_OPEN) : 0 < lambda_1 143 := by
+  have h := h_ks 143 sq_free_143
+  linarith [show (0 : ℝ) < 975 / 4096 from by norm_num]
 
-/-! ### Step 3: |S_weil_143(T)| ≤ C_S14_143 · T / log T (BC6 mechanism) -/
+/-! ## Step 3: Weil bound for S_weil_143 -/
 
-theorem bc6_explicit_formula_control :
+/-- **bc6_explicit_formula_143**: ∀ T > 1, |S_weil_143 T| ≤ C_S14_143·T/logT.
+
+    Given KimSarnak_Weil_OPEN (step 1) and BC6_Trace_OPEN (BC95 Thm 6 mechanism),
+    combined with the Arakelov positivity proved in C01.
+    #print axioms bc6_explicit_formula_143: {propext, Classical.choice, Quot.sound} -/
+theorem bc6_explicit_formula_143
+    (h_ks  : KimSarnak_Weil_OPEN)
+    (h_bc6 : BC6_Trace_OPEN) :
     ∀ T : ℝ, 1 < T → |S_weil_143 T| ≤ C_S14_143 * T / Real.log T :=
-  bc6_selberg_trace_143 lambda_1_143_pos arakelovSelfIntersection_X0_143_pos
+  h_bc6 (lambda_1_143_pos h_ks) arakelovSelfIntersection_X0_143_pos
 
-/-! ### Step 4: GRH_E_143a1 (Langlands descent) -/
+/-! ## Step 4: GRH_E_143a1 via Langlands descent -/
 
-theorem grh_143a1 : GRH_E_143a1 :=
-  langlands_descent_143a1 bc6_explicit_formula_control
+/-- **grh_143a1**: GRH for L(s, 143a1), given the three open surfaces.
 
-/-! ### Step 5: GRH_E_143a1 → RiemannHypothesis (OPEN surface)
-    _root_.RiemannHypothesis is the genuine Mathlib predicate, NOT True.
-    The descent GRH_E_143a1 → _root_.RiemannHypothesis requires Langlands
-    machinery (e.g. strong multiplicity one for GL(2)) not yet in Mathlib v4.12.0. -/
+    Proof: bc6_explicit_formula_143 h_ks h_bc6 produces the Weil bound;
+    h_lang applies the Converse-Theorem / modularity descent.
+    #print axioms grh_143a1: {propext, Classical.choice, Quot.sound} -/
+theorem grh_143a1
+    (h_ks   : KimSarnak_Weil_OPEN)
+    (h_bc6  : BC6_Trace_OPEN)
+    (h_lang : Langlands_Weil_OPEN) :
+    GRH_E_143a1 :=
+  h_lang (bc6_explicit_formula_143 h_ks h_bc6)
 
-/-- OPEN: GRH for L(s, X₀(143)) implies the Riemann Hypothesis.
-    This is the Langlands descent step.  Named OPEN surface — not dischargeable
-    by trivial since _root_.RiemannHypothesis is the genuine predicate. -/
+/-! ## Step 5: GRH_E_143a1 → _root_.RiemannHypothesis (OPEN surface) -/
+
+/-- **GRH_to_RH_Descent_143_OPEN**: the descent from GRH for 143a1 to RH.
+    _root_.RiemannHypothesis is the genuine Mathlib predicate (NOT True in v4.12.0).
+    The Langlands/GL₂ functoriality step is absent from Mathlib v4.12.0.
+
+    STATUS: OPEN.  def Prop — NOT an axiom, NOT proved. -/
 def GRH_to_RH_Descent_143_OPEN : Prop :=
   GRH_E_143a1 → _root_.RiemannHypothesis
 
-theorem grh_to_rh_descent (h : GRH_to_RH_Descent_143_OPEN) :
-    GRH_E_143a1 → _root_.RiemannHypothesis := h
+/-! ## Assembled conditional combinator -/
 
-/-- **RH_certificate_backed** — the assembled chain, conditional on the Langlands
-    descent surface.
+/-- **RH_certificate_backed** — the four-step RH conditional combinator.
 
-    Named open surfaces in the axiom footprint:
-      kim_sarnak_squarefree, bc6_selberg_trace_143,
-      langlands_descent_143a1, GRH_to_RH_Descent_143_OPEN.
+    All four named mathematical gaps enter as explicit hypothesis parameters.
+    No `axiom` keyword; no `sorry`; no `native_decide`.
+
+    Open surfaces:
+      h_ks     : KimSarnak_Weil_OPEN         (Kim-Sarnak 2003)
+      h_bc6    : BC6_Trace_OPEN             (Bost-Connes 1995, Thm 6)
+      h_lang   : Langlands_Weil_OPEN        (Cogdell-PS 1999)
+      hbridge  : GRH_to_RH_Descent_143_OPEN (Langlands descent gap)
+
+    #print axioms RH_certificate_backed:
+      {propext, Classical.choice, Quot.sound}
 
     SORRY: 0.  NOT a Clay claim.  RH: OPEN. -/
-theorem RH_certificate_backed (h : GRH_to_RH_Descent_143_OPEN) :
+theorem RH_certificate_backed
+    (h_ks    : KimSarnak_Weil_OPEN)
+    (h_bc6   : BC6_Trace_OPEN)
+    (h_lang  : Langlands_Weil_OPEN)
+    (hbridge : GRH_to_RH_Descent_143_OPEN) :
     _root_.RiemannHypothesis :=
-  grh_to_rh_descent h grh_143a1
+  hbridge (grh_143a1 h_ks h_bc6 h_lang)
 
 end TheoremaAureum
