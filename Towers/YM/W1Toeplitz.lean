@@ -55,8 +55,10 @@ open TheoremaAureum.Towers.YM.IntervalArith
 Uses `Complex.exp_mul_I : exp(↑θ * I) = cos θ + sin θ * I`. -/
 theorem euler_cos_real (θ : ℝ) :
     Real.cos θ = (Complex.exp (Complex.I * ↑θ)).re := by
-  rw [mul_comm]
-  simp [Complex.exp_mul_I]
+  rw [mul_comm, Complex.exp_mul_I, ← Complex.ofReal_cos, ← Complex.ofReal_sin]
+  simp only [Complex.add_re, Complex.mul_re, Complex.I_re, Complex.I_im, mul_zero,
+             mul_one, zero_mul, sub_zero, Complex.ofReal_re, Complex.ofReal_im]
+  ring
 
 /-- **PROVED (trio-only).** Symbol factorization (David's Step 2):
 `exp(r · cos θ) = exp(r · Re(exp(i·θ)))`. -/
@@ -68,10 +70,11 @@ theorem symbol_factorization (r θ : ℝ) :
 `cos θ = (exp(iθ) + exp(-iθ)).re / 2`. -/
 theorem cos_euler_symmetric (θ : ℝ) :
     Real.cos θ = ((Complex.exp (Complex.I * ↑θ) + Complex.exp (-(Complex.I * ↑θ))).re / 2) := by
-  rw [mul_comm, ← neg_mul]
-  simp [Complex.exp_mul_I, Complex.exp_neg, Complex.add_re,
-        Complex.mul_re, Complex.I_re, Complex.I_im]
-  ring
+  have h1 : (Complex.exp (Complex.I * ↑θ)).re = Real.cos θ := (euler_cos_real θ).symm
+  have h2 : (Complex.exp (-(Complex.I * ↑θ))).re = Real.cos θ := by
+    rw [show -(Complex.I * ↑θ) = Complex.I * ↑(-θ) from by push_cast; ring]
+    rw [← euler_cos_real]; exact Real.cos_neg θ
+  rw [Complex.add_re, h1, h2]; ring
 
 /-! ## §2  Basic Bessel facts (proved, trio-only) -/
 
@@ -83,8 +86,9 @@ private lemma besselI_series_zero_term_zero (x : ℝ) :
 /-- **PROVED (trio-only).** `I_0(x) ≥ 1` for `x ≥ 0`. -/
 theorem besselI_series_zero_ge_one (x : ℝ) (hx : 0 ≤ x) : 1 ≤ besselI_series 0 x := by
   have hsumm := besselI_series_summable 0 x
-  rw [← tsum_eq_zero_add hsumm]
-  simp only [Nat.zero_add, pow_zero, Nat.factorial, Nat.cast_one, mul_one]
+  unfold besselI_series
+  rw [tsum_eq_zero_add hsumm]
+  simp only [Nat.zero_add, mul_zero, pow_zero, Nat.factorial_zero, Nat.cast_one, mul_one, div_one]
   have hrest : 0 ≤ ∑' (b : ℕ), (x / 2) ^ (2 * (b + 1)) /
       ((Nat.factorial (b + 1) : ℝ) * Nat.factorial (b + 1)) :=
     tsum_nonneg fun k => div_nonneg (pow_nonneg (div_nonneg hx two_pos.le) _) (by positivity)
@@ -98,7 +102,9 @@ theorem besselI_series_nonneg (n : ℕ) (x : ℝ) (hx : 0 ≤ x) : 0 ≤ besselI
 theorem besselI_series_mono {x y : ℝ} (hx : 0 ≤ x) (hxy : x ≤ y) (n : ℕ) :
     besselI_series n x ≤ besselI_series n y :=
   tsum_le_tsum
-    (fun k => div_le_div_of_nonneg_right (pow_le_pow_left hx hxy _) (by positivity))
+    (fun k => div_le_div_of_nonneg_right
+        (pow_le_pow_left (div_nonneg hx two_pos.le) (by linarith) _)
+        (by positivity))
     (besselI_series_summable n x)
     (besselI_series_summable n y)
 
