@@ -18,6 +18,8 @@
 -/
 import Towers.X0_143.Basic
 import Mathlib.NumberTheory.NumberField.Basic
+import Mathlib.NumberTheory.NumberField.ClassNumber
+import Mathlib.RingTheory.Ideal.Norm
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
