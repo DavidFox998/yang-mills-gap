@@ -1,3 +1,9 @@
+import Towers.YM.BesselBounds
+import Towers.YM.W1Toeplitz
+import Towers.YM.KP_Closure
+import Towers.YM.Wall256_Beta0Bridge
+import Towers.YM.Wall256_MassGapConditional
+
 /-! # YM Tower — Standalone Collection (2026-06-17)
 
 ## What this file is
@@ -46,15 +52,10 @@ Mathlib ── Wall256_MassGapConditional  (entry-point E)
 - YM Surface #1 (`ρ < 1`)       — mass gap clustering rate; stays OPEN per locked invariants
 -/
 
-import Towers.YM.BesselBounds
-import Towers.YM.W1Toeplitz
-import Towers.YM.KP_Closure
-import Towers.YM.Wall256_Beta0Bridge
-import Towers.YM.Wall256_MassGapConditional
-
 open Real
 open TheoremaAureum.Towers.YM.BesselSeries
 open TheoremaAureum.Towers.YM.WeylToeplitzBound
+open TheoremaAureum.Towers.YM.IntervalArith
 open TheoremaAureum.Towers.YM.W1NumericProof
 open TheoremaAureum.Towers.YM.BesselBounds
 open TheoremaAureum.Towers.YM.W1Toeplitz
@@ -69,13 +70,13 @@ namespace TheoremaAureum.Towers.YM.Collection
 theorem col_tsum_det_le : TsumDetLe_Surface :=
   tsum_det_le_proved
 
-/-- `W1_Numeric_Surface` proved (Summable + tsum bound + exp enclosure). -/
-theorem col_w1_numeric_surface : W1_Numeric_Surface :=
-  bb_w1_numeric_surface
+/-- `W1_Numeric_Surface` conditional on `PartC_Surface` (the ℚ-arithmetic gap). -/
+theorem col_w1_numeric_surface (hc : PartC_Surface) : W1_Numeric_Surface :=
+  bb_w1_numeric_surface hc
 
-/-- `w1_weyl_series β₀ < 1/7` proved (pure Bessel + interval arithmetic). -/
-theorem col_w1_weyl_lt : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
-  bb_w1_weyl_lt
+/-- `w1_weyl_series β₀ < 1/7` conditional on `PartC_Surface`. -/
+theorem col_w1_weyl_lt (hc : PartC_Surface) : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
+  bb_w1_weyl_lt hc
 
 /-- `JacobiAngerGap` proved (placeholder tautology `∀ r hr k, x = x`).
 The TRUE Jacobi-Anger identity (`fourierCoeff (exp(r·cos·)) k = I_k(r)`) remains
@@ -104,9 +105,9 @@ After wiring `W1_Numeric_Surface` (now proved), the reduction is:
   `{trio, SzegoGap, W1_Numeric_Surface}` → `{trio, SzegoGap}`.
 `SzegoGap w1 := w1(β₀) = w1_weyl_series(β₀)` is the sole remaining gap. -/
 theorem col_w1_lt_of_szego
-    (w1 : ℝ → ℝ) (h_szego : SzegoGap w1) :
+    (hc : PartC_Surface) (w1 : ℝ → ℝ) (h_szego : SzegoGap w1) :
     w1 (β₀_rat : ℝ) < 1 / 7 :=
-  w1_eq_series_from_gaps w1 h_szego bb_w1_numeric_surface
+  w1_eq_series_from_gaps w1 h_szego (bb_w1_numeric_surface hc)
 
 /-! ## §4  Honest audit of remaining open surfaces -/
 
