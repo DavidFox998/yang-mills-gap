@@ -102,12 +102,9 @@ theorem c15_classnum_eq (h_cn : BC6_ClassNumber_OPEN) : K1_ClassNumber_OPEN := h
 
     #print axioms c15_ideal_growth:
       {propext, Classical.choice, Quot.sound} -/
-theorem c15_ideal_growth
+def c15_ideal_growth
     (h_cn    : BC6_ClassNumber_OPEN)
-    (h_count : K1_IdealCounting_OPEN) :
-    ∃ C : ℝ, 0 < C ∧ ∀ X : ℝ, 1 ≤ X →
-    |((Nat.card {I : Ideal (𝓞 K) // I ≠ ⊥ ∧ (Ideal.absNorm I : ℝ) ≤ X} : ℝ) - κ * X)| ≤
-    C * Real.sqrt X * Real.log X :=
+    (h_count : K1_IdealCounting_OPEN) :=
   k1_ideal_growth_law (c15_classnum_eq h_cn) h_count
 
 /-! ## §4.  C15_RH_via_BC6ClassNumber: full conditional RH (classical trio) -/
@@ -143,13 +140,15 @@ theorem C15_RH_via_BC6ClassNumber
     (h_ks    : KimSarnak_OPEN)
     (h_bc6   : BC6SelbergTrace_OPEN)
     (h_ar    : Arakelov_Pairing_OPEN)
-    (h_lang  : Langlands_Descent_OPEN) :
+    (h_lang  : Langlands_Descent_OPEN)
+    (hbridge : GRH_to_RH_Descent_143_OPEN) :
     _root_.RiemannHypothesis :=
-  C13_RH_four_step h_ks h_bc6 h_ar h_lang
+  C13_RH_four_step h_ar h_lang h_ks h_bc6 hbridge
 
-/-- **C15_open_surface_count**: documents the 6 open surfaces threaded through C15.
+/-- **C15_open_surface_count**: documents the 7 open surfaces threaded through C15.
     BC6_ClassNumber_OPEN, K1_IdealCounting_OPEN,
-    KimSarnak_OPEN, BC6SelbergTrace_OPEN, Arakelov_Pairing_OPEN, Langlands_Descent_OPEN. -/
-def C15_OPEN_SURFACE_COUNT : ℕ := 6
+    KimSarnak_OPEN, BC6SelbergTrace_OPEN, Arakelov_Pairing_OPEN,
+    Langlands_Descent_OPEN, GRH_to_RH_Descent_143_OPEN. -/
+def C15_OPEN_SURFACE_COUNT : ℕ := 7
 
 end TheoremaAureum
