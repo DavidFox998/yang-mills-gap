@@ -21,21 +21,28 @@
 
   **BC6SelbergTrace_OPEN** — BC95 Theorem 6 mechanism (defined in C14).
 
+  **GRH_to_RH_Descent_143_OPEN** — GRH_E_143a1 → _root_.RiemannHypothesis.
+    _root_.RiemannHypothesis is the genuine Mathlib predicate (NOT True).
+    The Langlands/GL₂ descent from GRH for 143a1 to the full RH is a real
+    open gap, absent from Mathlib v4.12.0.
+
   ## Chain (0 sorry, classical trio only)
 
-    h_ar   : Arakelov_Pairing_OPEN     [open surface: JK + Ogg]
-    h_lang : Langlands_Descent_OPEN    [open surface: Converse Thm]
-    h_ks   : KimSarnak_OPEN            [open surface: Kim-Sarnak 2003]
-    h_bc6  : BC6SelbergTrace_OPEN      [open surface: BC95 Thm 6]
-    bc6_explicit_formula_control h_ks h_bc6 h_ar : Weil bound [theorem]
-    h_lang (...) : GRH_E_143a1         [from Langlands_Descent_OPEN]
-    grh_to_rh_descent : RiemannHypothesis [theorem; RH := True in v4.12.0]
+    h_ar     : Arakelov_Pairing_OPEN         [open surface: JK + Ogg]
+    h_lang   : Langlands_Descent_OPEN        [open surface: Converse Thm]
+    h_ks     : KimSarnak_OPEN               [open surface: Kim-Sarnak 2003]
+    h_bc6    : BC6SelbergTrace_OPEN          [open surface: BC95 Thm 6]
+    hbridge  : GRH_to_RH_Descent_143_OPEN   [open surface: GRH→RH descent]
+    bc6_explicit_formula_control h_ks h_bc6 h_ar : Weil bound   [theorem]
+    h_lang (...)                             : GRH_E_143a1       [open surf]
+    hbridge (...)                            : RiemannHypothesis [open surf]
 
   SORRY: 0.  No native_decide.  Classical trio only.
 -/
 
 import Towers.RH.Chain.C01_Arakelov
 import Towers.RH.Chain.C14_BC6SpectralGap
+import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 namespace TheoremaAureum
@@ -93,47 +100,59 @@ theorem bc6_explicit_formula_control
 def Langlands_Descent_OPEN : Prop :=
   (∀ T : ℝ, 1 < T → |S_weil T| ≤ C_S14_143 * T / Real.log T) → GRH_E_143a1
 
-/-! ## Theorem: grh_to_rh_descent (classical trio, proved) -/
+/-! ## Open surface 5: GRH_E_143a1 → _root_.RiemannHypothesis -/
 
-/-- **GRH_E_143a1 → _root_.RiemannHypothesis (theorem, not axiom).**
+/-- **GRH_to_RH_Descent_143_OPEN**: GRH_E_143a1 → _root_.RiemannHypothesis.
 
-    Since _root_.RiemannHypothesis := True in Mathlib v4.12.0, this is
-    fun _ => trivial.  GRH_E_143a1 is still a genuine predicate in the chain.
+    _root_.RiemannHypothesis is the genuine Mathlib predicate, NOT True.
+    The Langlands/GL₂ descent from GRH for the 143a1 L-function to the full
+    Riemann Hypothesis is a real open gap, absent from Mathlib v4.12.0.
 
-    #print axioms grh_to_rh_descent:
-      {propext, Classical.choice, Quot.sound} -/
-theorem grh_to_rh_descent : GRH_E_143a1 → _root_.RiemannHypothesis :=
-  fun _ => trivial
+    STATUS: OPEN.  def Prop — NOT an axiom, NOT proved. -/
+def GRH_to_RH_Descent_143_OPEN : Prop :=
+  GRH_E_143a1 → _root_.RiemannHypothesis
+
+/-! ## Combinator: grh_to_rh_descent (classical trio) -/
+
+/-- **grh_to_rh_descent: threads GRH_to_RH_Descent_143_OPEN.**
+
+    Accepts hbridge : GRH_to_RH_Descent_143_OPEN as an explicit hypothesis.
+    No sorry.  #print axioms: {propext, Classical.choice, Quot.sound}. -/
+theorem grh_to_rh_descent
+    (hbridge : GRH_to_RH_Descent_143_OPEN) :
+    GRH_E_143a1 → _root_.RiemannHypothesis := hbridge
 
 /-! ## Main chain: zero-axiom RH combinator -/
 
-/-- **C13_RH_four_step: RiemannHypothesis given four open surfaces (classical trio).**
+/-- **C13_RH_four_step: RiemannHypothesis given five open surfaces (classical trio).**
 
     Chain:
-      h_ar   : Arakelov_Pairing_OPEN
-      h_lang : Langlands_Descent_OPEN
-      h_ks   : KimSarnak_OPEN
-      h_bc6  : BC6SelbergTrace_OPEN
+      h_ar      : Arakelov_Pairing_OPEN
+      h_lang    : Langlands_Descent_OPEN
+      h_ks      : KimSarnak_OPEN
+      h_bc6     : BC6SelbergTrace_OPEN
+      hbridge   : GRH_to_RH_Descent_143_OPEN
       ──────────────────────────────────────────────────
       bc6_explicit_formula_control h_ks h_bc6 h_ar
-        : ∀ T>1, |S(T)| ≤ C_S14_143·T/logT             [theorem]
+        : ∀ T>1, |S(T)| ≤ C_S14_143·T/logT         [theorem]
       h_lang (...)
-        : GRH_E_143a1                                   [from open surface]
-      grh_to_rh_descent (...)
-        : _root_.RiemannHypothesis                      [theorem; RH := True]
+        : GRH_E_143a1                               [from open surface]
+      grh_to_rh_descent hbridge (...)
+        : _root_.RiemannHypothesis                  [honest open surface]
 
     #print axioms C13_RH_four_step:
       {propext, Classical.choice, Quot.sound}
 
     SORRY: 0.  No native_decide.  No axiom beyond classical trio.
-    NOT a Clay claim.  _root_.RiemannHypothesis := True in Mathlib v4.12.0. -/
+    NOT a Clay claim.  _root_.RiemannHypothesis is the genuine predicate. -/
 theorem C13_RH_four_step
-    (h_ar   : Arakelov_Pairing_OPEN)
-    (h_lang : Langlands_Descent_OPEN)
-    (h_ks   : KimSarnak_OPEN)
-    (h_bc6  : BC6SelbergTrace_OPEN) :
+    (h_ar    : Arakelov_Pairing_OPEN)
+    (h_lang  : Langlands_Descent_OPEN)
+    (h_ks    : KimSarnak_OPEN)
+    (h_bc6   : BC6SelbergTrace_OPEN)
+    (hbridge : GRH_to_RH_Descent_143_OPEN) :
     _root_.RiemannHypothesis :=
-  grh_to_rh_descent
+  grh_to_rh_descent hbridge
     (h_lang (bc6_explicit_formula_control h_ks h_bc6 h_ar))
 
 end TheoremaAureum
