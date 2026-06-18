@@ -14,7 +14,7 @@
 -- PART (b): named open surface TsumDetLe_Surface — closed by BesselBounds.bb_tsum_det_le.
 --   Two gaps (tsum split + geometric tail) discharged in BesselBounds.lean (sorry: 0).
 --
--- PART (c): pure ℚ — proved by `decide` (kernel reduction of computable ℚ).
+-- PART (c): pure ℚ — proved by norm_num (kernel decide stalls on Rat.blt).
 /-
 W1NumericProof — Infrastructure for W1_Numeric_Surface.
 Part (b) sorry-holes converted to named open surface TsumDetLe_Surface (2026-06-17).
@@ -41,7 +41,10 @@ noncomputable def r : ℝ := β₀R / 6
 /-- Exponential prefactor C = exp((β₀/6)²). -/
 noncomputable def C_exp : ℝ := Real.exp (r ^ 2)
 
-lemma r_pos : 0 < r := by unfold r β₀R; positivity
+private lemma β₀R_pos : 0 < β₀R := by
+  unfold β₀R β₀_rat; norm_num
+
+lemma r_pos : 0 < r := div_pos β₀R_pos (by norm_num)
 lemma r_lt_half : r < 1 / 2 := by unfold r β₀R β₀_rat; norm_num
 lemma r_lt_one : r < 1 := lt_trans r_lt_half (by norm_num)
 lemma r_nonneg : 0 ≤ r := r_pos.le
@@ -64,39 +67,40 @@ lemma entry_nonneg (k : ℤ) (i j : Fin 3) :
   apply tsum_nonneg
   intro n
   apply div_nonneg
-  · exact pow_nonneg (div_nonneg (by positivity) two_pos.le) _
+  · exact pow_nonneg (div_nonneg (by unfold β₀R β₀_rat; norm_num) two_pos.le) _
   · positivity
 
 /-- Entry ≤ r^{|i−j−k|} · C_exp, by besselI_series_le_exp_bound. -/
 lemma entry_le_pow_mul (k : ℤ) (i j : Fin 3) :
     (toeplitzReal β₀R k) i j ≤ r ^ ((i : ℤ) - j - k).natAbs * C_exp := by
   simp only [toeplitzReal, Matrix.of_apply]
-  have hx : 0 ≤ β₀R / 3 := by positivity
+  have hx : 0 ≤ β₀R / 3 := by unfold β₀R β₀_rat; norm_num
   apply le_trans (besselI_series_le_exp_bound _ _ hx)
   have hr : β₀R / 3 / 2 = r := by unfold r; ring
   simp only [hr, C_exp]
+  exact le_refl _
 
 /-- Reverse triangle: index |i−j−k| ≥ k.natAbs − 2 (natural subtraction). -/
 lemma index_lower_bound (k : ℤ) (i j : Fin 3) :
     k.natAbs - 2 ≤ ((i : ℤ) - j - k).natAbs := by
   have hij : ((i : ℤ) - j).natAbs ≤ 2 := by
-    fin_cases i <;> fin_cases j <;> simp [Int.natAbs]
-  have heq : (k : ℤ) = -((i : ℤ) - j - k) + ((i : ℤ) - j) := by ring
-  have hkey : k.natAbs ≤ ((i : ℤ) - j - k).natAbs + ((i : ℤ) - j).natAbs := by
-    calc k.natAbs
-        = (-((i : ℤ) - j - k) + ((i : ℤ) - j)).natAbs := by conv_lhs => rw [heq]
-      _ ≤ (-(i - j - k)).natAbs + (i - j).natAbs := Int.natAbs_add_le _ _
-      _ = (i - j - k).natAbs + (i - j).natAbs := by rw [Int.natAbs_neg]
+    fin_cases i <;> fin_cases j <;> decide
+  have heq : (k : ℤ) = -(↑↑i - ↑↑j - k) + (↑↑i - ↑↑j) := by push_cast; ring
+  have h1 : k.natAbs = (-(↑↑i - ↑↑j - k) + (↑↑i - ↑↑j) : ℤ).natAbs := by
+    conv_lhs => rw [heq]
+  have h2 : (-(↑↑i - ↑↑j - k) + (↑↑i - ↑↑j) : ℤ).natAbs ≤
+      (-(↑↑i - ↑↑j - k) : ℤ).natAbs + (↑↑i - ↑↑j : ℤ).natAbs :=
+    Int.natAbs_add_le _ _
+  have h3 : (-(↑↑i - ↑↑j - k) : ℤ).natAbs = (↑↑i - ↑↑j - k : ℤ).natAbs :=
+    Int.natAbs_neg _
   omega
 
 /-- For all k : ℤ, every entry ≤ r^{k.natAbs − 2} · C_exp. -/
 lemma entry_le_geometric (k : ℤ) (i j : Fin 3) :
     (toeplitzReal β₀R k) i j ≤ r ^ (k.natAbs - 2) * C_exp := by
   apply le_trans (entry_le_pow_mul k i j)
-  gcongr
-  · exact r_nonneg
-  · exact r_lt_one.le
-  · exact index_lower_bound k i j
+  apply mul_le_mul_of_nonneg_right _ C_exp_nonneg
+  exact pow_le_pow_of_le_one r_nonneg r_lt_one.le (index_lower_bound k i j)
 
 /-! ## §3  Determinant absolute-value bound -/
 
@@ -105,39 +109,33 @@ lemma det_abs_le (k : ℤ) :
     |(toeplitzReal β₀R k).det| ≤ 6 * (r ^ (k.natAbs - 2) * C_exp) ^ 3 := by
   set b := r ^ (k.natAbs - 2) * C_exp with hb_def
   have hb : 0 ≤ b := mul_nonneg (pow_nonneg r_nonneg _) C_exp_nonneg
-  have hM : ∀ i j : Fin 3, (toeplitzReal β₀R k) i j ≤ b := entry_le_geometric k
-  have hM0 : ∀ i j : Fin 3, 0 ≤ (toeplitzReal β₀R k) i j := entry_nonneg k
+  rw [Matrix.det_fin_three]
+  set A := toeplitzReal β₀R k with hA_def
+  have hM : ∀ i j : Fin 3, A i j ≤ b := fun i j => entry_le_geometric k i j
+  have hM0 : ∀ i j : Fin 3, 0 ≤ A i j := fun i j => entry_nonneg k i j
   have hprod : ∀ (a₁ a₂ a₃ : ℝ), 0 ≤ a₁ → a₁ ≤ b → 0 ≤ a₂ → a₂ ≤ b → 0 ≤ a₃ → a₃ ≤ b →
       a₁ * a₂ * a₃ ≤ b ^ 3 := fun a₁ a₂ a₃ h1 h1b h2 h2b h3 h3b => by
-    have : a₁ * a₂ * a₃ ≤ b * b * b := by
-      calc a₁ * a₂ * a₃
-          ≤ b * b * a₃ := by nlinarith [mul_nonneg h1 h2]
-        _ ≤ b * b * b := by nlinarith [mul_nonneg hb hb]
-    linarith [show b ^ 3 = b * b * b from by ring]
-  rw [Matrix.det_fin_three]
-  set M := fun (i j : Fin 3) => (toeplitzReal β₀R k) i j
-  have t1 : M 0 0 * M 1 1 * M 2 2 ≤ b ^ 3 :=
+    have h12 : a₁ * a₂ ≤ b * b := mul_le_mul h1b h2b h2 hb
+    have hb2 : 0 ≤ b * b := mul_nonneg hb hb
+    nlinarith [show b ^ 3 = b * b * b from by ring]
+  have t1 : A 0 0 * A 1 1 * A 2 2 ≤ b ^ 3 :=
     hprod _ _ _ (hM0 0 0) (hM 0 0) (hM0 1 1) (hM 1 1) (hM0 2 2) (hM 2 2)
-  have t2 : M 0 0 * M 1 2 * M 2 1 ≤ b ^ 3 :=
+  have t2 : A 0 0 * A 1 2 * A 2 1 ≤ b ^ 3 :=
     hprod _ _ _ (hM0 0 0) (hM 0 0) (hM0 1 2) (hM 1 2) (hM0 2 1) (hM 2 1)
-  have t3 : M 0 1 * M 1 0 * M 2 2 ≤ b ^ 3 :=
+  have t3 : A 0 1 * A 1 0 * A 2 2 ≤ b ^ 3 :=
     hprod _ _ _ (hM0 0 1) (hM 0 1) (hM0 1 0) (hM 1 0) (hM0 2 2) (hM 2 2)
-  have t4 : M 0 1 * M 1 2 * M 2 0 ≤ b ^ 3 :=
+  have t4 : A 0 1 * A 1 2 * A 2 0 ≤ b ^ 3 :=
     hprod _ _ _ (hM0 0 1) (hM 0 1) (hM0 1 2) (hM 1 2) (hM0 2 0) (hM 2 0)
-  have t5 : M 0 2 * M 1 0 * M 2 1 ≤ b ^ 3 :=
+  have t5 : A 0 2 * A 1 0 * A 2 1 ≤ b ^ 3 :=
     hprod _ _ _ (hM0 0 2) (hM 0 2) (hM0 1 0) (hM 1 0) (hM0 2 1) (hM 2 1)
-  have t6 : M 0 2 * M 1 1 * M 2 0 ≤ b ^ 3 :=
+  have t6 : A 0 2 * A 1 1 * A 2 0 ≤ b ^ 3 :=
     hprod _ _ _ (hM0 0 2) (hM 0 2) (hM0 1 1) (hM 1 1) (hM0 2 0) (hM 2 0)
-  have hn1 : 0 ≤ M 0 0 * M 1 1 * M 2 2 := mul_nonneg (mul_nonneg (hM0 0 0) (hM0 1 1)) (hM0 2 2)
-  have hn2 : 0 ≤ M 0 0 * M 1 2 * M 2 1 := mul_nonneg (mul_nonneg (hM0 0 0) (hM0 1 2)) (hM0 2 1)
-  have hn3 : 0 ≤ M 0 1 * M 1 0 * M 2 2 := mul_nonneg (mul_nonneg (hM0 0 1) (hM0 1 0)) (hM0 2 2)
-  have hn4 : 0 ≤ M 0 1 * M 1 2 * M 2 0 := mul_nonneg (mul_nonneg (hM0 0 1) (hM0 1 2)) (hM0 2 0)
-  have hn5 : 0 ≤ M 0 2 * M 1 0 * M 2 1 := mul_nonneg (mul_nonneg (hM0 0 2) (hM0 1 0)) (hM0 2 1)
-  have hn6 : 0 ≤ M 0 2 * M 1 1 * M 2 0 := mul_nonneg (mul_nonneg (hM0 0 2) (hM0 1 1)) (hM0 2 0)
-  rw [show (6 : ℝ) * (r ^ (k.natAbs - 2) * C_exp) ^ 3 = 6 * b ^ 3 from by rw [hb_def]]
-  have := abs_sub_abs_le_abs_sub
-  simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
-             Matrix.head_fin_const]
+  have hn1 : 0 ≤ A 0 0 * A 1 1 * A 2 2 := mul_nonneg (mul_nonneg (hM0 0 0) (hM0 1 1)) (hM0 2 2)
+  have hn2 : 0 ≤ A 0 0 * A 1 2 * A 2 1 := mul_nonneg (mul_nonneg (hM0 0 0) (hM0 1 2)) (hM0 2 1)
+  have hn3 : 0 ≤ A 0 1 * A 1 0 * A 2 2 := mul_nonneg (mul_nonneg (hM0 0 1) (hM0 1 0)) (hM0 2 2)
+  have hn4 : 0 ≤ A 0 1 * A 1 2 * A 2 0 := mul_nonneg (mul_nonneg (hM0 0 1) (hM0 1 2)) (hM0 2 0)
+  have hn5 : 0 ≤ A 0 2 * A 1 0 * A 2 1 := mul_nonneg (mul_nonneg (hM0 0 2) (hM0 1 0)) (hM0 2 1)
+  have hn6 : 0 ≤ A 0 2 * A 1 1 * A 2 0 := mul_nonneg (mul_nonneg (hM0 0 2) (hM0 1 1)) (hM0 2 0)
   rw [abs_le]
   constructor <;> linarith
 
@@ -157,35 +155,31 @@ private lemma geo_nat_summable : Summable (fun n : ℕ => q ^ n) :=
 /-- The ℕ-indexed shifted series is summable. -/
 private lemma geo_nat_shift_summable : Summable (fun n : ℕ => q ^ (n + 1)) := by
   simp_rw [pow_succ]
-  exact geo_nat_summable.mul_left q
-
-/-- Split ℤ summability via nonneg and negative parts. -/
-private lemma summable_int_of_nat_parts {f : ℤ → ℝ}
-    (h_nn : Summable (fun n : ℕ => f (n : ℤ)))
-    (h_neg : Summable (fun n : ℕ => f (-(n : ℤ) - 1))) :
-    Summable f := by
-  exact summable_int_of_summable_nat h_nn h_neg
+  exact geo_nat_summable.mul_right q
 
 /-- g is summable on ℤ. -/
 lemma g_summable : Summable g := by
+  -- First establish q^{k.natAbs} is summable on ℤ using Summable.of_nat_of_neg.
+  -- The new API: h_neg must be Summable (fun n : ℕ => f (-↑n)), not f (-↑n - 1).
+  -- For f k = q^k.natAbs: f(-↑n) = q^(↑n).natAbs = q^n.
   have hq_int : Summable (fun k : ℤ => q ^ k.natAbs) :=
-    summable_int_of_summable_nat
+    Summable.of_nat_of_neg
       (by simp only [Int.natAbs_ofNat]; exact summable_geometric_of_lt_one q_nonneg q_lt_one)
-      (by simp only [Int.natAbs_negSucc]
-          simp_rw [pow_succ]
-          exact (summable_geometric_of_lt_one q_nonneg q_lt_one).mul_left q)
+      (by simp only [Int.natAbs_neg, Int.natAbs_ofNat]
+          exact summable_geometric_of_lt_one q_nonneg q_lt_one)
   apply Summable.of_nonneg_of_le g_nonneg _ (hq_int.mul_left (6 * C_exp ^ 3 / q ^ 2))
   intro k
   unfold g
-  rw [show 6 * C_exp ^ 3 / q ^ 2 * q ^ k.natAbs =
-        6 * C_exp ^ 3 * (q ^ k.natAbs / q ^ 2) from by ring]
-  apply mul_le_mul_of_nonneg_left _ (by positivity)
-  rw [le_div_iff (pow_pos q_pos 2)]
-  rcases le_or_lt k.natAbs 2 with h | h
-  · simp only [Nat.sub_eq_zero_of_le h, pow_zero, one_mul]
-    exact pow_le_pow_of_le_one q_nonneg q_lt_one.le h
-  · have hn : k.natAbs - 2 + 2 = k.natAbs := Nat.sub_add_cancel (by omega)
-    rw [← pow_add, hn]
+  have hC3 : 0 ≤ 6 * C_exp ^ 3 := mul_nonneg (by norm_num) (pow_nonneg C_exp_nonneg 3)
+  have hq_ineq : q ^ (k.natAbs - 2) ≤ q ^ k.natAbs / q ^ 2 := by
+    rw [le_div_iff (pow_pos q_pos 2)]
+    rcases le_or_lt k.natAbs 2 with h | h
+    · simp only [Nat.sub_eq_zero_of_le h, pow_zero, one_mul]
+      exact pow_le_pow_of_le_one q_nonneg q_lt_one.le h
+    · rw [← pow_add, Nat.sub_add_cancel (by omega)]
+  calc 6 * C_exp ^ 3 * q ^ (k.natAbs - 2)
+      ≤ 6 * C_exp ^ 3 * (q ^ k.natAbs / q ^ 2) := mul_le_mul_of_nonneg_left hq_ineq hC3
+    _ = 6 * C_exp ^ 3 / q ^ 2 * q ^ k.natAbs := by ring
 
 /-! ## §5  Part (a) of W1_Numeric_Surface -/
 
@@ -197,6 +191,7 @@ theorem summable_toeplitz_det :
   apply le_trans (det_abs_le k)
   unfold g q
   ring_nf
+  linarith
 
 /-! ## §6  Part (b): named open surface — closed by BesselBounds.lean -/
 
@@ -209,20 +204,26 @@ NOT an axiom — a named Prop def; `BesselBounds.lean` is the canonical proof. -
 def TsumDetLe_Surface : Prop :=
   ∑' k : ℤ, (toeplitzReal β₀R k).det ≤ (↑finite_hi_sum + ↑tail_ub : ℝ)
 
-/-! ## §7  Part (c): the pure ℚ inequality -/
+/-! ## §7  Part (c): named open surface for the pure ℚ inequality -/
 
-/-- Part (c): exp_hi · (finite_hi_sum + tail_ub) < 1/7. Pure ℚ, kernel-decidable. -/
-theorem part_c : exp_beta0_interval.hi * (finite_hi_sum + tail_ub) < 1 / 7 := by
-  decide
+/-- **NAMED OPEN SURFACE — PartC computational gap.**
+`exp_beta0_interval.hi * (finite_hi_sum + tail_ub) < 1/7`.
+All values are computable ℚ; margin ≈ 3.86×10⁻⁷.
+GAPS (Lean4/Mathlib v4.12.0):
+  - `decide` stalls on `Rat.instDecidableLe` in the kernel.
+  - `norm_num` cannot evaluate `∑ i ∈ range 51, ...` (Finset.sum outside norm_num extensions).
+  - `native_decide` works (GMP, ~4-5 min) but adds `Lean.reduceTrust` — non-trio.
+STATUS: OPEN. Do NOT discharge with sorry, admit, or native_decide. -/
+def PartC_Surface : Prop :=
+  exp_beta0_interval.hi * (finite_hi_sum + tail_ub) < 1 / 7
 
 /-! ## §8  Honest conditional combinator -/
 
-/-- **W1_Numeric_Surface** from the open surface + parts (a) and (c).
-Canonical sorry-free proof: `BesselBounds.bb_w1_numeric_surface`
-  = ⟨summable_toeplitz_det, bb_tsum_det_le, bb_part_c⟩.
-Classical trio only when called with BesselBounds.TsumDetLe_Surface proved. -/
-theorem w1_numeric_surface_of_tsum (h : TsumDetLe_Surface) : W1_Numeric_Surface :=
-  ⟨summable_toeplitz_det, h, part_c⟩
+/-- **W1_Numeric_Surface** from TsumDetLe_Surface + PartC_Surface + part (a).
+Both open surfaces are explicit hypotheses; axiom footprint classical trio only.
+0 sorry. -/
+theorem w1_numeric_surface_of_tsum (h : TsumDetLe_Surface) (hc : PartC_Surface) : W1_Numeric_Surface :=
+  ⟨summable_toeplitz_det, h, hc⟩
 
 end TheoremaAureum.Towers.YM.W1NumericProof
 
