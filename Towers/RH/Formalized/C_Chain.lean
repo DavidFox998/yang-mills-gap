@@ -1,5 +1,5 @@
-import TheoremaAureum.Certificates
-import TheoremaAureum.M9_WeilTransfer
+import Towers.RH.Formalized.Certificates
+import Towers.RH.M9_WeilTransfer
 
 /-!
   ## TheoremaAureum.C_Chain
