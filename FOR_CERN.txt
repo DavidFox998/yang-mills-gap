@@ -1,16 +1,13 @@
 # FOR_CERN.txt
-# SHA-256 manifest of key chain files (generated at push time)
+# SHA-256 manifest of key YM chain files (generated at push time)
 # CI regenerates this on every build — see Actions tab for latest.
 
 66fde3bc54dfcf81bfdcfe0edac38a02eea7ff735e99d5823430f460fb014166  Towers/YM/YMCollection.lean
 618996970c73c21e01bdcaba8ad9b81b4741c3a14c421273a064fd2e8180ba8f  Towers/YM/BesselBounds.lean
 7330cd48e1f25a1322b0707e266a2400b8f7186d4aedad218a294f6bf92d307c  Towers/YM/W1Toeplitz.lean
 811ee2ed01a127e11ed232103709cc57e9c688120194e8b5357bf24df295b271  Towers/YM/KP_Closure.lean
-6af773c552291ea78877bfaa4d8dcf5e9c0778775234b17638f4e1c5592d40e8  Towers/YM/Wall256_MassGapConditional.lean
 f30a311d4d0f040528a30a17c5e1837a7bd71f021b7e56cfb7e108f4f5ae45d1  Towers/YM/Wall256_Beta0Bridge.lean
 9846d0f61c0e4804c986fb398040dd4b4ae3425d31f799a7313a17296cc17157  Towers/YM/Wall256_Scaffold.lean
 d2ef7a6671aac9a6ff84d6e51cc2cebf3d1c43b9a7b534bbd4ec9de682df00dd  Towers/YM/W1NumericProof.lean
-5c18bf4349a3a90e3da01d0cb7e64a973593da2a299141beb9f18d71444a7f19  Towers/YM/WeylToeplitzBound.lean
-40209b53521eb27c447d376d7f6cb6cf8d0d7c94ddcba42f082fd16a201ba1b7  Towers/RH/Chain/C10_MainTheorem.lean
 26f6851e7bf7b39b0d3243c77a664ce64fd496fe0abbc8040d6cd2eecc283b1c  KP/Main.lean
 3b361452f0ab86155d84760096ea6a8495d36dd7b201a8f1e1b5115a010e38f3  lakefile.lean
