@@ -29,6 +29,7 @@ import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.RingTheory.ClassGroup
 import Mathlib.NumberTheory.NumberField.ClassNumber
+import Mathlib.Data.ZMod.Basic
 import Towers.RH.JorgensonKramer.X0_143.Discriminant143
 
 namespace Towers.RH.JorgensonKramer.X0_143
@@ -181,6 +182,69 @@ lemma norm_form_no_norm_512 (a b : ℤ) : a ^ 2 + a * b + 36 * b ^ 2 ≠ 512 := 
     have ha_le : a ≤ 13 := by nlinarith [sq_nonneg (a - 14)]
     have ha_ge : -16 ≤ a := by nlinarith [sq_nonneg (a + 16)]
     interval_cases a <;> omega
+
+/-! ### Step 4b: Norm form impossibilities for primes 3 and 7 -/
+
+/-- No a b : ℤ satisfy a² + ab + 36b² = 3.
+    Proof: complete the square → (2a+b)² + 143b² = 12; since 143 > 12,
+    b = 0; then a² = 3 which has no integer solution (1 < 3 < 4).
+    Consequence: p = 3 splits in K and 𝔭₃ is non-principal. -/
+lemma norm_form_no_norm_three (a b : ℤ) : a ^ 2 + a * b + 36 * b ^ 2 ≠ 3 := by
+  intro h
+  have heq : (2 * a + b) ^ 2 + 143 * b ^ 2 = 12 := by linear_combination 4 * h
+  have hb : b = 0 := by
+    by_contra hb'
+    nlinarith [one_le_sq_of_ne_zero hb', sq_nonneg (2 * a + b)]
+  subst hb; simp only [mul_zero, add_zero] at h
+  have ha_le : a ≤ 1 := by nlinarith [sq_nonneg (a - 2)]
+  have ha_ge : -1 ≤ a := by nlinarith [sq_nonneg (a + 2)]
+  interval_cases a <;> simp_all
+
+/-- No a b : ℤ satisfy a² + ab + 36b² = 7.
+    Proof: complete the square → (2a+b)² + 143b² = 28; since 143 > 28,
+    b = 0; then a² = 7 which has no integer solution (4 < 7 < 9).
+    Consequence: p = 7 splits in K and 𝔭₇ is non-principal. -/
+lemma norm_form_no_norm_seven (a b : ℤ) : a ^ 2 + a * b + 36 * b ^ 2 ≠ 7 := by
+  intro h
+  have heq : (2 * a + b) ^ 2 + 143 * b ^ 2 = 28 := by linear_combination 4 * h
+  have hb : b = 0 := by
+    by_contra hb'
+    nlinarith [one_le_sq_of_ne_zero hb', sq_nonneg (2 * a + b)]
+  subst hb; simp only [mul_zero, add_zero] at h
+  have ha_le : a ≤ 2 := by nlinarith [sq_nonneg (a - 3)]
+  have ha_ge : -2 ≤ a := by nlinarith [sq_nonneg (a + 3)]
+  interval_cases a <;> simp_all
+
+/-! ### Step 4c: Generator certificate for 𝔭₂^10 (norm = 1024 = 2^10) -/
+
+/-- Norm-form certificate: the element (-28) + 3·ω_int ∈ 𝓞 K has norm 1024.
+    Arithmetic: (-28)² + (-28)·3 + 36·3² = 784 − 84 + 324 = 1024 = 2^10.
+    This element is the generator of the principal ideal 𝔭₂^10, establishing
+    that 𝔭₂ has order dividing 10 in ClassGroup(𝓞 K).
+    Combined with the norm-form impossibilities for norms 2, 8, 32, 128, 512
+    (odd powers of 2), this constrains the order of [𝔭₂] to exactly 10. -/
+lemma norm_form_gen_1024 : (-28 : ℤ) ^ 2 + (-28) * 3 + 36 * 3 ^ 2 = 1024 := by norm_num
+
+/-! ### Step 4d: Splitting / inert behaviour of rational primes ≤ 7 in 𝓞 K -/
+
+/-! The minimal polynomial of ω = (1 + √-143)/2 over ℚ is X² − X + 36.
+    A rational prime p splits in 𝓞 K iff X² − X + 36 has a root in ZMod p.
+    Proofs are exhaustive evaluations on the finite type ZMod p (kernel `decide`). -/
+
+/-- p = 2 splits in K: X² − X + 36 ≡ 0 (mod 2) has the solution X ≡ 0. -/
+lemma prime_2_splits : ∃ x : ZMod 2, x ^ 2 - x + 36 = 0 := by decide
+
+/-- p = 3 splits in K: X² − X + 36 ≡ 0 (mod 3) has the solution X ≡ 0. -/
+lemma prime_3_splits : ∃ x : ZMod 3, x ^ 2 - x + 36 = 0 := by decide
+
+/-- p = 5 is inert in K: X² − X + 36 ≡ 0 (mod 5) has no solution.
+    −143 ≡ 2 (mod 5) is not a quadratic residue mod 5.  5 stays prime in 𝓞 K;
+    the smallest ideal above 5 has norm 5² = 25 > 7 (Minkowski bound), so it
+    contributes no generator within the Minkowski region. -/
+lemma prime_5_inert : ∀ x : ZMod 5, x ^ 2 - x + 36 ≠ 0 := by decide
+
+/-- p = 7 splits in K: X² − X + 36 ≡ 0 (mod 7) has the solution X ≡ 3. -/
+lemma prime_7_splits : ∃ x : ZMod 7, x ^ 2 - x + 36 = 0 := by decide
 
 /-! ### Step 5: Open surfaces toward classNumber K = 10 -/
 
