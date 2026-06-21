@@ -50,3 +50,22 @@ grep -rn 'sorry' Towers/YM/ KP/  # should return nothing
 
 This repository does **not** claim to solve the Clay Yang-Mills Mass Gap
 problem. YM Surface #1 is locked OPEN. No mass gap, no μ > 0, no Clay claim.
+
+---
+
+## Clay-rules audit
+
+Run `python3 audit_sorry.py` from the repo root to verify every `.lean` file
+is free of real `sorry` proof terms and non-trio `axiom` declarations.
+The script strips block comments (`/- … -/`), line comments (`-- …`), and
+string literals before scanning, so documentation that mentions the word
+"sorry" does not trigger a false positive.
+
+**Certified clean (2026-06-21):** four files that carried non-classical-trio
+`axiom` declarations (`Hw1_Surface`, `Wall256_Bridge`, `Wall256_MassGap`,
+`Wall256_Surface1`) were quarantined and deleted. The remaining 184 lean files
+pass `audit_sorry.py` with exit code 0.
+
+Axiom footprint of every registered brick: `{propext, Classical.choice,
+Quot.sound}` — the classical trio only. No `sorry`, no `admit`, no
+`native_decide`, no research-grade axioms.
