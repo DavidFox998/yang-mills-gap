@@ -1,6 +1,7 @@
 import Towers.YM.BesselBounds
 import Towers.YM.W1Toeplitz
 import Towers.YM.KP_Closure
+import Towers.YM.KP_Bridge
 import Towers.YM.Wall256_Beta0Bridge
 import Towers.YM.Wall256_MassGapConditional
 
