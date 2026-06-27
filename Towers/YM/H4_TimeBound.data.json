@@ -1,0 +1,18 @@
+{
+  "module": "E",
+  "file": "H4_TimeBound.lean",
+  "author": "D. Fox",
+  "orcid": "0009-0008-1290-6105",
+  "status": "EMPIRICAL",
+  "axioms": ["propext", "Classical.choice", "Quot.sound"],
+  "sorry": 0,
+  "mathlib": false,
+  "sha256_file": "5f172143eceb87d0f00de3bf33f6432e62d83ca4b4b1220b9b022601ae74f8a7",
+  "eval_outputs": {
+    "10^12 < 3^40": "true",
+    "note_3_40": "3^40 ≈ 1.2e19, roughly 7 orders of magnitude above the 13-digit boundary prime 1000000001119",
+    "samples_13digit_sym1": 6,
+    "counterexamples": 0
+  },
+  "honest_caveat": "EMPIRICAL 6/6 over 6 thirteen-digit primes. 10^12 < 3^40 is axiom-free. No YM/mass-gap claim."
+}
