@@ -1,0 +1,19 @@
+{
+  "module": "A",
+  "file": "H4Core.lean",
+  "leaf": "H4_Strata_Ztau.lean",
+  "author": "D. Fox",
+  "orcid": "0009-0008-1290-6105",
+  "status": "PROVEN",
+  "axioms": ["propext", "Classical.choice", "Quot.sound"],
+  "sorry": 0,
+  "mathlib": false,
+  "sha256_file": "aa8c1180048652b2aec592ee287479ca01098ec233738fb9b20fdb06b22b1a6ce",
+  "sha256_note": "File SHA-256 of H4Core.lean. The BUILD_MANIFEST v2.3 entry 48536d9d...ba997 is the prose milestone RECORD hash, NOT a file hash.",
+  "eval_outputs": {
+    "symOf [2, 3, 19, 191, 1000000001119]": "[120, 20, 2, 2, 1]",
+    "note_symOf_19": "symOf 19 = 2, NOT 20 (David's original claim was incorrect)",
+    "note_P5": "Proposed P5 = 10000000001119 has digit_len 14 NOT 13; genuine 13-digit boundary prime = 1000000001119"
+  },
+  "honest_caveat": "C13_law (all-prime boundary law) is REFUSED as a theorem. Named OPEN Prop C13_Law_Open, empirical 6/6 only. No YM/mass-gap/Surface-#1 claim."
+}
