@@ -6,34 +6,45 @@
 # AXIOMS: {propext, Classical.choice, Quot.sound} only.
 # NATIVE_DECIDE: none.
 #
+# === MILESTONE 2026-06-28: PartC_Surface CLOSED (N=5 Bessel norm_num) ===
+#
+# PartC_Surface is now PROVED. W1_Numeric_Surface and w1_weyl_series β₀ < 1/7
+# are now FULLY UNCONDITIONAL (no hypothesis required). Sole remaining gap: SzegoGap.
+#
+# N-sweep (exact Fraction): N=3 margin=-3.03e-9 FAIL, N=4=-1.26e-11 FAIL,
+#   N=5=+1.30e-14 PASS (norm_num feasible), N=40=+3.86e-7 OOMs (~3.9 GB).
+#
 # === Open surfaces ===
 #
-# 1. PartC_Surface  (W1NumericProof.lean §7)
-#    exp_beta0_interval.hi * (finite_hi_sum + tail_ub) < 1/7
-#    Barrier: decide/norm_num cannot close a 51-term Finset.sum over ℚ
-#             in the Lean kernel (non-trio native_decide excluded).
-#
-# 2. SzegoGap  (W1Toeplitz.lean)
+# 1. SzegoGap  (W1Toeplitz.lean) — SOLE REMAINING GAP
 #    w1(β₀) = w1_weyl_series(β₀)
+#    = SU(3) single-site Haar weight = Weyl-Toeplitz Bessel series
 #    Barrier: SU(3) Gross-Witten 1980 / Weyl integration absent from Mathlib v4.12.0.
+#    Three avenues documented in SzegoGapAvenues.lean:
+#      Avenue 1 (JacobiAnger): ~150 lines, 2-4 weeks, Mathlib fourierCoeff API exists
+#      Avenue 2 (WeylIntegration_SU3): 6-12 months, needs Weyl character formula
+#      Avenue 3 (ToeplitzBessel_Id): 12-18 months, needs Fredholm.det + Szego theorem
 #
-# 3. W1_KP_Surface  (W1Toeplitz.lean)
+# 2. W1_KP_Surface  (W1Toeplitz.lean)
 #    w1_fn(β₀_kp) < 1/56
 #    Barrier: SU(3) Haar integral at KP threshold β (same blocker as SzegoGap).
 #
-# 4. Hw1_Surface  (Wall256_Scaffold.lean)
+# 3. Hw1_Surface  (Wall256_Scaffold.lean)
 #    β₀-cert b → ∀ β > b, w1 β < 1/7
 #    Barrier: SU(3) Haar integral in β-neighbourhood (same blocker).
 #
-# 5. JacobiAngerGap  (W1Toeplitz.lean) — trivial placeholder
-#    True gap: fourierCoeff (exp(r·cos·)) k = I_k(r)
-#    Absent from Mathlib v4.12.0.
+# 4. JacobiAnger_FormCoeff  (SzegoGapAvenues.lean) — TRUE statement
+#    fourierCoeff (exp(r·cos·)) n = I_n(r)  (replaces tautology placeholder)
+#    Absent from Mathlib v4.12.0. Sub-steps: InterchangeSumIntegral + CosPower + BesselCollect.
 #
-# 6. YM Surface #1 / kotecky_preiss_criterion_Surface / MassGap_YM4_Clay_Surface
+# 5. YM Surface #1 / kotecky_preiss_criterion_Surface / MassGap_YM4_Clay_Surface
 #    LOCKED OPEN per project invariants. Do not discharge.
 #
-# === What IS proved unconditionally ===
+# === What IS proved unconditionally (all classical trio, 0 sorry) ===
 #
+#  PartC_Surface           BesselBounds.lean  (N=5 Bessel norm_num) ← NEW 2026-06-28
+#  W1_Numeric_Surface      BesselBounds.lean  (unconditional via bb_part_c) ← NEW
+#  w1_weyl_series β₀<1/7  BesselBounds.lean  (unconditional bb_w1_weyl_lt) ← NEW
 #  TsumDetLe_Surface       BesselBounds.lean  (Bessel tsum ≤ det)
 #  log_two_gt_two_thirds   KP_Closure.lean    (log 2 > 2/3)
 #  C_eff_tree_lt_one       KP_Closure.lean    ((exp(e/4)-1)/(2e) < 1)
@@ -50,7 +61,8 @@ a2b5ad5169d33a3530bfc51787330c19f5a2813e521c94c3855a166a0b5941ec  KP/Basic/D5.le
 c1094b7cd6909c6c82eb49c6bb9cc9d779c2eb00c47f574196030322cc117573  KP/Basic/D6.lean
 26f6851e7bf7b39b0d3243c77a664ce64fd496fe0abbc8040d6cd2eecc283b1c  KP/Main.lean
 8d40f97cb5cb7ffd2f7f26a1d4bdd1d8d3a1aa1800043d168faad2b60096fd1e  KP/PrintAxioms.lean
-7059bf90e091b43bc258cd9bf9c7aae33c115aa419f42d740e2b5d333622c01a  README.md
+27cb9df293d44ec45b9ea77c2e7c82dcb817bdad06b82a43dfe96b10c09a9552  LEDGER.md
+16c03b48a8eb86a71ab3e4ea67b616d67951fefaf142f5f9adadede888b240b1  README.md
 558bc1a02865ac16ae19d2fb7b71f2f0d21713445ecec3c1a0ce3aca700db434  Towers/YM/ActionInvariance.lean
 4c323421d6f5057a0d3f80d44006d7a6013a4f2c3cf2ff4b876a35b0292e9a6a  Towers/YM/AnalyticContinuationCore.lean
 255c522a3e8bdb06fa29be6f9aa944d0878819273d7403ba0889b3658828484a  Towers/YM/AsymptoticFreedomStub.lean
@@ -185,6 +197,7 @@ fca1de2b085e768a61ef320db8d7d23f546a0f3ddce0b76ccbc3f956eee69e89  Towers/YM/Spec
 e34370be6bcfdc9ddbf4d07b78af5d2d0d7d81fe85ee178e33d5fef59c90da01  Towers/YM/SpectrumBound.lean
 b5f5d4fe0c5bbb15b5c4b4306c24896f690ac74fe76f01a8bbdb6d4e108b4e93  Towers/YM/StringTensionStub.lean
 96252b25ea07d30a0cdc030d4c3e5c590f055b7e59d3941e5562091700167024  Towers/YM/Support.lean
+615412ac8bd19eea92ce44c7f2d946644a855f4aa1f2062cd64a11099339abb9  Towers/YM/SzegoGapAvenues.lean
 e0d3ba5d3cbcad9f17cea42a73cc155af00af2dbb91fc0254f70c8016643bd50  Towers/YM/TailImpliesTransfer.lean
 724a56dc08434729fcceedf2d3a62d7a5e8e35c4a24f2ac0b3fe03ce167f8bba  Towers/YM/TemperednessCore.lean
 61bb0136b4357a40b7591b1b2a5cfef02b6c4de347f1cf8010b82db912d40be0  Towers/YM/TimeReflection.lean
