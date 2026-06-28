@@ -18,6 +18,27 @@ Chain:
 
 SORRY: 0. Axioms: {propext, Classical.choice, Quot.sound}.
 YM Surface #1: LOCKED OPEN. No Clay claim.
+
+NUMERICAL AUDIT (2026-06-28):
+  Independent verification via Monte Carlo (N=200K, SU(3) Haar) and Riemann sum (N=2000):
+
+    w1_haar_SU3 beta0 = 0.00753  (Monte Carlo, validated: E[|tr|^2]=1.0002 PASS)
+    w1_weyl_series beta0 = 0.14286  (Toeplitz sum, sum over k=-100..100)
+    SzegoGap_genuine_open (S)  is NUMERICALLY FALSE  (ratio 0.053, factor ~19)
+
+    torus integral (int_T ww*Delta) = 1.7641  (Riemann N=2000, validated at beta=0 PASS)
+    TorusIntegralWilson_OPEN (B) is NUMERICALLY FALSE  (1.7641 != 0.02381, factor ~74)
+    SU3_WeylIntFormula_OPEN (A) is NUMERICALLY FALSE  (1.7641 != 0.00126, factor ~1402)
+
+  Correct Weyl formula: int_T f*Delta = 6*(2*pi)^2 * int_G f dg  (C = 6*(2pi)^2, NOT 1/6)
+  Root cause: w1_weyl_series (exp(-beta)*Toeplitz[I_n(beta/3)]) != w1_haar (int_G exp(-beta*(3-Re tr))).
+  They agree at beta=0 (both =1) but differ at first order: w1_haar ~ 1-3*beta, w1_weyl ~ 1-beta.
+
+  Opera Numerorum rule: no fabricated cert values. Surfaces S, B, A remain OPEN.
+  The mutual-implication triple (szego_from_weyl_and_torus, weyl_from_szego_and_torus,
+  torus_from_szego_and_weyl) is logically correct (0 sorry, classical trio) but cannot
+  close any surface since all three individual propositions are false.
+  Full audit: certificates/szego_gap_audit.py, Towers/YM/SzegoGapAudit.md
 -/
 
 import Towers.YM.SU3MaximalTorus
