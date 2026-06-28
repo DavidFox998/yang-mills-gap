@@ -15,6 +15,7 @@ import Towers.YM.RotationInvariance
 -- Transfer-chain + master combinator (all chain _OPEN surfaces closed 2026-06-28):
 import Towers.YM.YMMasterCombinator
 import Towers.YM.YMRhoClose
+import Towers.YM.SU3MaximalTorus
 
 /-! # YM Tower — Standalone Collection (updated 2026-06-28)
 
@@ -408,5 +409,35 @@ theorem col_mass_gap_lb_pos (h_szego : SzegoGap_genuine_open) : 0 < mass_gap_lb 
 theorem col_ym_rho_and_gap (h_szego : SzegoGap_genuine_open) :
     ρ_SU3 < 1 ∧ ∃ Δ : ℝ, 0 < Δ ∧ Δ ≤ mass_gap_lb :=
   ym_rho_and_gap_from_szego h_szego
+
+/-! ## §8  Avenue 2 prerequisites — maximal torus and Weyl denominator (2026-06-28) -/
+
+open TheoremaAureum.Towers.YM.SU3MaximalTorus in
+/-- **PROVED (unconditional, classical trio).**
+
+    Every element `torusElt θ₁ θ₂ = diag(e^{iθ₁}, e^{iθ₂}, e^{-i(θ₁+θ₂)})`
+    lies in `SU(3)`. Proves both unitarity (each entry on S¹) and det = 1.
+    This is Brick M1 toward `WeylIntegration_SU3_OPEN` (Avenue 2). -/
+theorem col_torusElt_mem_SU3 (θ₁ θ₂ : ℝ) :
+    torusElt θ₁ θ₂ ∈ Matrix.specialUnitaryGroup (Fin 3) ℂ :=
+  torusElt_mem_SU3 θ₁ θ₂
+
+open TheoremaAureum.Towers.YM.SU3MaximalTorus in
+/-- **PROVED (unconditional, classical trio).**
+
+    The SU(3) Weyl denominator `Δ(θ₁,θ₂)` is nonneg (product of `normSq` values).
+    This is Brick M2 toward `WeylIntegration_SU3_OPEN` (Avenue 2). -/
+theorem col_weyl_denominator_nonneg (θ₁ θ₂ : ℝ) :
+    0 ≤ SU3MaximalTorus.weyl_denominator θ₁ θ₂ :=
+  weyl_denominator_nonneg θ₁ θ₂
+
+open TheoremaAureum.Towers.YM.SU3MaximalTorus in
+/-- **PROVED (unconditional, classical trio).**
+
+    The torus is abelian: `torusElt θ₁ θ₂ * torusElt θ₃ θ₄ = torusElt θ₃ θ₄ * torusElt θ₁ θ₂`.
+    Diagonal matrices over a commutative ring commute. -/
+theorem col_torusElt_comm (θ₁ θ₂ θ₃ θ₄ : ℝ) :
+    torusElt θ₁ θ₂ * torusElt θ₃ θ₄ = torusElt θ₃ θ₄ * torusElt θ₁ θ₂ :=
+  torusElt_comm θ₁ θ₂ θ₃ θ₄
 
 end TheoremaAureum.Towers.YM.Collection
