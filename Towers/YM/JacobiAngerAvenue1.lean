@@ -135,7 +135,7 @@ private theorem fourier_norm_one (m : ℤ) (θ : AddCircle (2 * Real.pi)) :
 The Fourier coefficient of `exp(r·cos·)` equals the weighted sum of Fourier coefficients
 of cos-power functions.  Proof: expand exp as power series, swap ∫ and ∑ via
 `integral_tsum_of_summable_integral_norm` (dominated by `r^k/k!`). -/
-private theorem interchangeSumIntegral_proved : InterchangeSumIntegral_OPEN := by
+theorem interchangeSumIntegral_proved : InterchangeSumIntegral_OPEN := by
   intro r hr n
   simp only [MeasureTheory.fourierCoeff, smul_eq_mul]
   -- Pointwise: fourier(-n) θ * exp(r*cos θ) = ∑' k, fourier(-n) θ * (r^k/k! * cos^k θ)
@@ -207,7 +207,7 @@ def FourierCoeff_Single_OPEN : Prop :=
 
 /-- **PROVED (trio-only).** Delta-function property of the Fourier basis.
   Uses `integral_eq_zero_of_add_right_eq_neg` + `fourier_add_half_inv_index`. -/
-private theorem fourierCoeff_single_proved : FourierCoeff_Single_OPEN := by
+theorem fourierCoeff_single_proved : FourierCoeff_Single_OPEN := by
   intro m n
   simp only [MeasureTheory.fourierCoeff, smul_eq_mul]
   simp_rw [← fourier_add]
@@ -267,7 +267,7 @@ private theorem fourier_neg_one_pow (j : ℕ) (θ : AddCircle (2 * Real.pi)) :
 else 0.
 
 Proof: Euler formula + binomial theorem + orthonormality (C.1) + Finset selection. -/
-private theorem cosPower_fourierCoeff_proved : CosPower_FourierCoeff_OPEN := by
+theorem cosPower_fourierCoeff_proved : CosPower_FourierCoeff_OPEN := by
   intro k n
   simp only [MeasureTheory.fourierCoeff, smul_eq_mul]
   -- Step C-1: Expand (cos θ)^k in terms of fourier characters
@@ -440,7 +440,7 @@ def BesselReindex_OPEN : Prop :=
       = (besselI_series n.natAbs r : ℂ)
 
 /-- **PROVED (trio-only).** Step R: tsum reindexing via injection m ↦ n.natAbs + 2*m. -/
-private theorem besselReindex_proved : BesselReindex_OPEN := by
+theorem besselReindex_proved : BesselReindex_OPEN := by
   intro r hr n
   -- Injection g : ℕ → ℕ, g m = n.natAbs + 2*m
   let g : ℕ → ℕ := fun m => n.natAbs + 2 * m
