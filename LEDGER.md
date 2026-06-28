@@ -132,6 +132,31 @@ Blocked by: SU(3) Weyl integration formula (Mathlib v4.12.0 gap, ~6–12 mo).
 
 Axiom footprint: classical trio only. 0 sorry. YM Surface #1: LOCKED OPEN.
 
+### SzegoFromWeyl — Precise sub-gate wiring (2026-06-28)
+
+| Theorem / Surface | File | Method | Clay Status |
+|-------------------|------|--------|-------------|
+| `TorusIntegralWilson_OPEN β` | SzegoFromWeyl.lean §2 | Named open Prop; proof plan: JacobiAnger (proved) + 2D Fourier on T²; barriers documented | `CLAY_OPEN` |
+| `szego_from_weyl_and_torus` | SzegoFromWeyl.lean §3 | 0 sorry; 6-step arithmetic chain from A+B to SzegoGap_genuine_open | `CLAY_CONDITIONAL` |
+| `szego_genuine_decomp` | SzegoFromWeyl.lean §4 | Implication summary A∧B → SzegoGap_genuine_open | `CLAY_CONDITIONAL` |
+| `col_szego_from_weyl_and_torus` | YMCollection.lean §10 | Re-export of szego_from_weyl_and_torus | `CLAY_CONDITIONAL` |
+
+**Precise reduction achieved (2026-06-28):**
+
+```
+SzegoGap_genuine_open
+  <- Sub-gate A: SU3_WeylIntFormula_OPEN (wilson_weight beta0)   [6-12 months, measure theory]
+  <- Sub-gate B: TorusIntegralWilson_OPEN beta0                   [2-4 weeks, uses JacobiAnger]
+```
+
+The two sub-gates are INDEPENDENT.  Sub-gate B is purely analytic (T² Fourier on ℝ)
+and does NOT require Lie theory or measure disintegration.  Sub-gate A is purely
+measure-theoretic (G → G/T) and does NOT require Fourier analysis.  Either can
+be formalized first.
+
+**Net axiom footprint of SzegoFromWeyl.lean:** classical trio only, 0 sorry.
+
+
 ---
 
 ## N=5 Bessel Truncation Milestone (2026-06-28)
