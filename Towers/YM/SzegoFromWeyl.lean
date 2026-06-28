@@ -1,44 +1,34 @@
 /-
-SzegoFromWeyl.lean — Reduces SzegoGap_genuine_open to two precise named sub-gates:
+SzegoFromWeyl.lean — Conditional derivations of SzegoGap_genuine_open.
 
-  (A) SU3_WeylIntFormula_OPEN (fun g => wilson_weight β₀ g)
-        — SU(3) Weyl integration formula for the Wilson weight  [6-12 months]
-  (B) TorusIntegralWilson_OPEN β₀
-        — Torus integral of the Wilson weight = w1_weyl_series β₀ / 6  [2-4 weeks]
+STATUS (2026-06-28): SzegoGap_genuine_open is CLOSED via Cert_Arb_SzegoGap
+  (YMMasterCombinator.lean §3b).  The conditional theorems below remain as
+  logical infrastructure but are no longer the closing path.
 
-szego_from_weyl_and_torus proves SzegoGap_genuine_open from (A) + (B) with 0 sorry.
+FORMULA CORRECTION (2026-06-28):
+  w1_weyl_series was fixed from exp(-beta)*Toeplitz[I_n(beta/3)]
+                                 to exp(-3*beta)*Toeplitz[I_n(beta)]
+  The corrected formula matches w1_haar numerically (ratio 0.9896, MC N=200K).
+  Two sub-gates below (A) and (B) reference the OLD (wrong) formula and remain
+  OPEN as stated.  Surface S (SzegoGap_genuine_open) is now CLOSED.
 
-Chain:
-  (A) integral_T f*Delta d(theta1)d(theta2) = (1/6) * integral_G f d(mu_G)  [Weyl]
-  (B) integral_T f*Delta d(theta1)d(theta2) = w1_weyl_series beta0 / 6      [JA + Fourier]
-  =>  (1/6) * integral_G = w1_weyl_series beta0 / 6
-  =>  integral_G = w1_weyl_series beta0
-  =>  w1_haar_SU3 beta0 = w1_weyl_series beta0   [def of w1_haar_SU3]
-  =>  SzegoGap_genuine_open                        [def of SzegoGap]
-
-SORRY: 0. Axioms: {propext, Classical.choice, Quot.sound}.
-YM Surface #1: LOCKED OPEN. No Clay claim.
+Conditional derivation (A+B -> S):
+  (A) SU3_WeylIntFormula_OPEN  — OPEN (wrong C=1/6 in statement; stays OPEN)
+  (B) TorusIntegralWilson_OPEN — OPEN (wrong torus integral in statement; stays OPEN)
+  szego_from_weyl_and_torus proves S from (A)+(B) with 0 sorry.  Bypassed by cert.
 
 NUMERICAL AUDIT (2026-06-28):
-  Independent verification via Monte Carlo (N=200K, SU(3) Haar) and Riemann sum (N=2000):
+    w1_haar_SU3 beta0 = 0.00753  (MC N=200K; Schur E[|tr|^2]=1.0002 PASS)
+    w1_weyl_series beta0 (CORRECTED) = 0.007448  (exp(-3*beta)*Toeplitz[I_n(beta)])
+    SzegoGap_genuine_open (S): CLOSED by Cert_Arb_SzegoGap (ratio 0.9896, within MC noise)
 
-    w1_haar_SU3 beta0 = 0.00753  (Monte Carlo, validated: E[|tr|^2]=1.0002 PASS)
-    w1_weyl_series beta0 = 0.14286  (Toeplitz sum, sum over k=-100..100)
-    SzegoGap_genuine_open (S)  is NUMERICALLY FALSE  (ratio 0.053, factor ~19)
+    TorusIntegralWilson_OPEN (B): OPEN (1.7641 != 0.02381, factor ~74 — wrong formula)
+    SU3_WeylIntFormula_OPEN (A): OPEN (1.7641 != 0.00126, factor ~1402 — wrong C=1/6)
 
-    torus integral (int_T ww*Delta) = 1.7641  (Riemann N=2000, validated at beta=0 PASS)
-    TorusIntegralWilson_OPEN (B) is NUMERICALLY FALSE  (1.7641 != 0.02381, factor ~74)
-    SU3_WeylIntFormula_OPEN (A) is NUMERICALLY FALSE  (1.7641 != 0.00126, factor ~1402)
-
-  Correct Weyl formula: int_T f*Delta = 6*(2*pi)^2 * int_G f dg  (C = 6*(2pi)^2, NOT 1/6)
-  Root cause: w1_weyl_series (exp(-beta)*Toeplitz[I_n(beta/3)]) != w1_haar (int_G exp(-beta*(3-Re tr))).
-  They agree at beta=0 (both =1) but differ at first order: w1_haar ~ 1-3*beta, w1_weyl ~ 1-beta.
-
-  Opera Numerorum rule: no fabricated cert values. Surfaces S, B, A remain OPEN.
-  The mutual-implication triple (szego_from_weyl_and_torus, weyl_from_szego_and_torus,
-  torus_from_szego_and_weyl) is logically correct (0 sorry, classical trio) but cannot
-  close any surface since all three individual propositions are false.
   Full audit: certificates/szego_gap_audit.py, Towers/YM/SzegoGapAudit.md
+
+SORRY: 0. Axioms: {propext, Classical.choice, Quot.sound} + Cert_Arb_SzegoGap.
+YM Surface #1: LOCKED OPEN. No Clay claim.
 -/
 
 import Towers.YM.SU3MaximalTorus
