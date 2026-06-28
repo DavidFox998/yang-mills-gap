@@ -128,6 +128,36 @@ Once the SU(3) Gross-Witten / Weyl integration formula is formalized in Mathlib,
 
 **Sole genuine remaining gate:** `SzegoGap_genuine_open` = `SzegoGap w1_haar_SU3`
 (∫_{SU(3)} exp(-β₀·(3-Re tr U)) d(haarSU3) = w1_weyl_series β₀).
+
+
+### SzegoGap Mutual-Implication Triple (2026-06-28, numerically false)
+
+| Surface | Lean Prop | Computed | Claimed | Result |
+|---------|-----------|----------|---------|--------|
+| `SzegoGap_genuine_open` (S) | `w1_haar_SU3 β₀ = w1_weyl_series β₀` | 0.00753 (MC N=200K) | 0.14286 | **FALSE ×19** |
+| `TorusIntegralWilson_OPEN β₀` (B) | `∫∫ww·Δ = w1_weyl/6` | 1.7641 (Riemann N=2000) | 0.02381 | **FALSE ×74** |
+| `SU3_WeylIntFormula_OPEN` (A) | `∃C=1/6, ∫∫ww·Δ = C·∫_G ww` | 1.7641 | ~0.00126 | **FALSE ×1402** |
+
+**Validation (all pass):** β=0 Weyl check ∫∫Δ=6·(2π)²=236.870 ✓; Schur E[|tr U|²]=1.0002 ✓; symmetry E[Re tr]=0.002 ✓.
+
+**Mutual-implication triple** (A∧B→S, S∧B→A, S∧A→B) proved 0 sorry, classical trio.
+Triple is logically correct but none of the three surfaces can serve as an independent
+starting point — all three are false. No cert axiom can close any of them.
+
+**Root cause:** `w1_weyl_series β` uses argument `β/3` and prefactor `exp(-β)`, giving a
+DIFFERENT mathematical object from the Haar integral `∫_{SU(3)} exp(-β·(3-Re tr U)) dμ`.
+Taylor at β→0: w1_haar ~ 1−3β, w1_weyl ~ 1−β (differ at first order).
+Correct Weyl formula: `∫∫ f·Δ = 6·(2π)²·∫_G f dg` (C=6·(2π)², not C=1/6).
+
+**Audit:** `certificates/szego_gap_audit.py`, `Towers/YM/SzegoGapAudit.md`
+
+| Status | Note |
+|--------|------|
+| `szego_from_weyl_and_torus` | `CLAY_CONDITIONAL` (classical trio, 0 sorry) |
+| `weyl_from_szego_and_torus` | `CLAY_CONDITIONAL` (classical trio, 0 sorry) |
+| `torus_from_szego_and_weyl` | `CLAY_CONDITIONAL` (classical trio, 0 sorry) |
+| S, B, A individually | `CLAY_OPEN` (numerically false as stated; formula origin requires investigation) |
+
 Blocked by: SU(3) Weyl integration formula (Mathlib v4.12.0 gap, ~6–12 mo).
 
 Axiom footprint: classical trio only. 0 sorry. YM Surface #1: LOCKED OPEN.
@@ -331,5 +361,5 @@ in any registered brick or `CLAY_VALID` / `CLAY_CONDITIONAL` entry above.
 - `bb_part_c` uses `set_option maxHeartbeats 0` — elaboration takes several minutes.
 - `D4_fail` and `kp_bridge_*` are backed by `CERT_Arb` external certificate.
 - `BSD_GrossZagier_LMFDB_CLOSED` is an alias (`fun _ => BSD_AnalyticRankOne_CLOSED`), not a proof of the Gross-Zagier formula.
-- All `ToeplitzBessel_Id_OPEN`, `WeylIntegration_SU3_OPEN` are tautology placeholders — they do NOT carry genuine mathematical content yet.
+- All `ToeplitzBessel_Id_OPEN`, `WeylIntegration_SU3_OPEN` are tautology/trivial-witness placeholders — they do NOT carry genuine mathematical content. Audit (2026-06-28): the three surfaces in `SzegoFromWeyl.lean` (`SzegoGap_genuine_open`, `TorusIntegralWilson_OPEN`, `SU3_WeylIntFormula_OPEN`) are **numerically false** as stated (w1_haar≈0.00753 ≠ w1_weyl≈0.1429; ∫∫ww·Δ≈1.764 ≠ w1_weyl/6≈0.0238). No cert axiom can close them. See `certificates/szego_gap_audit.py`.
 - YM Surface #1 (`ρ < 1`) is LOCKED OPEN per project invariants. Under the Dirac `T_OS = 0` stand-in, every measure-surface proof is vacuous. **No mass gap is claimed.**
