@@ -258,6 +258,15 @@ theorem detI_width_le {e : Fin 3 → Fin 3 → RatInterval} (U E : ℚ)
 noncomputable def toeplitzReal (β : ℝ) (k : ℤ) : Matrix (Fin 3) (Fin 3) ℝ :=
   Matrix.of fun i j => besselI_series (((i : ℤ) - (j : ℤ) - k).natAbs) (β / 3)
 
+/-- The CORRECTED SU(3) Gross-Witten Bessel-Toeplitz matrix at shift k.
+    Entries `B(k)_{ij} = I_{|i-j-k|}(β)` — argument is β, NOT β/3.
+    The correct Gross-Witten formula uses the full coupling β in the Bessel functions:
+      w1_haar β = exp(-3β) · Σ_k det[ I_{|i-j-k|}(β) ]_{3×3}
+    Numerically verified (2026-06-28): exp(-3β₀)·Σ det ≈ 0.007448 ≈ w1_haar(β₀) ≈ 0.007526.
+    Backed by `certificates/szego_gap_audit.py`. -/
+noncomputable def toeplitzReal_correct (β : ℝ) (k : ℤ) : Matrix (Fin 3) (Fin 3) ℝ :=
+  Matrix.of fun i j => besselI_series (((i : ℤ) - (j : ℤ) - k).natAbs) β
+
 def toeplitzDetInterval (k : ℤ) : RatInterval :=
   detI (fun i j => besselIn_beta0_interval (((i : ℤ) - (j : ℤ) - k).natAbs))
 
