@@ -269,10 +269,10 @@ theorem bb_tsum_det_le :
 
 /-- `exp_hi · (finite_hi_sum + tail_ub) < 1/7`.
 All values are computable ℚ; margin ≈ 3.86 × 10⁻⁷.
-Kernel `decide` is equivalent to `#eval decide` but slower.
-Fallback if kernel times out: `norm_num [exp_beta0_interval, finite_hi_sum, tail_ub]`. -/
+Proved by norm_num (~6 min wall time). Kernel `decide` stalls on Rat.blt. -/
+set_option maxHeartbeats 8000000 in
 theorem bb_part_c : exp_beta0_interval.hi * (finite_hi_sum + tail_ub) < 1 / 7 := by
-  decide
+  norm_num [exp_beta0_interval, finite_hi_sum, tail_ub]
 
 /-! ## §14  W1_Numeric_Surface — 0 sorries -/
 
