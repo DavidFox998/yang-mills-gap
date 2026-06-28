@@ -71,13 +71,22 @@ namespace TheoremaAureum.Towers.YM.Collection
 theorem col_tsum_det_le : TsumDetLe_Surface :=
   tsum_det_le_proved
 
-/-- `W1_Numeric_Surface` conditional on `PartC_Surface` (the ℚ-arithmetic gap). -/
-theorem col_w1_numeric_surface (hc : PartC_Surface) : W1_Numeric_Surface :=
-  bb_w1_numeric_surface hc
+/-- `W1_Numeric_Surface` — proved unconditionally via `bb_part_c`.
+Classical trio only. Kept in collection for module-level completeness. -/
+theorem col_w1_numeric_surface : W1_Numeric_Surface :=
+  bb_w1_numeric_surface
 
-/-- `w1_weyl_series β₀ < 1/7` conditional on `PartC_Surface`. -/
-theorem col_w1_weyl_lt (hc : PartC_Surface) : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
-  bb_w1_weyl_lt hc
+/-- `W1_Numeric_Surface` — conditional form for backward compatibility. -/
+theorem col_w1_numeric_surface_cond (hc : PartC_Surface) : W1_Numeric_Surface :=
+  bb_w1_numeric_surface_cond hc
+
+/-- `w1_weyl_series β₀ < 1/7` — proved unconditionally via `bb_part_c`. -/
+theorem col_w1_weyl_lt : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
+  bb_w1_weyl_lt
+
+/-- `w1_weyl_series β₀ < 1/7` — conditional form for backward compatibility. -/
+theorem col_w1_weyl_lt_cond (hc : PartC_Surface) : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
+  bb_w1_weyl_lt_cond hc
 
 /-- `JacobiAngerGap` proved (placeholder tautology `∀ r hr k, x = x`).
 The TRUE Jacobi-Anger identity (`fourierCoeff (exp(r·cos·)) k = I_k(r)`) remains
@@ -106,9 +115,15 @@ After wiring `W1_Numeric_Surface` (now proved), the reduction is:
   `{trio, SzegoGap, W1_Numeric_Surface}` → `{trio, SzegoGap}`.
 `SzegoGap w1 := w1(β₀) = w1_weyl_series(β₀)` is the sole remaining gap. -/
 theorem col_w1_lt_of_szego
+    (w1 : ℝ → ℝ) (h_szego : SzegoGap w1) :
+    w1 (β₀_rat : ℝ) < 1 / 7 :=
+  w1_eq_series_from_gaps w1 h_szego bb_w1_numeric_surface
+
+/-- Backward-compat variant; `hc` is unused but kept for callers that supply it. -/
+theorem col_w1_lt_of_szego_cond
     (hc : PartC_Surface) (w1 : ℝ → ℝ) (h_szego : SzegoGap w1) :
     w1 (β₀_rat : ℝ) < 1 / 7 :=
-  w1_eq_series_from_gaps w1 h_szego (bb_w1_numeric_surface hc)
+  col_w1_lt_of_szego w1 h_szego
 
 /-! ## §4  Honest audit of remaining open surfaces -/
 
