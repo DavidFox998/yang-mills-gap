@@ -510,4 +510,38 @@ theorem col_szego_from_weyl_and_torus
   szego_from_weyl_and_torus h_weyl h_torus
 
 
+
+/-! ## §11  SzegoFromWeyl §5 re-exports — mutual implication triple (2026-06-28)
+
+`SzegoFromWeyl.lean §5` adds the two missing directions of the implication triangle:
+  Szego ∧ Torus → Weyl  (weyl_from_szego_and_torus)
+  Szego ∧ Weyl  → Torus (torus_from_szego_and_weyl)
+
+Together with §3's `szego_from_weyl_and_torus`, all three directions are now proved.
+**Once ANY ONE surface is proved independently, the other two follow at 0 sorry.** -/
+
+/-- **CONDITIONAL (trio-only, 0 sorry, 2026-06-28).**
+
+    Closing `SU3_WeylIntFormula_OPEN` from `SzegoGap_genuine_open` + `TorusIntegralWilson_OPEN`.
+    Re-export of `weyl_from_szego_and_torus` (SzegoFromWeyl §5). -/
+theorem col_weyl_from_szego_and_torus
+    (h_szego : col_szego_gap_genuine_open)
+    (h_torus : col_TorusIntegralWilson_OPEN (β₀_rat : Real)) :
+    SU3_WeylIntFormula_OPEN
+      (fun g : Matrix.specialUnitaryGroup (Fin 3) Complex =>
+        wilson_weight (β₀_rat : Real) g) :=
+  weyl_from_szego_and_torus h_szego h_torus
+
+/-- **CONDITIONAL (trio-only, 0 sorry, 2026-06-28).**
+
+    Closing `TorusIntegralWilson_OPEN` from `SzegoGap_genuine_open` + `SU3_WeylIntFormula_OPEN`.
+    Re-export of `torus_from_szego_and_weyl` (SzegoFromWeyl §5). -/
+theorem col_torus_from_szego_and_weyl
+    (h_szego : col_szego_gap_genuine_open)
+    (h_weyl : SU3_WeylIntFormula_OPEN
+                (fun g : Matrix.specialUnitaryGroup (Fin 3) Complex =>
+                  wilson_weight (β₀_rat : Real) g)) :
+    col_TorusIntegralWilson_OPEN (β₀_rat : Real) :=
+  torus_from_szego_and_weyl h_szego h_weyl
+
 end TheoremaAureum.Towers.YM.Collection
