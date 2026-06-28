@@ -16,6 +16,7 @@ import Towers.YM.RotationInvariance
 import Towers.YM.YMMasterCombinator
 import Towers.YM.YMRhoClose
 import Towers.YM.SU3MaximalTorus
+import Towers.YM.YMSurfaceClosure
 
 /-! # YM Tower — Standalone Collection (updated 2026-06-28)
 
@@ -439,5 +440,40 @@ open TheoremaAureum.Towers.YM.SU3MaximalTorus in
 theorem col_torusElt_comm (θ₁ θ₂ θ₃ θ₄ : ℝ) :
     torusElt θ₁ θ₂ * torusElt θ₃ θ₄ = torusElt θ₃ θ₄ * torusElt θ₁ θ₂ :=
   torusElt_comm θ₁ θ₂ θ₃ θ₄
+
+/-! ## §9  YMSurfaceClosure re-exports — all named surfaces proved (2026-06-28) -/
+
+open TheoremaAureum.Towers.YM.YMSurfaceClosure in
+/-- **PROVED (trio-only).** 8-way conjunction: every named open surface in the
+    Szegő-gap decomposition is proved (classical trio, 0 sorry).
+
+    Surfaces: InterchangeSumIntegral ∧ FourierCoeff_Single ∧ CosPower_FourierCoeff
+              ∧ BesselCollect ∧ BesselReindex ∧ JacobiAnger_FormCoeff
+              ∧ WeylIntegration_SU3 ∧ ToeplitzBessel_Id.
+
+    Genuine mathematical content: JacobiAnger_FormCoeff (Avenue 1) only.
+    Avenues 2+3: proved as weakly stated (existential / tautology).
+    Sole genuine remaining gate: col_szego_gap_genuine_open (§6 above). -/
+theorem col_all_named_surfaces_proved :
+    TheoremaAureum.Towers.YM.SzegoGapAvenues.InterchangeSumIntegral_OPEN ∧
+    TheoremaAureum.Towers.YM.JacobiAngerAvenue1.FourierCoeff_Single_OPEN ∧
+    TheoremaAureum.Towers.YM.SzegoGapAvenues.CosPower_FourierCoeff_OPEN ∧
+    TheoremaAureum.Towers.YM.SzegoGapAvenues.BesselCollect_OPEN ∧
+    TheoremaAureum.Towers.YM.JacobiAngerAvenue1.BesselReindex_OPEN ∧
+    TheoremaAureum.Towers.YM.SzegoGapAvenues.JacobiAnger_FormCoeff ∧
+    TheoremaAureum.Towers.YM.SzegoGapAvenues.WeylIntegration_SU3_OPEN ∧
+    TheoremaAureum.Towers.YM.SzegoGapAvenues.ToeplitzBessel_Id_OPEN :=
+  allSurfacesProvedConj
+
+open TheoremaAureum.Towers.YM.YMSurfaceClosure in
+/-- **PROVED (trio-only, conditional on h_wire).** YM closure combinator:
+    given `h_wire : w1 β₀ = w1_weyl_series β₀`, SzegoGap w1 closes.
+    All three avenues discharged (Avenue 1 genuinely, 2+3 trivially).
+    YM mass gap (Clay Surface #1): LOCKED OPEN.  No Clay claim. -/
+theorem col_ym_closure_combinator
+    (w1 : ℝ → ℝ)
+    (h_wire : w1 (β₀_rat : ℝ) = w1_weyl_series (β₀_rat : ℝ)) :
+    SzegoGap w1 :=
+  ym_closure_combinator w1 h_wire
 
 end TheoremaAureum.Towers.YM.Collection
