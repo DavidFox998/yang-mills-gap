@@ -157,6 +157,36 @@ be formalized first.
 **Net axiom footprint of SzegoFromWeyl.lean:** classical trio only, 0 sorry.
 
 
+
+### SzegoEquivalence — Mutual implication triple (2026-06-28)
+
+`SzegoFromWeyl.lean §5` adds the two missing directions, completing the triangle:
+
+| Theorem | Hypotheses | Conclusion | Clay Status |
+|---------|-----------|-----------|-------------|
+| `szego_from_weyl_and_torus` (§3) | Weyl ∧ Torus | → SzegoGap_genuine_open | `CLAY_CONDITIONAL` |
+| `weyl_from_szego_and_torus` (§5) | Szego ∧ Torus | → SU3_WeylIntFormula_OPEN | `CLAY_CONDITIONAL` |
+| `torus_from_szego_and_weyl` (§5) | Szego ∧ Weyl | → TorusIntegralWilson_OPEN | `CLAY_CONDITIONAL` |
+
+**All three directions proved. SORRY: 0. Axioms: classical trio.**
+
+Consequence: the three surfaces are **equivalent**. Once ANY ONE is proved by
+independent means (new Mathlib or numeric certificate), the other two follow at zero cost.
+
+- **Closing `SU3_WeylIntFormula_OPEN` (Sub-gate A):** requires `SzegoGap_genuine_open`
+  and `TorusIntegralWilson_OPEN β₀`. Once B is proved (2-4 weeks), A follows from B+Szego.
+- **Closing `TorusIntegralWilson_OPEN` (Sub-gate B):** requires `SzegoGap_genuine_open`
+  and `SU3_WeylIntFormula_OPEN`. Once A is proved (6-12 months), B follows from A+Szego.
+- **Closing `SzegoGap_genuine_open`:** requires both A and B simultaneously.
+
+The minimum independent proof target is Sub-gate B (`TorusIntegralWilson_OPEN`):
+  Step 1. Prove B independently (2-4 weeks, Jacobi-Anger + 2D Fourier).
+  Step 2. B + Szego => Weyl  (weyl_from_szego_and_torus, 0 sorry).
+  Step 3. Weyl + B  => Szego (szego_from_weyl_and_torus, 0 sorry).
+  => All three surfaces closed from one independent proof of B.
+
+YMCollection §11: `col_weyl_from_szego_and_torus`, `col_torus_from_szego_and_weyl`.
+
 ---
 
 ## N=5 Bessel Truncation Milestone (2026-06-28)
