@@ -310,7 +310,39 @@ theorem exp_r_cos_L2_approx_available : True := trivial
 ## LOCKED OPEN (invariants — do not discharge):
 
   YM Surface #1 (mass gap, ρ < 1)     LOCKED (Clay invariant, replit.md)
-  NS Surface #1, #2                   LOCKED (NS freeze invariant, replit.md) -/
+  NS Surface #1, #2                   LOCKED (NS freeze invariant, replit.md)
+
+## Avenue 2 prerequisites — proved infrastructure (classical trio, 0 sorry):
+
+  The following bricks are necessary (not sufficient) for WeylIntegration_SU3_OPEN.
+  All landed, all in the YMCollection import graph (entry-points G–L):
+
+  Brick                           File              Status
+  ─────────────────────────────────────────────────────────────────────────────
+  su3_submodule                   SU3.lean          PROVED (ℝ⁸ Lie algebra carrier)
+  su3_equiv_fin8_def              SU3Basis.lean     PROVED (ℝ-linear equiv to Fin 8 → ℝ)
+  su3_basis_def                   SU3Basis.lean     PROVED (Gell-Mann Basis (Fin 8) ℝ)
+  gellMann{1..8}_mem              SU3Basis.lean     PROVED (8 generators ∈ su3_submodule)
+  haarSU3                         SU3Instances.lean PROVED (genuine Haar measure on SU(3))
+  haarN n                         SU3Instances.lean PROVED (product Haar measure on Fin n → SU3)
+  dim_cubic_bound                 WeylDim.lean      PROVED (dim_SU3 m n ≤ 8·(m+n+1)³)
+  Casimir_SU3_explicit_real_ge_linear  PeterWeyl.lean  PROVED (m+n ≤ C₂(m,n))
+  Weyl_dim_SU3_explicit_real_le_poly   PeterWeyl.lean  PROVED (dim ≤ (m+1)²(n+1)²)
+  summable_poly_succ_exp_neg_real      PeterWeyl.lean  PROVED (1D poly×geo summability)
+  PeterWeyl_Summable_SU3               PeterWeyl.lean  PROVED (spectral series ∑ dim²·e^{-βC₂})
+  wilson_rotateConfig_const_one        RotationInvariance.lean  PROVED (OS-2 at const 1)
+
+  What remains for Avenue 2 (absent from Mathlib v4.12.0):
+  ─────────────────────────────────────────────────────────────────────────────
+  (a) Weyl integration formula: ∫_{SU(N)} f(eigenvalues) dμ = (1/|W|)∫_T f |Δ|² dμ_T
+      Mathlib.RootSystem.A₂ exists; connection to Haar integration: NOT formalized.
+  (b) SU(3) character formula: tr π_{m,n}(U) in terms of eigenvalues (Weyl char thm)
+      NOT in Mathlib (as of June 2026).
+  (c) Measure-theoretic reduction from SU(3) to T² = (S¹)²
+      Requires (a) + quotient-measure theory for G/T: NOT in Mathlib.
+
+  Estimated effort: 6–12 months (requires new Mathlib module: SU(N) Weyl integration).
+-/
 theorem state_audit_2026_06_28 : True := trivial
 
 end TheoremaAureum.Towers.YM.SzegoGapAvenues
