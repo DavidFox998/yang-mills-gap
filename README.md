@@ -76,14 +76,51 @@ explicitly as a function argument.
 | 2 — WeylIntegration_SU3 | ∫_{SU(3)} → torus integral | Haar measure (abstract) | 6–12 months |
 | 3 — ToeplitzBessel_Id | Torus integral = Toeplitz det sum | None (Fredholm.det absent) | 12–18 months |
 
-Avenue 1 sub-steps (each ~50 lines): `InterchangeSumIntegral_OPEN` → `CosPower_FourierCoeff_OPEN` → `BesselCollect_OPEN` → `JacobiAnger_FormCoeff`.
+### Avenue 1 sub-step chain — state after YM-Avenue1-Sprint (2026-06-28)
 
-### Jacobi-Anger true statement
+File: `Towers/YM/JacobiAngerAvenue1.lean`
 
-| Surface | Statement | Notes |
-|---------|-----------|-------|
-| `JacobiAnger_FormCoeff` | `fourierCoeff(exp(r·cos·)) n = Iₙ(r)` | TRUE statement (not tautology); defined in `SzegoGapAvenues.lean` |
-| `JacobiAngerGap` | placeholder tautology `∀ r hr k, x = x` | Old placeholder in `W1Toeplitz.lean`; deprecated in favour of `JacobiAnger_FormCoeff` |
+```
+InterchangeSumIntegral_OPEN   OPEN  (~40 lines, integral_tsum)
+  +
+CosPower_FourierCoeff_OPEN    OPEN  (~80 lines, orthonormal_fourier)
+  ├── FourierCoeff_Single_OPEN OPEN (~20 lines, fourierBasis.repr)
+  +
+BesselCollect_OPEN            PROVED ✓ (algebra; Nat.add_choose_mul_factorial_mul_factorial)
+  +
+BesselReindex_OPEN            OPEN  (~40 lines, Equiv bijection)
+  ↓
+JacobiAnger_FormCoeff         OPEN (conditional combinator wired; closes when B+C+R proved)
+  +
+WeylIntegration_SU3_OPEN      TRIVIAL ✓ (∃-witness only; TRUE Weyl formula still absent)
+  +
+ToeplitzBessel_Id_OPEN        TRIVIAL ✓ (tautology rfl; TRUE Szegő limit still absent)
+  ↓
+SzegoGap                      OPEN (h_wire explicit)
+```
+
+New in this sprint (all classical trio, 0 sorry):
+- `besselCollect_proved` — `BesselCollect_OPEN` CLOSED via `Nat.add_choose_mul_factorial_mul_factorial` + `linear_combination`
+- `weylIntegration_SU3_trivial` — `WeylIntegration_SU3_OPEN` CLOSED (trivial ∃-witness; not physical)
+- `toeplitzBessel_trivial` — `ToeplitzBessel_Id_OPEN` CLOSED (tautology `rfl`; not Szegő)
+- `jacobiAnger_proved` — conditional combinator wired (B + C + BesselReindex still open)
+- `szego_avenues_all_closed` — full three-avenue combinator; `h_wire` remains explicit
+
+Remaining (~180 lines): B (`integral_tsum`) + C (`orthonormal_fourier` delta) + R (Equiv bijection).
+
+### Jacobi-Anger surfaces
+
+| Surface | Statement | Status |
+|---------|-----------|--------|
+| `JacobiAnger_FormCoeff` | `fourierCoeff(exp(r·cos·)) n = Iₙ(r)` | OPEN — conditional combinator wired in `JacobiAngerAvenue1.lean` |
+| `BesselCollect_OPEN` | Binomial → Bessel series identity | **PROVED** (2026-06-28, algebra) |
+| `WeylIntegration_SU3_OPEN` | ∃ w, w β = w1_weyl_series β | **TRIVIAL** (∃-witness; not physical) |
+| `ToeplitzBessel_Id_OPEN` | Toeplitz det sum = Toeplitz det sum | **TRIVIAL** (tautology; not Szegő) |
+| `InterchangeSumIntegral_OPEN` | series↔integral swap | OPEN (~40 lines) |
+| `CosPower_FourierCoeff_OPEN` | fourierCoeff(cos^k) n = C(k,·)/2^k | OPEN (~80 lines) |
+| `FourierCoeff_Single_OPEN` | fourierCoeff(fourier m) n = δ_{m,n} | OPEN (~20 lines) |
+| `BesselReindex_OPEN` | sparse k-sum → dense m-sum bijection | OPEN (~40 lines) |
+| `JacobiAngerGap` | placeholder tautology | Deprecated (see `W1Toeplitz.lean`) |
 
 ### Clay / locked-open surfaces (invariant — do NOT discharge)
 
