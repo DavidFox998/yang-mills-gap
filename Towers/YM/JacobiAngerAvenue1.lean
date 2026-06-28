@@ -560,31 +560,24 @@ theorem interchangeSumIntegral_from_sub
 
 /-- **PROVED (trio-only, UNCONDITIONAL).**
 
-All four sub-steps are now proved:
-  B: `interchangeSumIntegral_proved`
-  C.1: `fourierCoeff_single_proved`
-  C: `cosPower_fourierCoeff_proved`
-  D: `besselCollect_proved`
-  R: `besselReindex_proved`
+All five sub-steps are proved:
+  B: `interchangeSumIntegral_proved`   — ∫∑ = ∑∫ (integral_tsum DCT)
+  C.1: `fourierCoeff_single_proved`   — δ_{m,n} property
+  C: `cosPower_fourierCoeff_proved`    — Euler + binomial + C.1
+  D: `besselCollect_proved`            — algebraic identity C(2m+n,m)/2^{2m+n}
+  R: `besselReindex_proved`            — injection reindex m ↦ |n|+2m
 
-The JacobiAnger identity `fourierCoeff (exp(r·cos·)) n = besselI_series |n| r` follows. -/
-theorem jacobiAnger_proved : JacobiAnger_FormCoeff := by
-  intro r hr n
-  rw [interchangeSumIntegral_proved r hr n]
-  apply tsum_congr; intro k
-  rw [cosPower_fourierCoeff_proved k n]
-  -- Now: ∑' k, r^k/k! * ite cond C(k,...)/2^k 0 = besselI_series |n| r
-  -- This is exactly besselReindex_proved applied to the tsum
-  sorry -- placeholder: besselReindex closing step (see §8.1 below)
-
-/-- **§8.1 Full chain closure.** -/
-theorem jacobiAnger_full_proved : JacobiAnger_FormCoeff :=
+Proof: B rewrites the fourierCoeff; C rewrites each cos-power term;
+R (in reverse) recognises the sparse tsum as besselI_series via injection. -/
+theorem jacobiAnger_proved : JacobiAnger_FormCoeff :=
   fun r hr n => by
-    have hB := interchangeSumIntegral_proved r hr n
     have hR := besselReindex_proved r hr n
-    rw [hB, ← hR]
+    rw [interchangeSumIntegral_proved r hr n, ← hR]
     apply tsum_congr; intro k
     rw [cosPower_fourierCoeff_proved k n]
+
+/-- **Alias for backward compatibility (same proof as `jacobiAnger_proved`).** -/
+theorem jacobiAnger_full_proved : JacobiAnger_FormCoeff := jacobiAnger_proved
 
 /-! ## §9  Full Three-Avenue Combinator -/
 
