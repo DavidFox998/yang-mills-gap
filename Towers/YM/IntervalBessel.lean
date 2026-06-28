@@ -703,37 +703,38 @@ private theorem besseln_term_tail_le (n : ℕ) (y : ℝ) (N : ℕ) (hy : 0 ≤ y
     _ = ((y / 2) ^ (n + 2 * (N + 1)) / (((N + 1).factorial : ℝ) * ((n + (N + 1)).factorial : ℝ)))
           / (1 - (y / 2) ^ 2 / ((n : ℝ) + (N : ℝ) + 2)) := by ring
 
-/-- The order-`n` `N=5` error is `≤` the order-`0` error, hence `< 5·10⁻⁸`. Proof:
-the numerator power `(β₀/6)^(n+12) ≤ (β₀/6)^12` (base `≤ 1`), the factorial
-denominator `(6)!·(n+6)! ≥ (6)!·(6)!`, and the geometric denominator
-`1 - (β₀/6)²/(n+7) ≥ 1 - (β₀/6)²/7 > 0`; combine via `div_le_div`, then reuse the
+/-- The order-`n` `N=40` error is `≤` the order-`0` error, hence `< 5·10⁻⁸`. Proof:
+the numerator power `(β₀/6)^(n+82) ≤ (β₀/6)^82` (base `≤ 1`), the factorial
+denominator `(41)!·(n+41)! ≥ (41)!·(41)!`, and the geometric denominator
+`1 - (β₀/6)²/(n+42) ≥ 1 - (β₀/6)²/42 > 0`; combine via `div_le_div`, then reuse the
 landed `I₀` numeric bound. -/
 theorem besselIn_error_beta0_lt (n : ℕ) :
-    besselIn_error n (β₀_rat / 3) 5 < 5 / 10 ^ 8 := by
+    besselIn_error n (β₀_rat / 3) 40 < 5 / 10 ^ 8 := by
   set x : ℚ := β₀_rat / 3 with hx
   have hx2nn : (0 : ℚ) ≤ x / 2 := by rw [hx]; norm_num [β₀_rat]
   have hx2le1 : x / 2 ≤ 1 := by rw [hx]; norm_num [β₀_rat]
   have hn0 : (0 : ℚ) ≤ (n : ℚ) := by positivity
-  have hF1 : (0 : ℚ) < ((5 + 1).factorial : ℚ) := by positivity
-  have hDr0 : (0 : ℚ) < 1 - (x / 2) ^ 2 / (((5 : ℕ) : ℚ) + 2) := by rw [hx]; norm_num [β₀_rat]
-  have hDle : 1 - (x / 2) ^ 2 / (((5 : ℕ) : ℚ) + 2)
-      ≤ 1 - (x / 2) ^ 2 / ((n : ℚ) + ((5 : ℕ) : ℚ) + 2) := by
-    have hb : (x / 2) ^ 2 / ((n : ℚ) + ((5 : ℕ) : ℚ) + 2)
-        ≤ (x / 2) ^ 2 / (((5 : ℕ) : ℚ) + 2) :=
+  have hF1 : (0 : ℚ) < ((40 + 1).factorial : ℚ) := by positivity
+  have hDr0 : (0 : ℚ) < 1 - (x / 2) ^ 2 / (((40 : ℕ) : ℚ) + 2) := by rw [hx]; norm_num [β₀_rat]
+  have hDle : 1 - (x / 2) ^ 2 / (((40 : ℕ) : ℚ) + 2)
+      ≤ 1 - (x / 2) ^ 2 / ((n : ℚ) + ((40 : ℕ) : ℚ) + 2) := by
+    have hb : (x / 2) ^ 2 / ((n : ℚ) + ((40 : ℕ) : ℚ) + 2)
+        ≤ (x / 2) ^ 2 / (((40 : ℕ) : ℚ) + 2) :=
       div_le_div_of_nonneg_left (by positivity) (by positivity) (by push_cast; linarith)
     linarith
-  have hpow : (x / 2) ^ (n + 2 * (5 + 1)) ≤ (x / 2) ^ (2 * 5 + 2) := by
-    rw [show n + 2 * (5 + 1) = (2 * 5 + 2) + n from by omega, pow_add]
-    calc (x / 2) ^ (2 * 5 + 2) * (x / 2) ^ n
-        ≤ (x / 2) ^ (2 * 5 + 2) * 1 :=
+  have hpow : (x / 2) ^ (n + 2 * (40 + 1)) ≤ (x / 2) ^ (2 * 40 + 2) := by
+    rw [show n + 2 * (40 + 1) = (2 * 40 + 2) + n from by omega, pow_add]
+    calc (x / 2) ^ (2 * 40 + 2) * (x / 2) ^ n
+        ≤ (x / 2) ^ (2 * 40 + 2) * 1 :=
           mul_le_mul_of_nonneg_left (pow_le_one n hx2nn hx2le1) (pow_nonneg hx2nn _)
-      _ = (x / 2) ^ (2 * 5 + 2) := mul_one _
-  have hfacN : ((5 + 1).factorial : ℚ) ≤ ((n + (5 + 1)).factorial : ℚ) := by
-    exact_mod_cast Nat.factorial_le (Nat.le_add_left (5 + 1) n)
-  have h0 : besselI0_error x 5 < 5 / 10 ^ 8 := by
+      _ = (x / 2) ^ (2 * 40 + 2) := mul_one _
+  have hfacN : ((40 + 1).factorial : ℚ) ≤ ((n + (40 + 1)).factorial : ℚ) := by
+    exact_mod_cast Nat.factorial_le (Nat.le_add_left (40 + 1) n)
+  have h0 : besselI0_error x 40 < 5 / 10 ^ 8 := by
     rw [hx]; norm_num [besselI0_error, β₀_rat, Nat.factorial]
-  have hcmp : besselIn_error n x 5 ≤ besselI0_error x 5 := by
+  have hcmp : besselIn_error n x 40 ≤ besselI0_error x 40 := by
     unfold besselIn_error besselI0_error
+    -- Goal: A/D1 ≤ C/D0 with A = num_n/den_n, C = num_0/den_0, D0 ≤ D1.
     -- Step 1: A/D1 ≤ A/D0 (larger geometric denominator); Step 2: A/D0 ≤ C/D0.
     refine le_trans (div_le_div_of_nonneg_left ?_ hDr0 hDle) ?_
     · exact div_nonneg (pow_nonneg hx2nn _) (by positivity)
@@ -743,20 +744,20 @@ theorem besselIn_error_beta0_lt (n : ℕ) :
   linarith
 
 /-- **Phase-2.5 general enclosure.** For every order `n`, `Iₙ(β₀/3) ∈
-`besselIn_interval n (ofRat (β₀/3)) 5`, with width `< 5·10⁻⁸`. Uniform `n` version
+`besselIn_interval n (ofRat (β₀/3)) 40`, with width `< 5·10⁻⁸`. Uniform `n` version
 of the `I₀`/`I₁`/`I₂` enclosures. Soundness is established at the concrete point
 `ofRat (β₀/3)` (`0 < q`), for every order; it discharges no YM surface / makes no
 mass-gap claim. -/
 theorem besselIn_beta0_enclosure (n : ℕ) :
-    ∃ I : RatInterval, besselIn_interval n (ofRat (β₀_rat / 3)) 5 = I
+    ∃ I : RatInterval, besselIn_interval n (ofRat (β₀_rat / 3)) 40 = I
       ∧ I.contains (besselI_series n ((β₀_rat / 3 : ℚ) : ℝ))
       ∧ I.hi - I.lo < 5 / 10 ^ 8 := by
   set q : ℚ := β₀_rat / 3 with hq
   have hqpos : 0 < q := by rw [hq]; norm_num [β₀_rat]
   have hqR : (0 : ℝ) < (q : ℝ) := by exact_mod_cast hqpos
-  have hr1Q : (q / 2) ^ 2 / ((n : ℚ) + ((5 : ℕ) : ℚ) + 2) < 1 := by
+  have hr1Q : (q / 2) ^ 2 / ((n : ℚ) + ((40 : ℕ) : ℚ) + 2) < 1 := by
     rw [div_lt_one (by positivity)]
-    have h1 : (q / 2) ^ 2 < 7 := by rw [hq]; norm_num [β₀_rat]
+    have h1 : (q / 2) ^ 2 < 42 := by rw [hq]; norm_num [β₀_rat]
     have hn0 : (0 : ℚ) ≤ (n : ℚ) := by positivity
     push_cast; linarith
   have hTsum : Summable (fun k : ℕ =>
@@ -769,75 +770,68 @@ theorem besselIn_beta0_enclosure (n : ℕ) :
   have besseln_eq : besselI_series n ((q : ℝ))
       = ∑' k : ℕ, ((q : ℝ) / 2) ^ (n + 2 * k) / ((k.factorial : ℝ) * ((n + k).factorial : ℝ)) :=
     rfl
-  have hcast_partial : ((besselIn_partial n q 5 : ℚ) : ℝ)
-      = ∑ k ∈ Finset.range (5 + 1),
+  have hcast_partial : ((besselIn_partial n q 40 : ℚ) : ℝ)
+      = ∑ k ∈ Finset.range (40 + 1),
           ((q : ℝ) / 2) ^ (n + 2 * k) / ((k.factorial : ℝ) * ((n + k).factorial : ℝ)) := by
     unfold besselIn_partial
     rw [Rat.cast_sum]
     refine Finset.sum_congr rfl (fun k _ => ?_)
     push_cast; ring
-  have hcast_error : ((besselIn_error n q 5 : ℚ) : ℝ)
-      = ((q : ℝ) / 2) ^ (n + 2 * (5 + 1))
-          / (((5 + 1).factorial : ℝ) * ((n + (5 + 1)).factorial : ℝ))
-        / (1 - ((q : ℝ) / 2) ^ 2 / ((n : ℝ) + (5 : ℝ) + 2)) := by
+  have hcast_error : ((besselIn_error n q 40 : ℚ) : ℝ)
+      = ((q : ℝ) / 2) ^ (n + 2 * (40 + 1))
+          / (((40 + 1).factorial : ℝ) * ((n + (40 + 1)).factorial : ℝ))
+        / (1 - ((q : ℝ) / 2) ^ 2 / ((n : ℝ) + (40 : ℝ) + 2)) := by
     unfold besselIn_error
     push_cast; ring
-  have herr_nonneg : 0 ≤ besselIn_error n q 5 := by
+  have herr_nonneg : 0 ≤ besselIn_error n q 40 := by
     unfold besselIn_error
     apply div_nonneg
     · exact div_nonneg (pow_nonneg (div_nonneg hqpos.le (by norm_num)) _) (by positivity)
     · linarith [hr1Q]
-  have hab : besselIn_partial n q 5 ≤ besselIn_partial n q 5 + besselIn_error n q 5 :=
+  have hab : besselIn_partial n q 40 ≤ besselIn_partial n q 40 + besselIn_error n q 40 :=
     le_add_of_nonneg_right herr_nonneg
-  have hlo : (besselIn_interval n (ofRat q) 5).lo = besselIn_partial n q 5 := by
+  have hlo : (besselIn_interval n (ofRat q) 40).lo = besselIn_partial n q 40 := by
     dsimp only [besselIn_interval, RatInterval.ofRat]; exact min_eq_left hab
-  have hhi : (besselIn_interval n (ofRat q) 5).hi
-      = besselIn_partial n q 5 + besselIn_error n q 5 := by
+  have hhi : (besselIn_interval n (ofRat q) 40).hi
+      = besselIn_partial n q 40 + besselIn_error n q 40 := by
     dsimp only [besselIn_interval, RatInterval.ofRat]; exact max_eq_right hab
-  refine ⟨besselIn_interval n (ofRat q) 5, rfl, ⟨?_, ?_⟩, ?_⟩
+  refine ⟨besselIn_interval n (ofRat q) 40, rfl, ⟨?_, ?_⟩, ?_⟩
   · -- lower bound
     rw [hlo, hcast_partial, besseln_eq]
     exact sum_le_tsum _ (fun i _ => hg_nonneg i) hTsum
   · -- upper bound
     rw [hhi]
     have hsplit : besselI_series n ((q : ℝ))
-        = (∑ k ∈ Finset.range (5 + 1),
+        = (∑ k ∈ Finset.range (40 + 1),
             ((q : ℝ) / 2) ^ (n + 2 * k) / ((k.factorial : ℝ) * ((n + k).factorial : ℝ)))
-          + ∑' i : ℕ, ((q : ℝ) / 2) ^ (n + 2 * (i + (5 + 1)))
-              / (((i + (5 + 1)).factorial : ℝ) * ((n + (i + (5 + 1))).factorial : ℝ)) := by
-      rw [besseln_eq]; exact (sum_add_tsum_nat_add (5 + 1) hTsum).symm
-    have htail_le : (∑' i : ℕ, ((q : ℝ) / 2) ^ (n + 2 * (i + (5 + 1)))
-            / (((i + (5 + 1)).factorial : ℝ) * ((n + (i + (5 + 1))).factorial : ℝ)))
-          ≤ ((besselIn_error n q 5 : ℚ) : ℝ) := by
-      have h := besseln_term_tail_le n (q : ℝ) 5 hqR.le (by exact_mod_cast hr1Q)
+          + ∑' i : ℕ, ((q : ℝ) / 2) ^ (n + 2 * (i + (40 + 1)))
+              / (((i + (40 + 1)).factorial : ℝ) * ((n + (i + (40 + 1))).factorial : ℝ)) := by
+      rw [besseln_eq]; exact (sum_add_tsum_nat_add (40 + 1) hTsum).symm
+    have htail_le : (∑' i : ℕ, ((q : ℝ) / 2) ^ (n + 2 * (i + (40 + 1)))
+            / (((i + (40 + 1)).factorial : ℝ) * ((n + (i + (40 + 1))).factorial : ℝ)))
+          ≤ ((besselIn_error n q 40 : ℚ) : ℝ) := by
+      have h := besseln_term_tail_le n (q : ℝ) 40 hqR.le (by exact_mod_cast hr1Q)
       rw [hcast_error]
       simpa only [Nat.cast_ofNat] using h
     calc besselI_series n ((q : ℝ))
-        = (∑ k ∈ Finset.range (5 + 1),
+        = (∑ k ∈ Finset.range (40 + 1),
             ((q : ℝ) / 2) ^ (n + 2 * k) / ((k.factorial : ℝ) * ((n + k).factorial : ℝ)))
-          + ∑' i : ℕ, ((q : ℝ) / 2) ^ (n + 2 * (i + (5 + 1)))
-              / (((i + (5 + 1)).factorial : ℝ) * ((n + (i + (5 + 1))).factorial : ℝ)) := hsplit
-      _ ≤ (∑ k ∈ Finset.range (5 + 1),
+          + ∑' i : ℕ, ((q : ℝ) / 2) ^ (n + 2 * (i + (40 + 1)))
+              / (((i + (40 + 1)).factorial : ℝ) * ((n + (i + (40 + 1))).factorial : ℝ)) := hsplit
+      _ ≤ (∑ k ∈ Finset.range (40 + 1),
             ((q : ℝ) / 2) ^ (n + 2 * k) / ((k.factorial : ℝ) * ((n + k).factorial : ℝ)))
-          + ((besselIn_error n q 5 : ℚ) : ℝ) := add_le_add_left htail_le _
-      _ = ((besselIn_partial n q 5 : ℚ) : ℝ) + ((besselIn_error n q 5 : ℚ) : ℝ) := by
+          + ((besselIn_error n q 40 : ℚ) : ℝ) := add_le_add_left htail_le _
+      _ = ((besselIn_partial n q 40 : ℚ) : ℝ) + ((besselIn_error n q 40 : ℚ) : ℝ) := by
             rw [hcast_partial]
-      _ = ((besselIn_partial n q 5 + besselIn_error n q 5 : ℚ) : ℝ) := by rw [Rat.cast_add]
+      _ = ((besselIn_partial n q 40 + besselIn_error n q 40 : ℚ) : ℝ) := by rw [Rat.cast_add]
   · -- width
     rw [hhi, hlo,
-      show besselIn_partial n q 5 + besselIn_error n q 5 - besselIn_partial n q 5
-        = besselIn_error n q 5 from by ring, hq]
+      show besselIn_partial n q 40 + besselIn_error n q 40 - besselIn_partial n q 40
+        = besselIn_error n q 40 from by ring, hq]
     exact besselIn_error_beta0_lt n
 
-/-- The concrete Phase-2.5 enclosure of `Iₙ(β₀/3)` at `N = 5` (6 terms), for any order `n`.
-N = 5 is the minimum truncation depth at which `PartC_Surface` holds under exact ℚ arithmetic:
-  - N = 3: product margin = −3.03×10⁻⁹  (FAILS — besselIn_error too coarse)
-  - N = 4: product margin = −1.26×10⁻¹¹ (FAILS)
-  - N = 5: product margin = +1.30×10⁻¹⁴ (PASSES, verified by `Fraction` arithmetic in Python)
-N = 5 also keeps the `Finset.sum_range_succ` expansion to 6 inner steps per Bessel entry
-(vs 41 for N = 40), making `norm_num` evaluation feasible without OOM.
-The N = 40 enclosure is ~6× tighter but norm_num OOMs (~3.9 GB) on the 41-term expansion. -/
-def besselIn_beta0_interval (n : ℕ) : RatInterval := besselIn_interval n (ofRat (β₀_rat / 3)) 5
+/-- The concrete Phase-2.5 enclosure of `Iₙ(β₀/3)` at `N = 40`, for any order `n`. -/
+def besselIn_beta0_interval (n : ℕ) : RatInterval := besselIn_interval n (ofRat (β₀_rat / 3)) 40
 
 -- Sanity #evals: widths shrink as the order grows, far inside the `5·10⁻⁸` budget.
 #eval (besselIn_beta0_interval 3).hi - (besselIn_beta0_interval 3).lo    -- width @ n=3

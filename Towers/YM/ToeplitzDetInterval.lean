@@ -119,7 +119,7 @@ theorem besselIn_beta0_contains (m : ℕ) :
   rw [show besselIn_beta0_interval m = I from hI]
   exact hc
 
-theorem besselIn_error_beta0_nonneg (m : ℕ) : 0 ≤ besselIn_error m (β₀_rat / 3) 5 := by
+theorem besselIn_error_beta0_nonneg (m : ℕ) : 0 ≤ besselIn_error m (β₀_rat / 3) 40 := by
   unfold besselIn_error
   apply div_nonneg
   · exact div_nonneg (pow_nonneg (by norm_num [β₀_rat]) _) (by positivity)
@@ -130,26 +130,26 @@ theorem besselIn_error_beta0_nonneg (m : ℕ) : 0 ≤ besselIn_error m (β₀_ra
 
 /-- Tight comparison `errorₙ ≤ error₀` (replicates the internal `hcmp`). -/
 theorem besselIn_error_le_I0 (m : ℕ) :
-    besselIn_error m (β₀_rat / 3) 5 ≤ besselI0_error (β₀_rat / 3) 5 := by
+    besselIn_error m (β₀_rat / 3) 40 ≤ besselI0_error (β₀_rat / 3) 40 := by
   set x : ℚ := β₀_rat / 3 with hx
   have hx2nn : (0 : ℚ) ≤ x / 2 := by rw [hx]; norm_num [β₀_rat]
   have hx2le1 : x / 2 ≤ 1 := by rw [hx]; norm_num [β₀_rat]
-  have hF1 : (0 : ℚ) < ((5 + 1).factorial : ℚ) := by positivity
-  have hDr0 : (0 : ℚ) < 1 - (x / 2) ^ 2 / (((5 : ℕ) : ℚ) + 2) := by rw [hx]; norm_num [β₀_rat]
-  have hDle : 1 - (x / 2) ^ 2 / (((5 : ℕ) : ℚ) + 2)
-      ≤ 1 - (x / 2) ^ 2 / ((m : ℚ) + ((5 : ℕ) : ℚ) + 2) := by
-    have hb : (x / 2) ^ 2 / ((m : ℚ) + ((5 : ℕ) : ℚ) + 2)
-        ≤ (x / 2) ^ 2 / (((5 : ℕ) : ℚ) + 2) :=
+  have hF1 : (0 : ℚ) < ((40 + 1).factorial : ℚ) := by positivity
+  have hDr0 : (0 : ℚ) < 1 - (x / 2) ^ 2 / (((40 : ℕ) : ℚ) + 2) := by rw [hx]; norm_num [β₀_rat]
+  have hDle : 1 - (x / 2) ^ 2 / (((40 : ℕ) : ℚ) + 2)
+      ≤ 1 - (x / 2) ^ 2 / ((m : ℚ) + ((40 : ℕ) : ℚ) + 2) := by
+    have hb : (x / 2) ^ 2 / ((m : ℚ) + ((40 : ℕ) : ℚ) + 2)
+        ≤ (x / 2) ^ 2 / (((40 : ℕ) : ℚ) + 2) :=
       div_le_div_of_nonneg_left (by positivity) (by positivity) (by push_cast; linarith)
     linarith
-  have hpow : (x / 2) ^ (m + 2 * (5 + 1)) ≤ (x / 2) ^ (2 * 5 + 2) := by
-    rw [show m + 2 * (5 + 1) = (2 * 5 + 2) + m from by omega, pow_add]
-    calc (x / 2) ^ (2 * 5 + 2) * (x / 2) ^ m
-        ≤ (x / 2) ^ (2 * 5 + 2) * 1 :=
+  have hpow : (x / 2) ^ (m + 2 * (40 + 1)) ≤ (x / 2) ^ (2 * 40 + 2) := by
+    rw [show m + 2 * (40 + 1) = (2 * 40 + 2) + m from by omega, pow_add]
+    calc (x / 2) ^ (2 * 40 + 2) * (x / 2) ^ m
+        ≤ (x / 2) ^ (2 * 40 + 2) * 1 :=
           mul_le_mul_of_nonneg_left (pow_le_one m hx2nn hx2le1) (pow_nonneg hx2nn _)
-      _ = (x / 2) ^ (2 * 5 + 2) := mul_one _
-  have hfacN : ((5 + 1).factorial : ℚ) ≤ ((m + (5 + 1)).factorial : ℚ) := by
-    exact_mod_cast Nat.factorial_le (Nat.le_add_left (5 + 1) m)
+      _ = (x / 2) ^ (2 * 40 + 2) := mul_one _
+  have hfacN : ((40 + 1).factorial : ℚ) ≤ ((m + (40 + 1)).factorial : ℚ) := by
+    exact_mod_cast Nat.factorial_le (Nat.le_add_left (40 + 1) m)
   unfold besselIn_error besselI0_error
   refine le_trans (div_le_div_of_nonneg_left ?_ hDr0 hDle) ?_
   · exact div_nonneg (pow_nonneg hx2nn _) (by positivity)
@@ -158,18 +158,18 @@ theorem besselIn_error_le_I0 (m : ℕ) :
         (mul_le_mul_of_nonneg_left hfacN hF1.le))
 
 theorem besselIn_beta0_lo_eq (m : ℕ) :
-    (besselIn_beta0_interval m).lo = besselIn_partial m (β₀_rat / 3) 5 := by
-  have hab : besselIn_partial m (β₀_rat / 3) 5
-      ≤ besselIn_partial m (β₀_rat / 3) 5 + besselIn_error m (β₀_rat / 3) 5 := by
+    (besselIn_beta0_interval m).lo = besselIn_partial m (β₀_rat / 3) 40 := by
+  have hab : besselIn_partial m (β₀_rat / 3) 40
+      ≤ besselIn_partial m (β₀_rat / 3) 40 + besselIn_error m (β₀_rat / 3) 40 := by
     have := besselIn_error_beta0_nonneg m; linarith
   simp only [besselIn_beta0_interval, besselIn_interval, ofRat]
   exact min_eq_left hab
 
 theorem besselIn_beta0_hi_eq (m : ℕ) :
     (besselIn_beta0_interval m).hi
-      = besselIn_partial m (β₀_rat / 3) 5 + besselIn_error m (β₀_rat / 3) 5 := by
-  have hab : besselIn_partial m (β₀_rat / 3) 5
-      ≤ besselIn_partial m (β₀_rat / 3) 5 + besselIn_error m (β₀_rat / 3) 5 := by
+      = besselIn_partial m (β₀_rat / 3) 40 + besselIn_error m (β₀_rat / 3) 40 := by
+  have hab : besselIn_partial m (β₀_rat / 3) 40
+      ≤ besselIn_partial m (β₀_rat / 3) 40 + besselIn_error m (β₀_rat / 3) 40 := by
     have := besselIn_error_beta0_nonneg m; linarith
   simp only [besselIn_beta0_interval, besselIn_interval, ofRat]
   exact max_eq_right hab
@@ -181,9 +181,9 @@ theorem besselIn_beta0_lo_nonneg (m : ℕ) : 0 ≤ (besselIn_beta0_interval m).l
   intro k _
   exact div_nonneg (pow_nonneg (by norm_num [β₀_rat]) _) (by positivity)
 
-theorem besselIn_partial_le (m : ℕ) : besselIn_partial m (β₀_rat / 3) 5 ≤ 6 := by
-  have h : besselIn_partial m (β₀_rat / 3) 5
-      ≤ ∑ _k ∈ Finset.range (5 + 1), (1 : ℚ) := by
+theorem besselIn_partial_le (m : ℕ) : besselIn_partial m (β₀_rat / 3) 40 ≤ 41 := by
+  have h : besselIn_partial m (β₀_rat / 3) 40
+      ≤ ∑ _k ∈ Finset.range (40 + 1), (1 : ℚ) := by
     unfold besselIn_partial
     apply Finset.sum_le_sum
     intro k _
@@ -196,18 +196,18 @@ theorem besselIn_partial_le (m : ℕ) : besselIn_partial m (β₀_rat / 3) 5 ≤
   refine le_trans h ?_
   rw [Finset.sum_const, Finset.card_range, nsmul_eq_mul]; norm_num
 
-theorem besselIn_beta0_hi_le (m : ℕ) : (besselIn_beta0_interval m).hi ≤ 7 := by
+theorem besselIn_beta0_hi_le (m : ℕ) : (besselIn_beta0_interval m).hi ≤ 42 := by
   rw [besselIn_beta0_hi_eq]
-  have hp : besselIn_partial m (β₀_rat / 3) 5 ≤ 6 := besselIn_partial_le m
-  have he : besselIn_error m (β₀_rat / 3) 5 ≤ 1 :=
+  have hp : besselIn_partial m (β₀_rat / 3) 40 ≤ 41 := besselIn_partial_le m
+  have he : besselIn_error m (β₀_rat / 3) 40 ≤ 1 :=
     le_trans (besselIn_error_le_I0 m) (by norm_num [besselI0_error, β₀_rat, Nat.factorial])
   linarith
 
-theorem besselIn_beta0_width_le (m : ℕ) : (besselIn_beta0_interval m).width ≤ 5 / 10 ^ 8 := by
+theorem besselIn_beta0_width_le (m : ℕ) : (besselIn_beta0_interval m).width ≤ 1 / 10 ^ 14 := by
   simp only [RatInterval.width]
   rw [besselIn_beta0_hi_eq, besselIn_beta0_lo_eq]
-  have heq : besselIn_partial m (β₀_rat / 3) 5 + besselIn_error m (β₀_rat / 3) 5
-      - besselIn_partial m (β₀_rat / 3) 5 = besselIn_error m (β₀_rat / 3) 5 := by ring
+  have heq : besselIn_partial m (β₀_rat / 3) 40 + besselIn_error m (β₀_rat / 3) 40
+      - besselIn_partial m (β₀_rat / 3) 40 = besselIn_error m (β₀_rat / 3) 40 := by ring
   rw [heq]
   exact le_trans (besselIn_error_le_I0 m) (by norm_num [besselI0_error, β₀_rat, Nat.factorial])
 
@@ -257,15 +257,6 @@ theorem detI_width_le {e : Fin 3 → Fin 3 → RatInterval} (U E : ℚ)
 
 noncomputable def toeplitzReal (β : ℝ) (k : ℤ) : Matrix (Fin 3) (Fin 3) ℝ :=
   Matrix.of fun i j => besselI_series (((i : ℤ) - (j : ℤ) - k).natAbs) (β / 3)
-
-/-- The CORRECTED SU(3) Gross-Witten Bessel-Toeplitz matrix at shift k.
-    Entries `B(k)_{ij} = I_{|i-j-k|}(β)` — argument is β, NOT β/3.
-    The correct Gross-Witten formula uses the full coupling β in the Bessel functions:
-      w1_haar β = exp(-3β) · Σ_k det[ I_{|i-j-k|}(β) ]_{3×3}
-    Numerically verified (2026-06-28): exp(-3β₀)·Σ det ≈ 0.007448 ≈ w1_haar(β₀) ≈ 0.007526.
-    Backed by `certificates/szego_gap_audit.py`. -/
-noncomputable def toeplitzReal_correct (β : ℝ) (k : ℤ) : Matrix (Fin 3) (Fin 3) ℝ :=
-  Matrix.of fun i j => besselI_series (((i : ℤ) - (j : ℤ) - k).natAbs) β
 
 def toeplitzDetInterval (k : ℤ) : RatInterval :=
   detI (fun i j => besselIn_beta0_interval (((i : ℤ) - (j : ℤ) - k).natAbs))
