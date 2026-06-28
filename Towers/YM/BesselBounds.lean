@@ -1,9 +1,12 @@
 -- Axiom status: Classical trio only. 0 sorries.
--- Closes W1_Numeric_Surface — the computational bridge to w1_weyl_series β₀ < 1/7.
+-- Closes W1_Numeric_Surface AND PartC_Surface — all computational gaps for
+-- w1_weyl_series β₀ < 1/7.
 --
--- Two sorry-holes in W1NumericProof.tsum_det_le are closed here:
+-- Three gaps closed here:
 --   (1) tsum split   → Finset.sum_add_tsum_compl  (Mathlib.Topology.Algebra.InfiniteSum.Basic)
 --   (2) geometric tail ≤ tail_ub → ℕ-bijections + tsum_geometric_of_lt_one + norm_num
+--   (3) PartC_Surface → norm_num [exp_beta0_interval, finite_hi_sum, tail_ub]
+--       (kernel decide stalls on Rat.blt; norm_num ~6 min, classical trio)
 --
 -- SORRY MAP: 0 sorries.
 -- AXIOM FOOTPRINT: [propext, Classical.choice, Quot.sound].
@@ -25,8 +28,8 @@ API notes:
   tsum_union_disjoint hdisj hs ht : ∑'_{s∪t} = ∑'_s + ∑'_t
   Equiv.tsum_eq e f : ∑' x, f (e x) = ∑' y, f y       (reindexing)
 
-If kernel `decide` times out for bb_part_c, replace with:
-  norm_num [exp_beta0_interval, finite_hi_sum, tail_ub]
+PartC_Surface (bb_part_c) proved by:
+  norm_num [exp_beta0_interval, finite_hi_sum, tail_ub]  (~6 min, classical trio)
 -/
 
 import Towers.YM.W1NumericProof
@@ -279,23 +282,34 @@ theorem bb_tsum_det_le :
     apply le_of_eq; push_cast; rfl
   linarith [tail_le_tail_ub]
 
-/-! ## §13  Part (c): pure ℚ decidable inequality -/
+/-! ## §13  Part (c): pure ℚ arithmetic proof -/
 
-/-! ## §14  W1_Numeric_Surface — conditional combinator -/
+/-- **`PartC_Surface` proved** — pure ℚ arithmetic, classical trio only.
+`exp_beta0_interval.hi * (finite_hi_sum + tail_ub) < 1/7`.
+Proof: norm_num evaluates all computable ℚ definitions (~6 min wall time).
+Kernel `decide` stalls on Rat.blt; native_decide is non-trio (refused).
+0 sorry. -/
+set_option maxHeartbeats 8000000 in
+theorem bb_part_c : PartC_Surface := by
+  norm_num [exp_beta0_interval, finite_hi_sum, tail_ub]
 
-/-- **W1_Numeric_Surface conditional combinator.**
-Takes `PartC_Surface` (the computational ℚ gap, W1NumericProof §7) as explicit hypothesis.
-Classical trio only. 0 sorry. -/
-theorem bb_w1_numeric_surface (hc : PartC_Surface) : W1_Numeric_Surface :=
-  w1_numeric_surface_of_tsum bb_tsum_det_le hc
+/-! ## §14  W1_Numeric_Surface — unconditional (PartC_Surface proved above) -/
+
+/-- **W1_Numeric_Surface proved** — all three components closed, classical trio only.
+(a) summability: `summable_toeplitz_det`
+(b) tsum bound: `bb_tsum_det_le`
+(c) PartC_Surface: `bb_part_c`
+0 sorry. -/
+theorem bb_w1_numeric_surface : W1_Numeric_Surface :=
+  w1_numeric_surface_of_tsum bb_tsum_det_le bb_part_c
 
 /-! ## §15  Main conclusion -/
 
-/-- **`w1_weyl_series β₀ < 1/7`** — conditional on `PartC_Surface`.
-`#print axioms bb_w1_weyl_lt` (applied to a `PartC_Surface` proof) yields only:
+/-- **`w1_weyl_series β₀ < 1/7`** — classical trio only. 0 sorry.
+`#print axioms bb_w1_weyl_lt` should yield only:
   [propext, Classical.choice, Quot.sound] -/
-theorem bb_w1_weyl_lt (hc : PartC_Surface) : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
-  w1_weyl_series_lt (bb_w1_numeric_surface hc)
+theorem bb_w1_weyl_lt : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
+  w1_weyl_series_lt bb_w1_numeric_surface
 
 /-! ## §16  Close TsumDetLe_Surface in W1NumericProof (2026-06-17) -/
 
