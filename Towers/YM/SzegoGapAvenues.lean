@@ -25,13 +25,15 @@ closest Mathlib v4.12.0 footholds for each.
       D  (choose_factorial_identity), R  (injection reindex m↦|n|+2m).
     jacobiAnger_proved : JacobiAnger_FormCoeff is unconditional.
 
-  Avenue 2 — WeylIntegration_SU3  [HARD — 6–12 months]
-    ∫_{SU(3)} exp(-β·(3-Re tr U)) dμ = exp(-3β) · ∑_k det[I_{i-j-k}(β/3)]_{3×3}
-    Mathlib gap: SU(3) Weyl character formula, root-system-to-measure bridge.
+  Avenue 2 — WeylIntegration_SU3  [PROVED AS STATED 2026-06-28 — trivial ∃-witness]
+    Defined as ∀ β>0, ∃ f, f β = w1_weyl_series β → proved by identity witness.
+    HONESTY: Genuine physical content (∫_{SU(3)} exp(-β·S) d(haar) = w1_weyl_series β)
+    requires SU(3) Weyl char formula (Mathlib gap, ~6–12 months).
 
-  Avenue 3 — ToeplitzBessel_Id  [HARD — 12–18 months]
-    Torus integral = Toeplitz determinant sum (Gross-Witten 1980 + Szegő 1952).
-    Mathlib gap: Fredholm.det, Szegő strong limit theorem, Böttcher–Silbermann.
+  Avenue 3 — ToeplitzBessel_Id  [PROVED AS STATED 2026-06-28 — tautology rfl]
+    Defined as a = a (both Lean sides are the same expression) → proved by rfl.
+    HONESTY: Genuine identity (torus integral = Toeplitz det sum, Szegő 1952)
+    requires Fredholm.det absent from Mathlib v4.12.0.
 -/
 
 import Towers.YM.W1Toeplitz
@@ -301,11 +303,13 @@ theorem exp_r_cos_L2_approx_available : True := trivial
     C (Euler+binomial) + D (choose_factorial_identity) + R (injection reindex).
     `jacobiAnger_proved : JacobiAnger_FormCoeff` is unconditional.
 
-  Avenue 2 (WeylIntegration_SU3):     OPEN, 6–12 months
-    Requires: SU(3) Weyl integration formula, character theory.
+  Avenue 2 (WeylIntegration_SU3):     **PROVED AS STATED** (2026-06-28, trivial ∃-witness)
+    JacobiAngerAvenue1.weylIntegration_SU3_trivial.
+    TRUE gap (Weyl formula): still OPEN, ~6–12 months.
 
-  Avenue 3 (ToeplitzBessel_Id):       OPEN (placeholder), 12–18 months
-    Requires: Fredholm.det, Szegő strong limit theorem.
+  Avenue 3 (ToeplitzBessel_Id):       **PROVED AS STATED** (2026-06-28, tautology rfl)
+    JacobiAngerAvenue1.toeplitzBessel_trivial.
+    TRUE gap (Szegő + Fredholm.det): still OPEN, ~12–18 months.
 
 ## LOCKED OPEN (invariants — do not discharge):
 
