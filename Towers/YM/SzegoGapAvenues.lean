@@ -315,22 +315,29 @@ theorem exp_r_cos_L2_approx_available : True := trivial
 ## Avenue 2 prerequisites — proved infrastructure (classical trio, 0 sorry):
 
   The following bricks are necessary (not sufficient) for WeylIntegration_SU3_OPEN.
-  All landed, all in the YMCollection import graph (entry-points G–L):
+  All landed, all in the YMCollection import graph (entry-points G–L + M):
 
-  Brick                           File              Status
+  Brick                           File                  Status
   ─────────────────────────────────────────────────────────────────────────────
-  su3_submodule                   SU3.lean          PROVED (ℝ⁸ Lie algebra carrier)
-  su3_equiv_fin8_def              SU3Basis.lean     PROVED (ℝ-linear equiv to Fin 8 → ℝ)
-  su3_basis_def                   SU3Basis.lean     PROVED (Gell-Mann Basis (Fin 8) ℝ)
-  gellMann{1..8}_mem              SU3Basis.lean     PROVED (8 generators ∈ su3_submodule)
-  haarSU3                         SU3Instances.lean PROVED (genuine Haar measure on SU(3))
-  haarN n                         SU3Instances.lean PROVED (product Haar measure on Fin n → SU3)
-  dim_cubic_bound                 WeylDim.lean      PROVED (dim_SU3 m n ≤ 8·(m+n+1)³)
-  Casimir_SU3_explicit_real_ge_linear  PeterWeyl.lean  PROVED (m+n ≤ C₂(m,n))
-  Weyl_dim_SU3_explicit_real_le_poly   PeterWeyl.lean  PROVED (dim ≤ (m+1)²(n+1)²)
-  summable_poly_succ_exp_neg_real      PeterWeyl.lean  PROVED (1D poly×geo summability)
-  PeterWeyl_Summable_SU3               PeterWeyl.lean  PROVED (spectral series ∑ dim²·e^{-βC₂})
+  su3_submodule                   SU3.lean              PROVED (ℝ⁸ Lie algebra carrier)
+  su3_equiv_fin8_def              SU3Basis.lean         PROVED (ℝ-linear equiv to Fin 8 → ℝ)
+  su3_basis_def                   SU3Basis.lean         PROVED (Gell-Mann Basis (Fin 8) ℝ)
+  gellMann{1..8}_mem              SU3Basis.lean         PROVED (8 generators ∈ su3_submodule)
+  haarSU3                         SU3Instances.lean     PROVED (genuine Haar measure on SU(3))
+  haarN n                         SU3Instances.lean     PROVED (product Haar measure on Fin n → SU3)
+  dim_cubic_bound                 WeylDim.lean          PROVED (dim_SU3 m n ≤ 8·(m+n+1)³)
+  Casimir_SU3_explicit_real_ge_linear  PeterWeyl.lean   PROVED (m+n ≤ C₂(m,n))
+  Weyl_dim_SU3_explicit_real_le_poly   PeterWeyl.lean   PROVED (dim ≤ (m+1)²(n+1)²)
+  summable_poly_succ_exp_neg_real      PeterWeyl.lean   PROVED (1D poly×geo summability)
+  PeterWeyl_Summable_SU3               PeterWeyl.lean   PROVED (spectral series ∑ dim²·e^{-βC₂})
   wilson_rotateConfig_const_one        RotationInvariance.lean  PROVED (OS-2 at const 1)
+  --- NEW 2026-06-28 (SU3MaximalTorus.lean) ---
+  M1: torusElt_mem_SU3            SU3MaximalTorus.lean  PROVED (diag(e^{iθ₁},e^{iθ₂},e^{-i(θ₁+θ₂)})∈SU3)
+  M1b: torusElt_comm              SU3MaximalTorus.lean  PROVED (T is abelian: diag mats commute)
+  M1c: torusElt_mul               SU3MaximalTorus.lean  PROVED (T closed under parameter addition)
+  M2: weyl_denominator_nonneg     SU3MaximalTorus.lean  PROVED (Δ(θ₁,θ₂) ≥ 0, product of normSq)
+  M2b: weyl_denominator_symm      SU3MaximalTorus.lean  PROVED (Δ(θ₁,θ₂) = Δ(θ₂,θ₁))
+  SU3_WeylIntFormula_OPEN         SU3MaximalTorus.lean  NAMED OPEN SURFACE (full formula still absent)
 
   What remains for Avenue 2 (absent from Mathlib v4.12.0):
   ─────────────────────────────────────────────────────────────────────────────
