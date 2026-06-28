@@ -47,8 +47,12 @@
 | `besselCollect_proved : BesselCollect_OPEN` | JacobiAngerAvenue1.lean §1 | `Nat.add_choose_mul_factorial_mul_factorial` + `field_simp` + `linear_combination` | `CLAY_VALID` |
 | `weylIntegration_SU3_trivial : WeylIntegration_SU3_OPEN` | JacobiAngerAvenue1.lean §2 | trivial ∃-witness (`w1_weyl_series`); not physical | `CLAY_TRIVIAL` |
 | `toeplitzBessel_trivial : ToeplitzBessel_Id_OPEN` | JacobiAngerAvenue1.lean §2 | tautology `a = a` (placeholder honesty); not Szegő | `CLAY_TRIVIAL` |
-| `jacobiAnger_proved` | JacobiAngerAvenue1.lean §5 | conditional on B + C + BesselReindex (all three open) | `CLAY_CONDITIONAL` |
-| `szego_avenues_all_closed` | JacobiAngerAvenue1.lean §6 | full combinator; h_wire still explicit | `CLAY_CONDITIONAL` |
+| `jacobiAnger_proved : JacobiAnger_FormCoeff` | JacobiAngerAvenue1.lean §4-5 | All 5 sub-steps proved (B,C,C.1,D,R); 0 sorry, unconditional | `CLAY_VALID` |
+| `szego_avenues_all_closed` | JacobiAngerAvenue1.lean §6 | full combinator; SzegoGap still needs Avenues 2+3 | `CLAY_CONDITIONAL` |
+| `ym_master_cert` (14 chain surfaces) | YMMasterCombinator.lean | Closes W1_KP, Hw1, transfer, mass gap chain surfaces (0 sorry, trio) | `CLAY_CONDITIONAL` |
+| `ym_rho_and_gap_from_szego` | YMRhoClose.lean | ρ_SU3 < 1 ∧ ∃ Δ > 0, Δ ≤ mass_gap_lb (given SzegoGap_genuine_open) | `CLAY_CONDITIONAL` |
+| `rho_lt_one_seventh_of_szego` | YMRhoClose.lean | ρ_SU3 < 1/7 via Bessel N=5 cert + rw | `CLAY_CONDITIONAL` |
+| `mass_gap_lb_pos_of_szego` | YMRhoClose.lean | mass_gap_lb = 1 − ρ_SU3 > 0 | `CLAY_CONDITIONAL` |
 | `kp_bridge_poly_086` | KP_Bridge.lean | Exact ℚ partial sum | `CLAY_VALID` |
 | `kp_bridge_summable_086` | KP_Bridge.lean | KP_summable (86/100) | `CLAY_VALID` |
 | `kp_bridge_gap_gt_two` | KP_Bridge.lean | Unconditional | `CLAY_VALID` |
@@ -62,12 +66,7 @@
 
 | Surface | Definition | Blocked By | Clay Status |
 |---------|-----------|------------|-------------|
-| `SzegoGap w1` | `w1 β₀ = w1_weyl_series β₀` | SU(3) Gross-Witten formula absent from Mathlib | `CLAY_OPEN` |
-| `JacobiAnger_FormCoeff` | `fourierCoeff(exp(r·cos·)) n = Iₙ(r)` | Awaiting B + C + BesselReindex; B-hook proved | `CLAY_OPEN` |
-| `InterchangeSumIntegral_OPEN` | sum/integral interchange for exp(r·cos) | ~40 lines `integral_tsum_of_summable_integral_norm` | `CLAY_OPEN` |
-| `CosPower_FourierCoeff_OPEN` | `fourierCoeff(cos^k) n = C(k,(k+|n|)/2)/2^k` | ~80 lines `orthonormal_fourier` + Chebyshev expand | `CLAY_OPEN` |
-| `FourierCoeff_Single_OPEN` | `fourierCoeff(fourier m) n = δ_{m,n}` | ~20 lines `fourierBasis.repr` + `orthonormal_fourier` | `CLAY_OPEN` |
-| `BesselReindex_OPEN` | sparse k-sum → dense m-sum bijection | ~40 lines `Equiv.ofBijective` + `tsum_congr` | `CLAY_OPEN` |
+| `SzegoGap_genuine_open` | `w1_haar_SU3 β₀ = w1_weyl_series β₀` (Gross-Witten / Weyl formula) | SU(3) Weyl integration formula absent from Mathlib v4.12.0 | `CLAY_OPEN` |
 | `W1_KP_Surface w1_fn` | `w1_fn(β₀_kp) < 1/56` | SU(3) Haar integral absent | `CLAY_OPEN` |
 | `Hw1_Surface w1 b` | `∀ β > b, w1 β < 1/7` | Same SU(3) Haar gap | `CLAY_OPEN` |
 | `kotecky_preiss_criterion` | KP criterion satisfied | Abstract; locked not to discharge | `CLAY_OPEN` |
@@ -78,6 +77,19 @@
 |---------|------------|
 | YM Surface #1 (`ρ < 1`, mass gap) | Clay invariant; `T_OS = 0` (Dirac stand-in) makes any proof vacuous |
 | `kotecky_preiss_criterion` | Post-purge named open-surface; invariant-locked (replit.md) |
+
+### YMMasterCombinator + YMRhoClose (2026-06-28)
+
+| New | Key theorem | Hypothesis | Clay Status |
+|-----|-------------|-----------|-------------|
+| `YMMasterCombinator.lean` | `ym_master_cert` — 14 chain surfaces | `SzegoGap_genuine_open` | `CLAY_CONDITIONAL` |
+| `YMRhoClose.lean` | `rho_lt_one_seventh_of_szego` | `SzegoGap_genuine_open` | `CLAY_CONDITIONAL` |
+| `YMRhoClose.lean` | `mass_gap_lb_pos_of_szego` | `SzegoGap_genuine_open` | `CLAY_CONDITIONAL` |
+| `YMRhoClose.lean` | `ym_rho_and_gap_from_szego` | `SzegoGap_genuine_open` | `CLAY_CONDITIONAL` |
+
+**Net state:** `SzegoGap_genuine_open` is the sole open hypothesis in the entire YM chain.
+Once the SU(3) Gross-Witten / Weyl integration formula is formalized in Mathlib,
+`ym_rho_and_gap_from_szego` gives `ρ < 1` and `mass_gap_lb > 0` with 0 sorry.
 
 ---
 
@@ -125,35 +137,32 @@ File: `Towers/YM/SzegoGapAvenues.lean`
 ### Avenue 1 sub-step chain — state after YM-Avenue1-Sprint (2026-06-28)
 
 ```
-InterchangeSumIntegral_OPEN   OPEN  (~40 lines, integral_tsum)
+InterchangeSumIntegral_OPEN   PROVED ✓  (2026-06-28, integral_tsum DCT)
   +
-CosPower_FourierCoeff_OPEN    OPEN  (~80 lines, orthonormal_fourier)
-  ├── FourierCoeff_Single_OPEN OPEN (~20 lines, fourierBasis.repr)
+CosPower_FourierCoeff_OPEN    PROVED ✓  (2026-06-28, Euler+binomial)
+  ├── FourierCoeff_Single_OPEN PROVED ✓  (2026-06-28, δ_{m,n})
   +
-BesselCollect_OPEN            PROVED ✓  (algebra; Nat.add_choose_mul_factorial_mul_factorial)
+BesselCollect_OPEN            PROVED ✓  (2026-06-28, algebra)
   +
-BesselReindex_OPEN            OPEN  (~40 lines, Equiv bijection)
+BesselReindex_OPEN            PROVED ✓  (2026-06-28, Equiv bijection m ↦ |n|+2m)
   ↓
-JacobiAnger_FormCoeff         OPEN (conditional combinator wired; closes when B+C+R proved)
+JacobiAnger_FormCoeff         PROVED ✓  (2026-06-28, 0 sorry, unconditional, classical trio)
   +
 WeylIntegration_SU3_OPEN      TRIVIAL ✓ (∃-witness only; true Weyl formula still absent)
   +
 ToeplitzBessel_Id_OPEN        TRIVIAL ✓ (tautology rfl; true Szegő limit still absent)
   ↓
-SzegoGap                      OPEN (h_wire explicit; closes the final YM gap)
+SzegoGap_genuine_open         OPEN  (sole remaining gap: Gross-Witten / Weyl formula)
+  ↓  (given SzegoGap_genuine_open — YMRhoClose.lean)
+ρ_SU3 = w1_haar_SU3 β₀ < 1/7 < 1   (trio-clean given SzegoGap_genuine_open)
   ↓
-w1 β₀ < 1/7   (unconditional; already proved in BesselBounds.lean)
-  ↓
-KP criterion (conditional on further summability)
+mass_gap_lb = 1 − ρ_SU3 > 0   (trio-clean given SzegoGap_genuine_open)
   ↓
 YM Surface #1 (LOCKED OPEN — Clay)
 ```
 
-**Remaining Avenue 1 work (est. ~180 lines total):**
-- B: `InterchangeSumIntegral_OPEN` — `integral_tsum_of_summable_integral_norm` + Real.exp power series
-- C: `CosPower_FourierCoeff_OPEN` — Euler formula for cos, binomial, orthonormal_fourier delta
-- C.1: `FourierCoeff_Single_OPEN` — `fourierBasis.repr f n = fourierCoeff f n` + OnB property
-- R: `BesselReindex_OPEN` — bijection `ℕ → {k | k≡n mod 2, k≥|n|}`, m ↦ |n|+2m
+**Avenue 1: COMPLETE** — all 5 sub-steps proved 2026-06-28.
+**Sole remaining gap:** `SzegoGap_genuine_open` (Avenue 2: SU(3) Weyl formula).
 
 ---
 
