@@ -41,6 +41,10 @@ YM Surface #1 (mass gap): LOCKED OPEN. No Clay claim.
 | `dim_cubic_bound` | `WeylDim.lean` | dim_SU3 m n ≤ 8·(m+n+1)³ |
 | `PeterWeyl_Summable_SU3` | `PeterWeyl.lean` | ∑ dim²·exp(-βC₂) summable β>0 |
 | `wilson_rotateConfig_const_one` | `RotationInvariance.lean` | OS-2 at const-1 |
+| **`torusElt_mem_SU3`** ✓ | **`SU3MaximalTorus.lean`** | **diag(e^{iθ₁},e^{iθ₂},e^{-i(θ₁+θ₂)}) ∈ SU(3), M1 brick** |
+| **`weyl_denominator_nonneg`** ✓ | **`SU3MaximalTorus.lean`** | **Δ(θ₁,θ₂) ≥ 0, M2 brick** |
+| `torusElt_comm`, `torusElt_mul` | `SU3MaximalTorus.lean` | T abelian, closed under param addition |
+| `SU3_WeylIntFormula_OPEN` | `SU3MaximalTorus.lean` | Named open surface — Avenue 2 gate |
 
 ## Proved conditionally (classical trio, named open hypothesis explicit)
 
