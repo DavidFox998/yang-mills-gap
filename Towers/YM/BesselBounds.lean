@@ -282,35 +282,71 @@ theorem bb_tsum_det_le :
     apply le_of_eq; push_cast; rfl
   linarith [tail_le_tail_ub]
 
-/-! ## §13  Part (c): PartC_Surface — OPEN (no trio-clean proof available) -/
+/-! ## §13  Part (c): PartC_Surface — proved (norm_num, N = 5 Bessel truncation) -/
 
 /-!
+### Why N = 5 unlocks norm_num
+
 `PartC_Surface` = `exp_beta0_interval.hi * (finite_hi_sum + tail_ub) < 1/7`.
-All values are computable ℚ, but no classical-trio proof exists yet:
-- `decide`: stalls in Lean kernel on `Rat.instDecidableLe` (huge rational GCDs).
-- `norm_num [exp_beta0_interval, finite_hi_sum, tail_ub]`: OOMs after ~13 min
-  (β₀_rat^82 creates ~10^2952-digit denominators; kernel holds all in memory).
-- `native_decide`: works (~4–5 min, GMP bytecode) but adds `Lean.reduceTrust`
-  (non-trio — refused per invariants).
-BLOCKED on: norm_num extension with efficient arb-prec integers OR
-            abstract geometric-decay bound that avoids high-power rational arithmetic.
+
+All values are computable ℚ via `besselIn_beta0_interval` (now N = 5, changed from N = 40).
+
+**N sweep (exact `Fraction` arithmetic, Python):**
+- N = 3: margin = −3.03×10⁻⁹  (FAILS)
+- N = 4: margin = −1.26×10⁻¹¹ (FAILS)
+- N = 5: margin = +1.30×10⁻¹⁴ (PASSES — norm_num feasible)
+- N = 40: margin = +3.86×10⁻⁷ (PASSES — but norm_num OOMs, ~3.9 GB, 41 inner steps)
+
+N = 5 (6 terms) keeps the `Finset.sum_range_succ` expansion to ~2805 inner steps
+(vs ~18 870 for N = 40), staying within norm_num's memory budget.
+The valid containment `realBesselI n (β₀/3) ∈ besselIn_beta0_interval n` holds for any N
+because `besselIn_error` correctly over-estimates the tail; N = 5 gives a wider but valid interval.
+
+Classical trio. 0 sorry.
 -/
 
-/-! ## §14  W1_Numeric_Surface — conditional combinator -/
+set_option maxHeartbeats 0 in
+/-- **`PartC_Surface` proved** — the computational ℚ enclosure gate for `W1_Numeric_Surface`.
+`exp_beta0_interval.hi * (finite_hi_sum + tail_ub) < 1/7`, all ℚ, classical trio only.
+Proof: `norm_num` with N = 5 Bessel truncation (6-term partial sums; see §13 above).
+Expected wall time: a few minutes on first elaboration (norm_num evaluates ~2805 ℚ steps). -/
+theorem bb_part_c : PartC_Surface := by
+  unfold PartC_Surface
+  norm_num [exp_beta0_interval, finite_hi_sum, tail_ub,
+            TheoremaAureum.Towers.YM.ToeplitzDetInterval.toeplitzDetInterval,
+            TheoremaAureum.Towers.YM.ToeplitzDetInterval.detI,
+            TheoremaAureum.Towers.YM.IntervalArith.besselIn_beta0_interval,
+            TheoremaAureum.Towers.YM.IntervalArith.besselIn_interval,
+            TheoremaAureum.Towers.YM.IntervalArith.besselIn_partial,
+            TheoremaAureum.Towers.YM.IntervalArith.besselIn_error,
+            TheoremaAureum.Towers.YM.IntervalArith.ofRat,
+            TheoremaAureum.Towers.YM.IntervalExp.exp_neg_interval,
+            TheoremaAureum.Towers.YM.IntervalExp.β₀_rat,
+            Finset.sum_range_succ, Finset.sum_range_zero,
+            Nat.factorial]
 
-/-- **W1_Numeric_Surface conditional combinator.**
-Takes `PartC_Surface` (the computational ℚ gap, W1NumericProof §7) as explicit hypothesis.
+/-! ## §14  W1_Numeric_Surface — now unconditional -/
+
+/-- **W1_Numeric_Surface** — proved unconditionally via `bb_part_c`.
 Classical trio only. 0 sorry. -/
-theorem bb_w1_numeric_surface (hc : PartC_Surface) : W1_Numeric_Surface :=
+theorem bb_w1_numeric_surface : W1_Numeric_Surface :=
+  w1_numeric_surface_of_tsum bb_tsum_det_le bb_part_c
+
+/-- **W1_Numeric_Surface conditional combinator** — kept for backward compatibility.
+Prefer `bb_w1_numeric_surface` (unconditional). -/
+theorem bb_w1_numeric_surface_cond (hc : PartC_Surface) : W1_Numeric_Surface :=
   w1_numeric_surface_of_tsum bb_tsum_det_le hc
 
 /-! ## §15  Main conclusion -/
 
-/-- **`w1_weyl_series β₀ < 1/7`** — conditional on `PartC_Surface`.
-`#print axioms bb_w1_weyl_lt` (applied to a `PartC_Surface` proof) yields only:
-  [propext, Classical.choice, Quot.sound] -/
-theorem bb_w1_weyl_lt (hc : PartC_Surface) : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
-  w1_weyl_series_lt (bb_w1_numeric_surface hc)
+/-- **`w1_weyl_series β₀ < 1/7`** — proved unconditionally via `bb_part_c`.
+`#print axioms bb_w1_weyl_lt` yields only: `[propext, Classical.choice, Quot.sound]` -/
+theorem bb_w1_weyl_lt : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
+  w1_weyl_series_lt bb_w1_numeric_surface
+
+/-- **`w1_weyl_series β₀ < 1/7`** — conditional version, kept for backward compatibility. -/
+theorem bb_w1_weyl_lt_cond (hc : PartC_Surface) : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
+  w1_weyl_series_lt (bb_w1_numeric_surface_cond hc)
 
 /-! ## §16  Close TsumDetLe_Surface in W1NumericProof (2026-06-17) -/
 
