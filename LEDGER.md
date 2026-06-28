@@ -78,6 +78,20 @@
 | YM Surface #1 (`ρ < 1`, mass gap) | Clay invariant; `T_OS = 0` (Dirac stand-in) makes any proof vacuous |
 | `kotecky_preiss_criterion` | Post-purge named open-surface; invariant-locked (replit.md) |
 
+### SU3MaximalTorus — Avenue 2 prerequisites (2026-06-28, unconditional)
+
+| Brick | Key theorem | Notes | Clay Status |
+|-------|-------------|-------|-------------|
+| M1 | `torusElt_mem_SU3` | `diag(e^{iθ₁},e^{iθ₂},e^{-i(θ₁+θ₂)}) ∈ SU(3)`, 0 sorry | `CLAY_VALID` |
+| M1b | `torusElt_comm` | Torus is abelian (diagonal matrices commute) | `CLAY_VALID` |
+| M1c | `torusElt_mul` | Closed under parameter addition | `CLAY_VALID` |
+| M2 | `weyl_denominator_nonneg` | `Δ(θ₁,θ₂) ≥ 0` (product of normSq), 0 sorry | `CLAY_VALID` |
+| M2b | `weyl_denominator_symm` | `Δ(θ₁,θ₂) = Δ(θ₂,θ₁)` | `CLAY_VALID` |
+| Gate | `SU3_WeylIntFormula_OPEN` | Named open surface; Weyl int formula still absent | `CLAY_OPEN` |
+
+All 5 bricks: **unconditional**, classical trio, 0 sorry.
+Prerequisite for `WeylIntegration_SU3_OPEN` (Avenue 2); not sufficient alone.
+
 ### YMMasterCombinator + YMRhoClose (2026-06-28)
 
 | New | Key theorem | Hypothesis | Clay Status |
