@@ -17,6 +17,8 @@ import Towers.YM.YMMasterCombinator
 import Towers.YM.YMRhoClose
 import Towers.YM.SU3MaximalTorus
 import Towers.YM.YMSurfaceClosure
+-- SzegoGap_genuine_open decomposition into two precise sub-gates:
+import Towers.YM.SzegoFromWeyl
 
 /-! # YM Tower — Standalone Collection (updated 2026-06-28)
 
@@ -119,6 +121,7 @@ open TheoremaAureum.Towers.YM.WeylDim
 open TheoremaAureum.Towers.YM.SU3Instances
 open TheoremaAureum.Towers.YM.PeterWeyl
 open TheoremaAureum.Towers.YM.LatticeGauge
+open TheoremaAureum.Towers.YM.SzegoFromWeyl
 open TheoremaAureum.Towers.YM.MasterCombinator
 open TheoremaAureum.Towers.YM.RhoClose
 
@@ -475,5 +478,36 @@ theorem col_ym_closure_combinator
     (h_wire : w1 (β₀_rat : ℝ) = w1_weyl_series (β₀_rat : ℝ)) :
     SzegoGap w1 :=
   ym_closure_combinator w1 h_wire
+
+/-! ## §10  SzegoFromWeyl — precise sub-gate decomposition of SzegoGap_genuine_open (2026-06-28)
+
+`SzegoFromWeyl.lean` decomposes the sole genuine remaining gate into two independent
+named open sub-gates.  Both have 0 sorry and are correctly stated mathematical propositions.
+
+  Sub-gate A: `SU3_WeylIntFormula_OPEN` (for Wilson weight) — measure-theoretic step
+              SU(3) Weyl integration formula (G -> G/T).  Effort: 6-12 months.
+  Sub-gate B: `TorusIntegralWilson_OPEN beta0` — analytic step
+              Torus integral via Jacobi-Anger + 2D Fourier.  Effort: 2-4 weeks.
+
+The wiring theorem `szego_from_weyl_and_torus` proves `SzegoGap_genuine_open` from A + B
+with 0 sorry (classical trio only). -/
+
+/-- Re-export: `TorusIntegralWilson_OPEN beta` — the analytic sub-gate.
+    See SzegoFromWeyl.lean §2 for full documentation and proof sketch. -/
+def col_TorusIntegralWilson_OPEN (beta : Real) : Prop :=
+  TorusIntegralWilson_OPEN beta
+
+/-- **CONDITIONAL (classical trio, 0 sorry, 2026-06-28).**
+
+    `SzegoGap_genuine_open` from sub-gate A (Weyl formula) + sub-gate B (torus integral).
+    Re-export of `szego_from_weyl_and_torus` for collection-level callers. -/
+theorem col_szego_from_weyl_and_torus
+    (h_weyl : SU3_WeylIntFormula_OPEN
+                (fun g : Matrix.specialUnitaryGroup (Fin 3) Complex =>
+                  wilson_weight (β₀_rat : Real) g))
+    (h_torus : col_TorusIntegralWilson_OPEN (β₀_rat : Real)) :
+    col_szego_gap_genuine_open :=
+  szego_from_weyl_and_torus h_weyl h_torus
+
 
 end TheoremaAureum.Towers.YM.Collection
