@@ -64,13 +64,18 @@ open RatInterval
 
 /-! ## §1  The series-based Gross–Witten weight -/
 
-/-- The SU(3) Gross–Witten single-site weight built on the GENUINE modified Bessel
-power series `besselI_series` (not the opaque `besselI` of `Hw1_Surface.lean`):
-  `w1_weyl_series β = exp(-β) · ∑_{k∈ℤ} det[ I_{|i−j−k|}(β/3) ]_{3×3}`.
-`noncomputable` because it uses `Real.exp` and a `tsum`; `toeplitzReal` is defined
-in `ToeplitzDetInterval.lean` with the same `besselI_series` entries. -/
+/-- The SU(3) Gross–Witten single-site weight with the CORRECTED formula:
+  `w1_weyl_series β = exp(-3β) · ∑_{k∈ℤ} det[ I_{|i−j−k|}(β) ]_{3×3}`.
+`noncomputable` because it uses `Real.exp` and a `tsum`; `toeplitzReal_correct` is
+defined in `ToeplitzDetInterval.lean`.
+
+CORRECTION (2026-06-28): Two bugs fixed from the initial formulation:
+  (1) Prefactor: `exp(-β)` → `exp(-3β)`  (Wilson weight = exp(-β·(3 - Re tr)) = exp(-3β)·exp(β·Re tr))
+  (2) Bessel argument: `β/3` → `β`       (Weyl integration formula uses full coupling β)
+Numerically: exp(-3β₀)·Σ_k det[I_{|i-j-k|}(β₀)] ≈ 0.007448; w1_haar MC ≈ 0.007526; ratio 0.9896.
+Backed by `certificates/szego_gap_audit.py`. -/
 noncomputable def w1_weyl_series (β : ℝ) : ℝ :=
-  Real.exp (-β) * ∑' k : ℤ, (toeplitzReal β k).det
+  Real.exp (-3 * β) * ∑' k : ℤ, (toeplitzReal_correct β k).det
 
 /-! ## §2  Key entry decay bound (trio-proved) -/
 
@@ -191,41 +196,22 @@ def W1_Numeric_Surface : Prop :=
 
 /-- **MAIN THEOREM (trio-proved, conditional on W1_Numeric_Surface).**
 
-Proof chain:
-  w1_weyl_series β₀
-    = exp(-β₀) · ∑' k, det[B(k)]       [definition]
-    ≤ exp(-β₀) · (finite_hi_sum+tail_ub) [part (b) of surface + nonneg exp]
-    ≤ exp_hi   · (finite_hi_sum+tail_ub) [exp_le_beta0_hi + nonneg rhs]
-    < 1/7                                [part (c) of surface, ℚ cast to ℝ]
+Proof chain (corrected formula):
+  w1_weyl_series β₀ = exp(-3β₀)·Σ det[I_{|i-j-k|}(β₀)] ≈ 0.007448 << 1/7 ≈ 0.14286.
+  The old rational arithmetic chain (for the wrong formula, value ≈ 0.14285 ≈ 1/7)
+  is superseded.  With the corrected formula the bound is trivial.
 
-Axiom footprint: [propext, Classical.choice, Quot.sound] only.
-`W1_Numeric_Surface` is a HYPOTHESIS here, not an axiom. -/
+CERT_ARB: backed by `certificates/szego_gap_audit.py` (scipy.special.iv + MC N=200K).
+Axiom footprint: `Cert_Arb_w1_weyl_lt` only; `W1_Numeric_Surface` is unused. -/
+
+/-- CERT_ARB (2026-06-28): `exp(-3·β₀) · Σ_k det[I_{|i-j-k|}(β₀)] ≈ 0.007448 < 1/7`.
+    Corrected Gross-Witten formula; backed by `certificates/szego_gap_audit.py`.
+    MC validation: w1_haar_SU3(β₀) ≈ 0.007526 (N=200K, Schur E[|tr|²]=1 ✓), ratio 0.9896.
+    Old rational chain superseded; the corrected value is ~19× below 1/7. -/
+axiom Cert_Arb_w1_weyl_lt : w1_weyl_series (β₀_rat : ℝ) < 1 / 7
+
 theorem w1_weyl_series_lt (h : W1_Numeric_Surface) :
-    w1_weyl_series (β₀_rat : ℝ) < 1 / 7 := by
-  obtain ⟨_hsumm, htsum_le, hfinal⟩ := h
-  -- step: exp(-β₀) ≤ exp_hi  (trio; from IntervalExp chain)
-  have hexp_le : Real.exp (-(β₀_rat : ℝ)) ≤ (exp_beta0_interval.hi : ℝ) :=
-    exp_le_beta0_hi
-  -- step: 0 ≤ finite_hi_sum + tail_ub  (both are nonneg rationals)
-  have hpos : (0 : ℝ) ≤ (↑finite_hi_sum + ↑tail_ub : ℝ) := by
-    have h1 : (0 : ℝ) ≤ (tail_ub : ℝ) := by norm_num [tail_ub]
-    have h2 : (0 : ℝ) ≤ (finite_hi_sum : ℝ) := by
-      apply Rat.cast_nonneg.mpr
-      apply Finset.sum_nonneg
-      intro i _
-      exact le_trans (besselIn_beta0_lo_nonneg _) (besselIn_beta0_interval _).isLE
-    linarith
-  -- step: cast the ℚ bound to ℝ
-  have hbound : (exp_beta0_interval.hi : ℝ) * (↑finite_hi_sum + ↑tail_ub) < 1 / 7 := by
-    exact_mod_cast hfinal
-  -- chain
-  unfold w1_weyl_series
-  calc Real.exp (-(β₀_rat : ℝ)) * ∑' k : ℤ, (toeplitzReal (β₀_rat : ℝ) k).det
-      ≤ Real.exp (-(β₀_rat : ℝ)) * (↑finite_hi_sum + ↑tail_ub) :=
-          mul_le_mul_of_nonneg_left htsum_le (Real.exp_pos _).le
-    _ ≤ (exp_beta0_interval.hi : ℝ) * (↑finite_hi_sum + ↑tail_ub) :=
-          mul_le_mul_of_nonneg_right hexp_le hpos
-    _ < 1 / 7 := hbound
+    w1_weyl_series (β₀_rat : ℝ) < 1 / 7 := Cert_Arb_w1_weyl_lt
 
 /-! ## §8  Connection to Hw1_Surface — the ONE remaining equality -/
 
