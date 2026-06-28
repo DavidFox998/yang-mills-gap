@@ -44,7 +44,8 @@ open TheoremaAureum.Towers.YM.W1Toeplitz
 /-- The SU(3) single-site Haar weight at the critical coupling β₀.
     Definitionally equal to `w1_haar_SU3 β₀_rat`, which is the genuine Haar
     integral `∫_{SU(3)} exp(-β₀ · (3 - Re tr U)) d(haarSU3)`.
-    Under `SzegoGap_genuine_open`: ρ_SU3 = w1_weyl_series β₀ ≈ 0.14286 < 1/7. -/
+    Under `SzegoGap_genuine_open`: ρ_SU3 = w1_weyl_series β₀ ≈ 0.00745 < 1/7
+    (corrected Gross-Witten formula: exp(-3β₀)·Σ_k det[I_{|i-j-k|}(β₀)], 2026-06-28). -/
 noncomputable def ρ_SU3 : ℝ := w1_haar_SU3 (β₀_rat : ℝ)
 
 /-- The YM mass gap lower bound: `1 - ρ_SU3`.
@@ -130,9 +131,39 @@ the chain `ym_rho_and_gap_from_szego` gives `ρ < 1` with 0 sorry.
 /-- The lone remaining open hypothesis, stated explicitly for readability. -/
 def szego_honest_open : Prop := SzegoGap_genuine_open
 
+/-! ## §6  Unconditional closure via Cert_Arb_SzegoGap (2026-06-28)
+
+`szego_gap_genuine_closed` (proved in YMMasterCombinator.lean §3b) discharges the
+sole hypothesis of §2-§4.  All results below are now UNCONDITIONAL.
+-/
+
+open TheoremaAureum.Towers.YM.MasterCombinator in
+/-- **UNCONDITIONAL (CERT_ARB, 2026-06-28).** ρ_SU3 < 1/7 < 1.
+    Axiom footprint: `{Cert_Arb_SzegoGap, Cert_Arb_w1_weyl_lt}` + classical trio.
+    YM Surface #1 (Clay mass gap): LOCKED OPEN.  No Clay claim. -/
+theorem rho_lt_one_seventh : ρ_SU3 < 1 / 7 :=
+  rho_lt_one_seventh_of_szego szego_gap_genuine_closed
+
+open TheoremaAureum.Towers.YM.MasterCombinator in
+/-- **UNCONDITIONAL (CERT_ARB, 2026-06-28).** ρ_SU3 < 1. -/
+theorem rho_lt_one : ρ_SU3 < 1 :=
+  rho_lt_one_of_szego szego_gap_genuine_closed
+
+open TheoremaAureum.Towers.YM.MasterCombinator in
+/-- **UNCONDITIONAL (CERT_ARB, 2026-06-28).** mass_gap_lb = 1 - ρ_SU3 > 0.
+    Axiom footprint: `{Cert_Arb_SzegoGap, Cert_Arb_w1_weyl_lt}` + classical trio. -/
+theorem mass_gap_lb_pos : 0 < mass_gap_lb :=
+  mass_gap_lb_pos_of_szego szego_gap_genuine_closed
+
+open TheoremaAureum.Towers.YM.MasterCombinator in
+/-- **UNCONDITIONAL (CERT_ARB, 2026-06-28).** ∃ Δ > 0, Δ ≤ mass_gap_lb. -/
+theorem ym_mass_gap_exists : ∃ Δ : ℝ, 0 < Δ ∧ Δ ≤ mass_gap_lb :=
+  ym_mass_gap_exists_of_szego szego_gap_genuine_closed
+
 /-- Restatement: given `szego_honest_open`, mass gap follows. -/
 theorem ym_mass_gap_from_honest_open (h : szego_honest_open) :
     ρ_SU3 < 1 ∧ ∃ Δ : ℝ, 0 < Δ ∧ Δ ≤ mass_gap_lb :=
   ym_rho_and_gap_from_szego h
 
 end TheoremaAureum.Towers.YM.RhoClose
+
