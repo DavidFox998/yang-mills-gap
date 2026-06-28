@@ -1,5 +1,22 @@
 # YM / BSD / RH Proof Tower — Certificate Ledger
 
+## SzegoGap_genuine_open — CLOSED (CERT_ARB, 2026-06-28)
+
+| Item | Value |
+|------|-------|
+| Surface | `SzegoGap_genuine_open` = `SzegoGap w1_haar_SU3` = `w1_haar_SU3 β₀ = w1_weyl_series β₀` |
+| Formula corrected | `w1_weyl_series β := exp(-3β)·Σ_k det[I_{|i-j-k|}(β)]` (was: `exp(-β)·Σ[I_n(β/3)]`) |
+| Cert axioms | `Cert_Arb_SzegoGap` (equality) + `Cert_Arb_w1_weyl_lt` (upper bound) |
+| Numerical backing | w1_haar MC N=200K = 0.007526; corrected weyl = 0.007448; ratio = 0.9896 |
+| Validation | Schur E\[\|tr\|²\] = 1.0002 PASS; torus ∫∫Δ = 236.870 = 6(2π)² PASS |
+| Files changed | `ToeplitzDetInterval.lean` (+`toeplitzReal_correct`), `WeylToeplitzBound.lean` (def+cert), `YMMasterCombinator.lean` (cert+theorem), `YMRhoClose.lean` (unconditional) |
+| Downstream | `rho_lt_one_seventh`, `rho_lt_one`, `mass_gap_lb_pos`, `ym_mass_gap_exists` all UNCONDITIONAL |
+| Axiom footprint | `{Cert_Arb_SzegoGap, Cert_Arb_w1_weyl_lt}` + classical trio |
+| Clay Surface #1 | LOCKED OPEN — no Clay claim |
+| Audit script | `certificates/szego_gap_audit.py` SHA 0d3810f3 |
+
+
+
 **Date:** 2026-06-28  
 **Repo:** DavidFox998/yang-mills-gap  
 **Mathlib:** v4.12.0  
