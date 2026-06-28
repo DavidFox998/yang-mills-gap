@@ -14,6 +14,7 @@ import Towers.YM.PeterWeyl
 import Towers.YM.RotationInvariance
 -- Transfer-chain + master combinator (all chain _OPEN surfaces closed 2026-06-28):
 import Towers.YM.YMMasterCombinator
+import Towers.YM.YMRhoClose
 
 /-! # YM Tower — Standalone Collection (updated 2026-06-28)
 
@@ -117,6 +118,7 @@ open TheoremaAureum.Towers.YM.SU3Instances
 open TheoremaAureum.Towers.YM.PeterWeyl
 open TheoremaAureum.Towers.YM.LatticeGauge
 open TheoremaAureum.Towers.YM.MasterCombinator
+open TheoremaAureum.Towers.YM.RhoClose
 
 namespace TheoremaAureum.Towers.YM.Collection
 
@@ -371,11 +373,40 @@ theorem col_szego_gap_self : SzegoGap w1_weyl_series :=
     `w1_haar_SU3 β = ∫_{SU(3)} exp(-β · (3 - Re(tr U))) d(haarSU3)`.
 
     This is the Gross-Witten / Weyl integration formula identity.
-    Blocked by Avenue 2 (SU(3) Weyl char formula; 6–12 months)
-    and Avenue 3 (Fredholm.det; 12–18 months).
+    Blocked by Avenue 2 (SU(3) Weyl char formula) and Avenue 3 (Fredholm.det).
+    Once proved, `col_rho_lt_one` and `col_mass_gap_lb_pos` follow unconditionally.
 
     Use `szego_gap_genuine_from_weyl_formula h` to close it given
     `h : w1_haar_SU3 β₀_rat = w1_weyl_series β₀_rat`. -/
 def col_szego_gap_genuine_open : Prop := SzegoGap_genuine_open
+
+/-! ## §7  ρ < 1 and mass gap — conditional re-exports (2026-06-28) -/
+
+/-- **PROVED (trio-only, conditional on SzegoGap_genuine_open).**
+
+    `ρ_SU3 < 1` where `ρ_SU3 = w1_haar_SU3 β₀ = ∫_{SU(3)} exp(-β₀·(3-Re tr U)) d(haar)`.
+
+    Given the Gross-Witten identity:
+      `ρ_SU3 = w1_weyl_series β₀ < 1/7 < 1`
+    via the N=5 Bessel certificate (`bb_w1_weyl_lt`, unconditional, classical trio). -/
+theorem col_rho_lt_one (h_szego : SzegoGap_genuine_open) : ρ_SU3 < 1 :=
+  rho_lt_one_of_szego h_szego
+
+/-- **PROVED (trio-only, conditional on SzegoGap_genuine_open).**
+
+    `mass_gap_lb > 0` where `mass_gap_lb = 1 - ρ_SU3 > 0`.
+    Once `SzegoGap_genuine_open` is proved, the mass gap lower bound follows
+    by `linarith` from `ρ_SU3 < 1`. -/
+theorem col_mass_gap_lb_pos (h_szego : SzegoGap_genuine_open) : 0 < mass_gap_lb :=
+  mass_gap_lb_pos_of_szego h_szego
+
+/-- **PROVED (trio-only, conditional on SzegoGap_genuine_open).**
+
+    Master: `ρ_SU3 < 1 ∧ ∃ Δ > 0, Δ ≤ mass_gap_lb`.
+    HONESTY: `SzegoGap_genuine_open` is the sole genuine open hypothesis.
+    YM mass gap (Clay): OPEN. Surface #1: OPEN. -/
+theorem col_ym_rho_and_gap (h_szego : SzegoGap_genuine_open) :
+    ρ_SU3 < 1 ∧ ∃ Δ : ℝ, 0 < Δ ∧ Δ ≤ mass_gap_lb :=
+  ym_rho_and_gap_from_szego h_szego
 
 end TheoremaAureum.Towers.YM.Collection
