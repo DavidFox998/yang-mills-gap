@@ -18,12 +18,12 @@ the only remaining YM gap in the classical-trio chain is SzegoGap.  This file
 decomposes it into three mathematically independent sub-surfaces and documents the
 closest Mathlib v4.12.0 footholds for each.
 
-  Avenue 1 — JacobiAnger_FormCoeff  [MOST APPROACHABLE — ~150 lines, 2–4 weeks]
+  Avenue 1 — JacobiAnger_FormCoeff  [PROVED 2026-06-28 — 0 sorry, classical trio]
     fourierCoeff(exp(r·cos·)) n = Iₙ(r)
-    Mathlib has: fourierCoeff, fourierCoeff_eq_intervalIntegral,
-                 orthonormal_fourier, hasSum_fourier_series_of_summable.
-    Missing: DCT/uniform-convergence interchange, cos^k Fourier formula (Chebyshev),
-             Bessel series collection (binomial coefficient identity).
+    Proved in JacobiAngerAvenue1.lean via five sub-steps:
+      B  (integral_tsum DCT), C.1 (δ_{m,n}), C (Euler+binomial),
+      D  (choose_factorial_identity), R  (injection reindex m↦|n|+2m).
+    jacobiAnger_proved : JacobiAnger_FormCoeff is unconditional.
 
   Avenue 2 — WeylIntegration_SU3  [HARD — 6–12 months]
     ∫_{SU(3)} exp(-β·(3-Re tr U)) dμ = exp(-3β) · ∑_k det[I_{i-j-k}(β/3)]_{3×3}
@@ -296,9 +296,10 @@ theorem exp_r_cos_L2_approx_available : True := trivial
 
   SzegoGap = Avenue1 ∧ Avenue2 ∧ Avenue3
 
-  Avenue 1 (JacobiAnger_FormCoeff):   OPEN, ~150 lines, 2–4 weeks
-    3 sub-steps: InterchangeSumIntegral + CosPower_FourierCoeff + BesselCollect
-    Each sub-step is ≤60 lines with existing Mathlib infrastructure.
+  Avenue 1 (JacobiAnger_FormCoeff):   **PROVED** (2026-06-28, classical trio, 0 sorry)
+    Proved in JacobiAngerAvenue1.lean: B (integral_tsum DCT) + C.1 (δ_{m,n}) +
+    C (Euler+binomial) + D (choose_factorial_identity) + R (injection reindex).
+    `jacobiAnger_proved : JacobiAnger_FormCoeff` is unconditional.
 
   Avenue 2 (WeylIntegration_SU3):     OPEN, 6–12 months
     Requires: SU(3) Weyl integration formula, character theory.
