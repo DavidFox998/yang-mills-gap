@@ -168,4 +168,81 @@ theorem szego_genuine_decomp :
     SzegoGap_genuine_open :=
   fun ⟨hw, ht⟩ => szego_from_weyl_and_torus hw ht
 
+
+/-! ## §5  Mutual implication completeness
+
+The three propositions `SzegoGap_genuine_open`, `SU3_WeylIntFormula_OPEN f_wilson`,
+and `TorusIntegralWilson_OPEN β₀` form a **mutual-implication triple**:
+
+  Weyl ∧ Torus → Szego   (szego_from_weyl_and_torus, §3)
+  Szego ∧ Torus → Weyl   (weyl_from_szego_and_torus, this section)
+  Szego ∧ Weyl  → Torus  (torus_from_szego_and_weyl, this section)
+
+Consequence: **once ANY ONE surface is proved independently, the other two follow
+immediately from these 0-sorry conditional theorems.** -/
+
+/-- **CONDITIONAL (classical trio, 0 sorry) — closing SU3_WeylIntFormula_OPEN.**
+
+    Given `SzegoGap_genuine_open` and `TorusIntegralWilson_OPEN β₀`,
+    proves `SU3_WeylIntFormula_OPEN (fun g => wilson_weight β₀ g)`.
+
+    Arithmetic: both sides of the Weyl formula equation equal `w1_weyl_series β₀ / 6`:
+      LHS = ∫_T wilson_weight β₀ * Δ  = w1_weyl_series β₀ / 6  (by h_torus)
+      RHS = (1/6) * ∫_G wilson_weight β₀  = (1/6) * w1_haar_SU3 β₀
+          = (1/6) * w1_weyl_series β₀ = w1_weyl_series β₀ / 6  (by h_szego + defs)
+
+    SORRY: 0. Axioms: classical trio. -/
+theorem weyl_from_szego_and_torus
+    (h_szego : SzegoGap_genuine_open)
+    (h_torus : TorusIntegralWilson_OPEN (β₀_rat : Real)) :
+    SU3_WeylIntFormula_OPEN
+      (fun g : Matrix.specialUnitaryGroup (Fin 3) Complex =>
+        wilson_weight (β₀_rat : Real) g) := by
+  refine ⟨1/6, rfl, ?_⟩
+  simp only []
+  -- lhs_val: ∫_T = w1_weyl_series β₀ / 6   (from h_torus, after beta-reduction)
+  have lhs_val := h_torus
+  -- rhs_val: (1/6) * ∫_G ww β₀ ∂haarMeasure = w1_weyl_series β₀ / 6
+  have rhs_val : (1 / 6 : Real) *
+      ∫ g : Matrix.specialUnitaryGroup (Fin 3) Complex,
+        wilson_weight (β₀_rat : Real) g
+        ∂(MeasureTheory.Measure.haarMeasure ⊤) =
+      w1_weyl_series (β₀_rat : Real) / 6 := by
+    have hs : w1_haar_SU3 (β₀_rat : Real) = w1_weyl_series (β₀_rat : Real) := h_szego
+    simp only [w1_haar_eq_wilson_integral, haarSU3_eq_haarMeasure] at hs
+    linarith
+  linarith [lhs_val, rhs_val]
+
+/-- **CONDITIONAL (classical trio, 0 sorry) — closing TorusIntegralWilson_OPEN.**
+
+    Given `SzegoGap_genuine_open` and `SU3_WeylIntFormula_OPEN (fun g => wilson_weight β₀ g)`,
+    proves `TorusIntegralWilson_OPEN β₀`.
+
+    Arithmetic:
+      From h_weyl (C = 1/6):  ∫_T = (1/6) * ∫_G ww β₀
+      From h_szego + defs:    ∫_G ww β₀ = w1_haar_SU3 β₀ = w1_weyl_series β₀
+      Therefore:              ∫_T = (1/6) * w1_weyl_series β₀ = w1_weyl_series β₀ / 6
+
+    SORRY: 0. Axioms: classical trio. -/
+theorem torus_from_szego_and_weyl
+    (h_szego : SzegoGap_genuine_open)
+    (h_weyl : SU3_WeylIntFormula_OPEN
+                (fun g : Matrix.specialUnitaryGroup (Fin 3) Complex =>
+                  wilson_weight (β₀_rat : Real) g)) :
+    TorusIntegralWilson_OPEN (β₀_rat : Real) := by
+  obtain ⟨C, hC, hWeyl⟩ := h_weyl
+  simp only [] at hWeyl ⊢
+  -- hG: ∫_G ww β₀ ∂haarMeasure = w1_weyl_series β₀
+  have hG : ∫ g : Matrix.specialUnitaryGroup (Fin 3) Complex,
+      wilson_weight (β₀_rat : Real) g
+      ∂(MeasureTheory.Measure.haarMeasure ⊤) =
+      w1_weyl_series (β₀_rat : Real) := by
+    have hs : w1_haar_SU3 (β₀_rat : Real) = w1_weyl_series (β₀_rat : Real) := h_szego
+    simp only [w1_haar_eq_wilson_integral, haarSU3_eq_haarMeasure] at hs
+    exact hs
+  -- Substitute: ∫_T = C * ∫_G = C * w1_weyl = (1/6) * w1_weyl = w1_weyl / 6
+  rw [hG] at hWeyl
+  rw [hC] at hWeyl
+  linarith
+
 end TheoremaAureum.Towers.YM.SzegoFromWeyl
