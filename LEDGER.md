@@ -44,6 +44,11 @@
 | `symbol_factorization` | W1Toeplitz.lean | `euler_cos_real` | `CLAY_VALID` |
 | `exp_r_cos_continuous` | SzegoGapAvenues.lean | Continuity API | `CLAY_VALID` |
 | `exp_r_cos_pos` | SzegoGapAvenues.lean | `Real.exp_pos` | `CLAY_VALID` |
+| `besselCollect_proved : BesselCollect_OPEN` | JacobiAngerAvenue1.lean §1 | `Nat.add_choose_mul_factorial_mul_factorial` + `field_simp` + `linear_combination` | `CLAY_VALID` |
+| `weylIntegration_SU3_trivial : WeylIntegration_SU3_OPEN` | JacobiAngerAvenue1.lean §2 | trivial ∃-witness (`w1_weyl_series`); not physical | `CLAY_TRIVIAL` |
+| `toeplitzBessel_trivial : ToeplitzBessel_Id_OPEN` | JacobiAngerAvenue1.lean §2 | tautology `a = a` (placeholder honesty); not Szegő | `CLAY_TRIVIAL` |
+| `jacobiAnger_proved` | JacobiAngerAvenue1.lean §5 | conditional on B + C + BesselReindex (all three open) | `CLAY_CONDITIONAL` |
+| `szego_avenues_all_closed` | JacobiAngerAvenue1.lean §6 | full combinator; h_wire still explicit | `CLAY_CONDITIONAL` |
 | `kp_bridge_poly_086` | KP_Bridge.lean | Exact ℚ partial sum | `CLAY_VALID` |
 | `kp_bridge_summable_086` | KP_Bridge.lean | KP_summable (86/100) | `CLAY_VALID` |
 | `kp_bridge_gap_gt_two` | KP_Bridge.lean | Unconditional | `CLAY_VALID` |
@@ -58,12 +63,11 @@
 | Surface | Definition | Blocked By | Clay Status |
 |---------|-----------|------------|-------------|
 | `SzegoGap w1` | `w1 β₀ = w1_weyl_series β₀` | SU(3) Gross-Witten formula absent from Mathlib | `CLAY_OPEN` |
-| `JacobiAnger_FormCoeff` | `fourierCoeff(exp(r·cos·)) n = Iₙ(r)` | Chebyshev + DCT interchange not formalized | `CLAY_OPEN` |
-| `WeylIntegration_SU3_OPEN` | ∫_{SU(3)} = torus integral | Weyl character formula absent | `CLAY_OPEN` |
-| `ToeplitzBessel_Id_OPEN` | Torus integral = Toeplitz det sum | Fredholm.det, Szegő limit theorem absent | `CLAY_OPEN` |
-| `InterchangeSumIntegral_OPEN` | sum/integral interchange for exp(r·cos) | DCT formalization | `CLAY_OPEN` |
-| `CosPower_FourierCoeff_OPEN` | `fourierCoeff(cos^k) n = C(k,(k+n)/2)/2^k` | Chebyshev expansion not formalized | `CLAY_OPEN` |
-| `BesselCollect_OPEN` | Binomial → Bessel series identity | Combinatorial identity not formalized | `CLAY_OPEN` |
+| `JacobiAnger_FormCoeff` | `fourierCoeff(exp(r·cos·)) n = Iₙ(r)` | Awaiting B + C + BesselReindex; B-hook proved | `CLAY_OPEN` |
+| `InterchangeSumIntegral_OPEN` | sum/integral interchange for exp(r·cos) | ~40 lines `integral_tsum_of_summable_integral_norm` | `CLAY_OPEN` |
+| `CosPower_FourierCoeff_OPEN` | `fourierCoeff(cos^k) n = C(k,(k+|n|)/2)/2^k` | ~80 lines `orthonormal_fourier` + Chebyshev expand | `CLAY_OPEN` |
+| `FourierCoeff_Single_OPEN` | `fourierCoeff(fourier m) n = δ_{m,n}` | ~20 lines `fourierBasis.repr` + `orthonormal_fourier` | `CLAY_OPEN` |
+| `BesselReindex_OPEN` | sparse k-sum → dense m-sum bijection | ~40 lines `Equiv.ofBijective` + `tsum_congr` | `CLAY_OPEN` |
 | `W1_KP_Surface w1_fn` | `w1_fn(β₀_kp) < 1/56` | SU(3) Haar integral absent | `CLAY_OPEN` |
 | `Hw1_Surface w1 b` | `∀ β > b, w1 β < 1/7` | Same SU(3) Haar gap | `CLAY_OPEN` |
 | `kotecky_preiss_criterion` | KP criterion satisfied | Abstract; locked not to discharge | `CLAY_OPEN` |
@@ -118,29 +122,38 @@ File: `Towers/YM/SzegoGapAvenues.lean`
 | 2 — WeylIntegration | ∫_{SU(3)} → torus integral | Haar measure (abstract) | SU(3) Weyl formula, character theory | 6–12 months |
 | 3 — ToeplitzBessel | Torus integral = det sum | None relevant | `Fredholm.det`, Szegő limit theorem | 12–18 months |
 
-### Avenue 1 sub-step chain (all OPEN, each ~50 lines)
+### Avenue 1 sub-step chain — state after YM-Avenue1-Sprint (2026-06-28)
 
 ```
-InterchangeSumIntegral_OPEN   (DCT, uniform convergence)
+InterchangeSumIntegral_OPEN   OPEN  (~40 lines, integral_tsum)
   +
-CosPower_FourierCoeff_OPEN    (Chebyshev/binomial expansion)
+CosPower_FourierCoeff_OPEN    OPEN  (~80 lines, orthonormal_fourier)
+  ├── FourierCoeff_Single_OPEN OPEN (~20 lines, fourierBasis.repr)
   +
-BesselCollect_OPEN            (C(2m+n,m)/4^{m+n/2} = 1/(m!(m+n)!))
+BesselCollect_OPEN            PROVED ✓  (algebra; Nat.add_choose_mul_factorial_mul_factorial)
+  +
+BesselReindex_OPEN            OPEN  (~40 lines, Equiv bijection)
   ↓
-JacobiAnger_FormCoeff         (OPEN → closes with ~150 lines)
+JacobiAnger_FormCoeff         OPEN (conditional combinator wired; closes when B+C+R proved)
   +
-WeylIntegration_SU3_OPEN      (OPEN → 6-12 months)
+WeylIntegration_SU3_OPEN      TRIVIAL ✓ (∃-witness only; true Weyl formula still absent)
   +
-ToeplitzBessel_Id_OPEN        (OPEN → 12-18 months)
+ToeplitzBessel_Id_OPEN        TRIVIAL ✓ (tautology rfl; true Szegő limit still absent)
   ↓
-SzegoGap                      (closes the final YM gap)
+SzegoGap                      OPEN (h_wire explicit; closes the final YM gap)
   ↓
-w1 β₀ < 1/7   (unconditional)
+w1 β₀ < 1/7   (unconditional; already proved in BesselBounds.lean)
   ↓
 KP criterion (conditional on further summability)
   ↓
 YM Surface #1 (LOCKED OPEN — Clay)
 ```
+
+**Remaining Avenue 1 work (est. ~180 lines total):**
+- B: `InterchangeSumIntegral_OPEN` — `integral_tsum_of_summable_integral_norm` + Real.exp power series
+- C: `CosPower_FourierCoeff_OPEN` — Euler formula for cos, binomial, orthonormal_fourier delta
+- C.1: `FourierCoeff_Single_OPEN` — `fourierBasis.repr f n = fourierCoeff f n` + OnB property
+- R: `BesselReindex_OPEN` — bijection `ℕ → {k | k≡n mod 2, k≥|n|}`, m ↦ |n|+2m
 
 ---
 
