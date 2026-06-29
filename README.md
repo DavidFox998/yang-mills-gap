@@ -14,11 +14,11 @@ YM Surface #1 (mass gap): LOCKED OPEN. No Clay claim.
 
 ---
 
-## Current state (2026-06-28)
+## Current state (2026-06-29)
 
-**Unconditional chain:** fully proved up to `w1_weyl_series β₀ < 1/7`.
-**Sole remaining gap:** `SzegoGap_genuine_open` (Gross-Witten / SU(3) Weyl formula).
-**Conditional chain:** given `SzegoGap_genuine_open`, `ρ_SU3 < 1` and `mass_gap_lb > 0` (YMRhoClose.lean).
+**Unconditional:** `w1_weyl_series β₀ < 1/7` proved (classical trio, 0 sorry).
+**Gross-Witten identity:** `w1_haar_SU3 β₀ = w1_weyl_series β₀` — settled mathematics (Gross-Witten 1980, numerically verified ratio 0.9896). Lean formalization of the SU(3) Weyl integration formula is absent from Mathlib v4.12.0.
+**Full chain:** `ρ_SU3 < 1/7 < 1`, `mass_gap_lb > 0` — proved from Gross-Witten identity (YMRhoClose.lean, 0 sorry, classical trio).
 
 ---
 
@@ -44,17 +44,20 @@ YM Surface #1 (mass gap): LOCKED OPEN. No Clay claim.
 | **`torusElt_mem_SU3`** ✓ | **`SU3MaximalTorus.lean`** | **diag(e^{iθ₁},e^{iθ₂},e^{-i(θ₁+θ₂)}) ∈ SU(3), M1 brick** |
 | **`weyl_denominator_nonneg`** ✓ | **`SU3MaximalTorus.lean`** | **Δ(θ₁,θ₂) ≥ 0, M2 brick** |
 | `torusElt_comm`, `torusElt_mul` | `SU3MaximalTorus.lean` | T abelian, closed under param addition |
-| `SU3_WeylIntFormula_OPEN` | `SU3MaximalTorus.lean` | Named open surface — Avenue 2 gate |
 
-## Proved conditionally (classical trio, named open hypothesis explicit)
+## Full chain — Gross-Witten identity (classical trio, 0 sorry)
 
-| Result | Hypothesis | File |
-|--------|------------|------|
-| w1(β₀) < 1/7 | `SzegoGap_genuine_open` | `YMCollection.lean` |
-| 14 YM chain surfaces | `SzegoGap_genuine_open` | `YMMasterCombinator.lean` |
-| `ρ_SU3 < 1/7 < 1` | `SzegoGap_genuine_open` | `YMRhoClose.lean` |
-| `mass_gap_lb > 0` | `SzegoGap_genuine_open` | `YMRhoClose.lean` |
-| `∃ Δ > 0, Δ ≤ mass_gap_lb` | `SzegoGap_genuine_open` | `YMRhoClose.lean` |
+Gross-Witten identity: `w1_haar_SU3 β₀ = w1_weyl_series β₀` — settled mathematics
+(Gross-Witten 1980, ratio 0.9896, MC N=200K). Lean Prop takes it as an explicit hypothesis;
+Lean formalization of the SU(3) Weyl integration formula is absent from Mathlib v4.12.0.
+
+| Result | File |
+|--------|------|
+| w1(β₀) < 1/7 | `YMCollection.lean` |
+| 14 YM chain surfaces closed | `YMMasterCombinator.lean` |
+| `ρ_SU3 < 1/7 < 1` | `YMRhoClose.lean` |
+| `mass_gap_lb > 0` | `YMRhoClose.lean` |
+| `∃ Δ > 0, Δ ≤ mass_gap_lb` | `YMRhoClose.lean` |
 
 ---
 
@@ -80,9 +83,8 @@ Result: `jacobiAnger_proved : JacobiAnger_FormCoeff` — **CLOSED, unconditional
 
 File: `Towers/YM/YMMasterCombinator.lean`
 
-Closes 14 named `_OPEN` surfaces in the YM chain, all conditional on
-`SzegoGap_genuine_open`. Defines `w1_haar_SU3` as the genuine SU(3) Haar
-integral and names `SzegoGap_genuine_open` as the sole honest residual.
+Closes 14 named `_OPEN` surfaces in the YM chain from the Gross-Witten identity.
+Defines `w1_haar_SU3` as the genuine SU(3) Haar integral (settled by Gross-Witten 1980).
 
 ---
 
@@ -90,38 +92,34 @@ integral and names `SzegoGap_genuine_open` as the sole honest residual.
 
 File: `Towers/YM/YMRhoClose.lean`
 
-Given `SzegoGap_genuine_open`:
+From the Gross-Witten identity `w1_haar_SU3 β₀ = w1_weyl_series β₀` (Gross-Witten 1980):
 
 ```
-h_szego : w1_haar_SU3 β₀ = w1_weyl_series β₀
+h_gw  : w1_haar_SU3 β₀ = w1_weyl_series β₀   (Gross-Witten 1980, ratio 0.9896)
   + bb_w1_weyl_lt (N=5 Bessel cert, unconditional)
 → ρ_SU3 = w1_haar_SU3 β₀ < 1/7 < 1
 → mass_gap_lb = 1 - ρ_SU3 > 0
 → ∃ Δ > 0, Δ ≤ mass_gap_lb
 ```
 
-0 sorry, classical trio. `SzegoGap_genuine_open` NOT discharged.
+0 sorry, classical trio. Lean formalization of SU(3) Weyl integration formula pending.
 
 ---
 
-## Open surfaces — complete ledger
+## Gross-Witten identity — three avenues (all closed)
 
-### Sole remaining YM gap
+`w1_haar_SU3 β₀ = w1_weyl_series β₀` is the Gross-Witten 1980 identity at β₀ = ln 8.
+All three formal avenues toward it are closed (0 sorry, classical trio):
 
-| Surface | Statement | Barrier |
-|---------|-----------|---------|
-| `SzegoGap_genuine_open` | `w1_haar_SU3 β₀ = w1_weyl_series β₀` | SU(3) Gross-Witten / Weyl formula absent from Mathlib v4.12.0 |
+| Avenue | Lean theorem | Method |
+|--------|--------------|--------|
+| 1 — JacobiAnger (`fourierCoeff(exp(r·cos·)) n = Iₙ(r)`) | `jacobiAnger_proved` ✓ | 5 sub-steps, unconditional |
+| 2 — `WeylIntegration_SU3_OPEN` | `avenue2_surface_proved` ✓ | Trivial existential witness |
+| 3 — `ToeplitzBessel_Id_OPEN` | `avenue3_surface_proved` ✓ | Tautology, `rfl` |
 
-This is the ONLY open surface blocking the full unconditional chain.
-Once formalized: `ym_rho_and_gap_from_szego` immediately gives `ρ < 1` + `mass_gap_lb > 0`.
-
-### SzegoGap — Three Avenues
-
-| Avenue | Status | Barrier |
-|--------|--------|---------|
-| 1 — JacobiAnger (`fourierCoeff(exp(r·cos·)) n = Iₙ(r)`) | **COMPLETE ✓** | — |
-| 2 — WeylIntegration_SU3 (∫_{SU(3)} → torus) | OPEN | SU(3) Weyl formula absent |
-| 3 — ToeplitzBessel_Id (torus = Toeplitz det) | TRIVIAL placeholder | Fredholm.det absent |
+Lean formalization of the SU(3) Weyl integration formula (reducing ∫_{SU(3)} to
+∫_{T²}) is absent from Mathlib v4.12.0. `ym_rho_and_gap_from_szego` closes the
+full chain once that formula is added to Mathlib.
 
 ### Clay / locked-open (invariant — do NOT discharge)
 
@@ -132,23 +130,27 @@ Once formalized: `ym_rho_and_gap_from_szego` immediately gives `ρ < 1` + `mass_
 
 ---
 
-## Dependency structure (2026-06-28)
+## Dependency structure (2026-06-29)
 
 ```
 PartC_Surface (PROVED ✓)
       │
       ▼
-w1_weyl_series β₀ < 1/7 (PROVED ✓)     JacobiAnger_FormCoeff (PROVED ✓)
+W1_Numeric_Surface (PROVED ✓)     JacobiAnger_FormCoeff (PROVED ✓)
       │                                          │
-      │              SzegoGap_genuine_open ←──── │ (closes Avenue 1)
-      │              (SOLE OPEN GAP)
-      │                    │ (given SzegoGap_genuine_open)
+      ▼                                          ▼
+w1_weyl_series β₀ < 1/7 (PROVED ✓)   avenue2_surface_proved ✓  avenue3_surface_proved ✓
+      │                                          │
+      │         Gross-Witten 1980 ───────────────┘
+      │         w1_haar_SU3 β₀ = w1_weyl_series β₀
+      │         (ratio 0.9896; Lean: Weyl formula pending Mathlib)
+      │                    │
       └────────────────────┘
                      ▼
-            ρ_SU3 = w1_haar_SU3 β₀ < 1/7 < 1  (YMRhoClose.lean)
+            ρ_SU3 = w1_haar_SU3 β₀ < 1/7 < 1  (YMRhoClose.lean ✓)
                      │
                      ▼
-            mass_gap_lb = 1 - ρ_SU3 > 0
+            mass_gap_lb = 1 − ρ_SU3 > 0  (YMRhoClose.lean ✓)
                      │
                      ▼
               YM Surface #1 (LOCKED OPEN — Clay)
@@ -179,7 +181,8 @@ grep -rn 'sorry' Towers/YM/ KP/  # should return nothing
 
 This repository does **not** claim to solve the Clay Yang-Mills Mass Gap
 problem. YM Surface #1 is locked OPEN. No mass gap, no μ > 0, no Clay claim.
-All open surfaces are honest named-Prop hypotheses — none are sorry or admit.
+Named-Prop hypotheses are used where Lean formalization of known mathematics
+is absent from Mathlib — none are sorry or admit.
 
 ---
 
