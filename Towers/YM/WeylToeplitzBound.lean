@@ -9,7 +9,8 @@
 --         directly from `toeplitz_det_contains`.
 --     § exp_le_beta0_hi  — exp(-β₀) ≤ exp_beta0_interval.hi,
 --         from `exp_neg_beta0_enclosure`.
---     § w1_weyl_series_lt  — CONDITIONAL: W1_Numeric_Surface → w1_weyl_series β₀ < 1/7.
+--     § W1_WeylBeta0_Open  — named open surface (def, not axiom).
+--     § w1_weyl_series_lt  — conditional: W1_Numeric_Surface + W1_WeylBeta0_Open → bound.
 --     § hw1_from_series  — CONDITIONAL: W1_Weyl_Series_Surface w1 ∧ W1_Numeric_Surface
 --         → w1 β₀ < 1/7.  Classical trio footprint throughout.
 --
@@ -202,16 +203,19 @@ Proof chain (corrected formula):
   is superseded.  With the corrected formula the bound is trivial.
 
 CERT_ARB: backed by `certificates/szego_gap_audit.py` (scipy.special.iv + MC N=200K).
-Axiom footprint: `Cert_Arb_w1_weyl_lt` only; `W1_Numeric_Surface` is unused. -/
+Open surfaces: `W1_WeylBeta0_Open` (named def, not axiom). `W1_Numeric_Surface` certifies the β₇ bound. -/
 
 /-- CERT_ARB (2026-06-28): `exp(-3·β₀) · Σ_k det[I_{|i-j-k|}(β₀)] ≈ 0.007448 < 1/7`.
     Corrected Gross-Witten formula; backed by `certificates/szego_gap_audit.py`.
     MC validation: w1_haar_SU3(β₀) ≈ 0.007526 (N=200K, Schur E[|tr|²]=1 ✓), ratio 0.9896.
     Old rational chain superseded; the corrected value is ~19× below 1/7. -/
-axiom Cert_Arb_w1_weyl_lt : w1_weyl_series (β₀_rat : ℝ) < 1 / 7
+def W1_WeylBeta0_Open : Prop :=
+    w1_weyl_series (β₀_rat : ℝ) < 1 / 7
 
-theorem w1_weyl_series_lt (h : W1_Numeric_Surface) :
-    w1_weyl_series (β₀_rat : ℝ) < 1 / 7 := Cert_Arb_w1_weyl_lt
+/-- **Conditional on `W1_WeylBeta0_Open`.**
+    `W1_Numeric_Surface` certifies the β₇ bound; `hw` carries the β₀ bound. -/
+theorem w1_weyl_series_lt (_ : W1_Numeric_Surface) (hw : W1_WeylBeta0_Open) :
+    w1_weyl_series (β₀_rat : ℝ) < 1 / 7 := hw
 
 /-! ## §8  Connection to Hw1_Surface — the ONE remaining equality -/
 
@@ -237,9 +241,10 @@ we derive `w1 β₀ < 1/7` with ONLY the classical trio as axioms.
 theorem hw1_from_series
     (w1 : ℝ → ℝ)
     (hweyl : W1_Weyl_Series_Surface w1)
-    (hnum : W1_Numeric_Surface) :
+    (hnum : W1_Numeric_Surface)
+    (hw0 : W1_WeylBeta0_Open) :
     w1 (β₀_rat : ℝ) < 1 / 7 :=
-  hweyl ▸ w1_weyl_series_lt hnum
+  hweyl ▸ w1_weyl_series_lt hnum hw0
 
 end TheoremaAureum.Towers.YM.WeylToeplitzBound
 
@@ -271,10 +276,10 @@ open TheoremaAureum.Towers.YM.IntervalArith in
 
 ```
 #print axioms w1_weyl_series_lt
--- [propext, Classical.choice, Quot.sound]   (W1_Numeric_Surface is a hypothesis)
+-- [propext, Classical.choice, Quot.sound]   (W1_WeylBeta0_Open is a free hypothesis, not an axiom)
 
 #print axioms hw1_from_series
--- [propext, Classical.choice, Quot.sound]   (both surfaces are hypotheses)
+-- [propext, Classical.choice, Quot.sound]   (all three surfaces are free hypotheses, not axioms)
 
 #print axioms besselI_series_le_exp_bound
 -- [propext, Classical.choice, Quot.sound]
