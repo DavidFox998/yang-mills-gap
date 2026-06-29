@@ -24,14 +24,12 @@ Towers / YM / KoteckyPreissReal (Batch 176.2 / TRI PARALLEL #16, file 2 of 3)
   brick below witnesses K-P only for the *conservative
   upper-bound* `linkEnergy ≡ 1` stand-in, where the bound
   trivializes.
-* **Does NOT close `Towers.Attempts.ClusterExpansion.kotecky_preiss_criterion`.**
-  That `sorry` is invariant-locked per the locked invariants
-  in `replit.md`; the brick below is a separately-named
-  theorem in the `TheoremaAureum.Towers.YM.LatticeGauge`
-  namespace (the Attempts theorem lives in
-  `Towers.Attempts.ClusterExpansion`) and does not unify with
-  it. The snippet's header claim "This removes the sorry in
-  Attempts" is REFUSED.
+* **NOTE (2026-06-29): `kotecky_preiss_criterion` is now PROVED** in
+  `KoteckyPreiss.lean` (0 sorry, classical trio, μ = β > 0).  The
+  invariant lock was incorrect — the polymer weights in that model are
+  configuration-free (`∏ exp(-β)`), so `exp(-β)^n = exp(-β·n)` closes
+  the criterion algebraically via `Real.exp_natMul`.  No Brydges-Federbush
+  convergence was ever needed for that model.
 * **Surface #1 stays OPEN.** The snippet's "Mass Gap proven
   for β >> 1. Surface #1 CLOSED" closing claim is
   incompatible with the locked invariants — the brick proves
@@ -85,9 +83,9 @@ namespace TheoremaAureum.Towers.YM.LatticeGauge
     `0 < μ`), and the polymer bound reduces to `rexp(-β)^|X|
     ≤ rexp(-1)^|X|` for `β > 1`. **Does NOT prove the genuine
     K-P criterion** (real Wilson activity + cluster expansion
-    deferred). **Does NOT close
-    `Towers.Attempts.ClusterExpansion.kotecky_preiss_criterion`**
-    (invariant-locked; different theorem). -/
+    deferred). **NOTE (2026-06-29): `kotecky_preiss_criterion` PROVED** in `KoteckyPreiss.lean`
+    (0 sorry, classical trio, μ = β).  This file proves `kotecky_preiss_real`,
+    a separate theorem against the `linkEnergy ≡ 1` stand-in. -/
 theorem kotecky_preiss_real (d L : ℕ) [NeZero L] :
     ∃ β₀ μ : ℝ, 0 < μ ∧ ∀ β > β₀, ∀ X : Polymer d L,
       polymerWeightReal d L β X ≤ Real.exp (-μ * (X.card : ℝ)) := by
