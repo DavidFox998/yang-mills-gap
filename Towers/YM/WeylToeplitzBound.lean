@@ -116,7 +116,7 @@ theorem besselI_series_le_exp_bound (n : ℕ) (x : ℝ) (hx : 0 ≤ x) :
         tsum_le_tsum hterm hsumm hsumm_dom
     _ = (x / 2) ^ n * ∑' k : ℕ, ((x / 2) ^ 2) ^ k / ↑k.factorial := tsum_mul_left
     _ = (x / 2) ^ n * Real.exp ((x / 2) ^ 2) := by
-        congr 1; exact (Real.exp_eq_tsum _).symm
+        congr 1; exact (Real.hasSum_pow_div_factorial ((x / 2) ^ 2)).tsum_eq
 
 /-! ## §3  Finite sum upper bound (trio-proved) -/
 
