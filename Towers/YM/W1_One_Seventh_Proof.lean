@@ -12,6 +12,8 @@
 --
 -- All proofs: classical trio only.  0 sorry.  0 new axioms.
 
+import Towers.YM.WeylToeplitzBound
+import Towers.YM.W1NumericProof
 import Towers.YM.BesselBounds
 
 namespace TheoremaAureum.Towers.YM.W1SeventhProof
