@@ -1,9 +1,9 @@
 /-
 SzegoFromWeyl.lean — Conditional derivations of SzegoGap_genuine_open.
 
-STATUS (2026-06-28): SzegoGap_genuine_open is CLOSED via Cert_Arb_SzegoGap
-  (YMMasterCombinator.lean §3b).  The conditional theorems below remain as
-  logical infrastructure but are no longer the closing path.
+STATUS (2026-06-29): Cert_Arb_SzegoGap axiom REMOVED (axioms policy).
+  SzegoGap_genuine_open is a named open surface (no axiom).
+  The conditional theorems below are the honest open path.
 
 FORMULA CORRECTION (2026-06-28):
   w1_weyl_series was fixed from exp(-beta)*Toeplitz[I_n(beta/3)]
@@ -20,14 +20,14 @@ Conditional derivation (A+B -> S):
 NUMERICAL AUDIT (2026-06-28):
     w1_haar_SU3 beta0 = 0.00753  (MC N=200K; Schur E[|tr|^2]=1.0002 PASS)
     w1_weyl_series beta0 (CORRECTED) = 0.007448  (exp(-3*beta)*Toeplitz[I_n(beta)])
-    SzegoGap_genuine_open (S): CLOSED by Cert_Arb_SzegoGap (ratio 0.9896, within MC noise)
+    SzegoGap_genuine_open (S): OPEN (named open surface; axiom removed 2026-06-29)
 
     TorusIntegralWilson_OPEN (B): OPEN (1.7641 != 0.02381, factor ~74 — wrong formula)
     SU3_WeylIntFormula_OPEN (A): OPEN (1.7641 != 0.00126, factor ~1402 — wrong C=1/6)
 
   Full audit: certificates/szego_gap_audit.py, Towers/YM/SzegoGapAudit.md
 
-SORRY: 0. Axioms: {propext, Classical.choice, Quot.sound} + Cert_Arb_SzegoGap.
+SORRY: 0. Axioms: {propext, Classical.choice, Quot.sound}. (Cert_Arb_SzegoGap removed 2026-06-29)
 YM Surface #1: LOCKED OPEN. No Clay claim.
 -/
 
