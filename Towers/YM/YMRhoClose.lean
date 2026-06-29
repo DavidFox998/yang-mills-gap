@@ -9,7 +9,7 @@ Closes `ρ_SU3 < 1` and the YM mass gap lower bound CONDITIONALLY on
   `SzegoGap_genuine_open`
     ↓ unfold (SzegoGap_genuine_open → SzegoGap → W1_Weyl_Series_Surface)
   `w1_haar_SU3 β₀ = w1_weyl_series β₀`
-    ↓ rw + bb_w1_weyl_lt (N=5 Bessel certificate, unconditional)
+    ↓ rw + bb_w1_weyl_lt hw0 (conditional on W1_WeylBeta0_Open, no axiom)
   `w1_haar_SU3 β₀ < 1/7`
     ↓ def ρ_SU3 := w1_haar_SU3 β₀
   `ρ_SU3 < 1/7 < 1`
@@ -61,36 +61,37 @@ noncomputable def mass_gap_lb : ℝ := 1 - ρ_SU3
                                          = W1_Weyl_Series_Surface w1_haar_SU3
                                          = (w1_haar_SU3 β₀ = w1_weyl_series β₀)`
       (2) rewrite: goal `w1_haar_SU3 β₀ < 1/7` becomes `w1_weyl_series β₀ < 1/7`
-      (3) close: `bb_w1_weyl_lt` (N=5 Bessel certificate, 0 sorry, classical trio).
+      (3) close: `bb_w1_weyl_lt hw0` (conditional on W1_WeylBeta0_Open, 0 sorry, 0 axiom).
 
-    `#print axioms rho_lt_one_seventh_of_szego` → classical trio. -/
+    `#print axioms rho_lt_one_seventh_of_szego` → classical trio
+    (W1_WeylBeta0_Open and SzegoGap_genuine_open are free hypotheses). -/
 theorem rho_lt_one_seventh_of_szego
-    (h_szego : SzegoGap_genuine_open) : ρ_SU3 < 1 / 7 := by
+    (h_szego : SzegoGap_genuine_open) (hw0 : W1_WeylBeta0_Open) : ρ_SU3 < 1 / 7 := by
   unfold ρ_SU3
   calc w1_haar_SU3 (β₀_rat : ℝ)
       = w1_weyl_series (β₀_rat : ℝ) := h_szego
-    _ < 1 / 7 := bb_w1_weyl_lt
+    _ < 1 / 7 := bb_w1_weyl_lt hw0
 
 /-- **PROVED (trio-only, conditional on SzegoGap_genuine_open).**
     `ρ_SU3 < 1/7 < 1`. -/
-theorem rho_lt_one_of_szego (h_szego : SzegoGap_genuine_open) : ρ_SU3 < 1 :=
-  lt_trans (rho_lt_one_seventh_of_szego h_szego) (by norm_num)
+theorem rho_lt_one_of_szego (h_szego : SzegoGap_genuine_open) (hw0 : W1_WeylBeta0_Open) : ρ_SU3 < 1 :=
+  lt_trans (rho_lt_one_seventh_of_szego h_szego hw0) (by norm_num)
 
 /-! ## §3  Mass gap lower bound is positive -/
 
 /-- **PROVED (trio-only, conditional on SzegoGap_genuine_open).**
     The mass gap lower bound `mass_gap_lb = 1 - ρ_SU3 > 0`. -/
-theorem mass_gap_lb_pos_of_szego (h_szego : SzegoGap_genuine_open) :
+theorem mass_gap_lb_pos_of_szego (h_szego : SzegoGap_genuine_open) (hw0 : W1_WeylBeta0_Open) :
     0 < mass_gap_lb := by
   unfold mass_gap_lb
-  linarith [rho_lt_one_of_szego h_szego]
+  linarith [rho_lt_one_of_szego h_szego hw0]
 
 /-- **PROVED (trio-only, conditional on SzegoGap_genuine_open).**
     The YM mass gap exists: `∃ Δ > 0, Δ ≤ mass_gap_lb`.
     Witness: `Δ := mass_gap_lb = 1 - ρ_SU3`. -/
-theorem ym_mass_gap_exists_of_szego (h_szego : SzegoGap_genuine_open) :
+theorem ym_mass_gap_exists_of_szego (h_szego : SzegoGap_genuine_open) (hw0 : W1_WeylBeta0_Open) :
     ∃ Δ : ℝ, 0 < Δ ∧ Δ ≤ mass_gap_lb :=
-  ⟨mass_gap_lb, mass_gap_lb_pos_of_szego h_szego, le_refl _⟩
+  ⟨mass_gap_lb, mass_gap_lb_pos_of_szego h_szego hw0, le_refl _⟩
 
 /-! ## §4  Master combinator: SzegoGap_genuine_open → ρ < 1 ∧ mass gap -/
 
@@ -110,9 +111,9 @@ theorem ym_mass_gap_exists_of_szego (h_szego : SzegoGap_genuine_open) :
       NOT `1 - ρ_SU3`; that would require Perron-Frobenius for the
       *real* Wilson transfer operator, absent from Mathlib v4.12.0.
     - `kotecky_preiss_criterion` stays invariant-locked OPEN. -/
-theorem ym_rho_and_gap_from_szego (h_szego : SzegoGap_genuine_open) :
+theorem ym_rho_and_gap_from_szego (h_szego : SzegoGap_genuine_open) (hw0 : W1_WeylBeta0_Open) :
     ρ_SU3 < 1 ∧ ∃ Δ : ℝ, 0 < Δ ∧ Δ ≤ mass_gap_lb :=
-  ⟨rho_lt_one_of_szego h_szego, ym_mass_gap_exists_of_szego h_szego⟩
+  ⟨rho_lt_one_of_szego h_szego hw0, ym_mass_gap_exists_of_szego h_szego hw0⟩
 
 /-! ## §5  Honest residual: what SzegoGap_genuine_open actually requires
 
@@ -131,39 +132,39 @@ the chain `ym_rho_and_gap_from_szego` gives `ρ < 1` with 0 sorry.
 /-- The lone remaining open hypothesis, stated explicitly for readability. -/
 def szego_honest_open : Prop := SzegoGap_genuine_open
 
-/-! ## §6  Unconditional closure via Cert_Arb_SzegoGap (2026-06-28)
+/-! ## §6  Conditional closure (2026-06-29)
 
-`szego_gap_genuine_closed` (proved in YMMasterCombinator.lean §3b) discharges the
-sole hypothesis of §2-§4.  All results below are now UNCONDITIONAL.
+`Cert_Arb_SzegoGap` and `Cert_Arb_w1_weyl_lt` have been removed (axioms policy).
+These theorems now take the two named open surfaces as explicit hypotheses.
+No axiom, no sorry, 0 named axioms beyond the classical trio.
 -/
 
-open TheoremaAureum.Towers.YM.MasterCombinator in
-/-- **UNCONDITIONAL (CERT_ARB, 2026-06-28).** ρ_SU3 < 1/7 < 1.
-    Axiom footprint: `{Cert_Arb_SzegoGap, Cert_Arb_w1_weyl_lt}` + classical trio.
+/-- **Conditional on SzegoGap_genuine_open + W1_WeylBeta0_Open.**
     YM Surface #1 (Clay mass gap): LOCKED OPEN.  No Clay claim. -/
-theorem rho_lt_one_seventh : ρ_SU3 < 1 / 7 :=
-  rho_lt_one_seventh_of_szego szego_gap_genuine_closed
+theorem rho_lt_one_seventh
+    (h_szego : SzegoGap_genuine_open) (hw0 : W1_WeylBeta0_Open) : ρ_SU3 < 1 / 7 :=
+  rho_lt_one_seventh_of_szego h_szego hw0
 
-open TheoremaAureum.Towers.YM.MasterCombinator in
-/-- **UNCONDITIONAL (CERT_ARB, 2026-06-28).** ρ_SU3 < 1. -/
-theorem rho_lt_one : ρ_SU3 < 1 :=
-  rho_lt_one_of_szego szego_gap_genuine_closed
+/-- **Conditional on SzegoGap_genuine_open + W1_WeylBeta0_Open.** ρ_SU3 < 1. -/
+theorem rho_lt_one
+    (h_szego : SzegoGap_genuine_open) (hw0 : W1_WeylBeta0_Open) : ρ_SU3 < 1 :=
+  rho_lt_one_of_szego h_szego hw0
 
-open TheoremaAureum.Towers.YM.MasterCombinator in
-/-- **UNCONDITIONAL (CERT_ARB, 2026-06-28).** mass_gap_lb = 1 - ρ_SU3 > 0.
-    Axiom footprint: `{Cert_Arb_SzegoGap, Cert_Arb_w1_weyl_lt}` + classical trio. -/
-theorem mass_gap_lb_pos : 0 < mass_gap_lb :=
-  mass_gap_lb_pos_of_szego szego_gap_genuine_closed
+/-- **Conditional on SzegoGap_genuine_open + W1_WeylBeta0_Open.** mass_gap_lb > 0. -/
+theorem mass_gap_lb_pos
+    (h_szego : SzegoGap_genuine_open) (hw0 : W1_WeylBeta0_Open) : 0 < mass_gap_lb :=
+  mass_gap_lb_pos_of_szego h_szego hw0
 
-open TheoremaAureum.Towers.YM.MasterCombinator in
-/-- **UNCONDITIONAL (CERT_ARB, 2026-06-28).** ∃ Δ > 0, Δ ≤ mass_gap_lb. -/
-theorem ym_mass_gap_exists : ∃ Δ : ℝ, 0 < Δ ∧ Δ ≤ mass_gap_lb :=
-  ym_mass_gap_exists_of_szego szego_gap_genuine_closed
+/-- **Conditional on SzegoGap_genuine_open + W1_WeylBeta0_Open.** ∃ Δ > 0. -/
+theorem ym_mass_gap_exists
+    (h_szego : SzegoGap_genuine_open) (hw0 : W1_WeylBeta0_Open) : ∃ Δ : ℝ, 0 < Δ ∧ Δ ≤ mass_gap_lb :=
+  ym_mass_gap_exists_of_szego h_szego hw0
 
-/-- Restatement: given `szego_honest_open`, mass gap follows. -/
-theorem ym_mass_gap_from_honest_open (h : szego_honest_open) :
+/-- Restatement: given both named open surfaces, mass gap follows. -/
+theorem ym_mass_gap_from_honest_open
+    (h : szego_honest_open) (hw0 : W1_WeylBeta0_Open) :
     ρ_SU3 < 1 ∧ ∃ Δ : ℝ, 0 < Δ ∧ Δ ≤ mass_gap_lb :=
-  ym_rho_and_gap_from_szego h
+  ym_rho_and_gap_from_szego h hw0
 
 end TheoremaAureum.Towers.YM.RhoClose
 
