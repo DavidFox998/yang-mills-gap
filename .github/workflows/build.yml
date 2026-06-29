@@ -16,7 +16,8 @@ jobs:
 
       - name: Install elan
         run: |
-          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh             -sSf | sh -s -- -y --default-toolchain leanprover/lean4:v4.12.0
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            -sSf | sh -s -- -y --default-toolchain leanprover/lean4:v4.12.0
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
       - name: lake update
@@ -28,28 +29,25 @@ jobs:
       - name: lake build
         run: lake build
 
-      - name: Check zero sorry (comment-aware)
-        run: python3 -c "
-import re, sys
-from pathlib import Path
-
-sorry_pat = re.compile(r'\bsorry\b')
-found = []
-
-for d in ['Towers/YM', 'KP']:
-    for p in sorted(Path(d).rglob('*.lean')):
-        code = p.read_text(encoding='utf-8', errors='replace')
-        # Strip block comments /-...-/
-        code = re.sub(r'/-.*?-/', ' ', code, flags=re.DOTALL)
-        for lineno, line in enumerate(code.split('\n'), 1):
-            codeline = re.sub(r'--.*', '', line)
-            if sorry_pat.search(codeline):
-                found.append(str(p) + ':' + str(lineno) + ': ' + line.strip()[:120])
-
-if found:
-    print('FAIL: sorry in code (not comment):')
-    for x in found[:30]:
-        print(' ', x)
-    sys.exit(1)
-print('PASS: 0 sorry in code')
-"
+      - name: Check zero sorry
+        run: |
+          python3 - <<'PYEOF'
+          import re, sys
+          from pathlib import Path
+          sorry_pat = re.compile(r'\bsorry\b')
+          found = []
+          for lean_dir in ['Towers/YM', 'KP']:
+              for p in sorted(Path(lean_dir).rglob('*.lean')):
+                  code = p.read_text(encoding='utf-8', errors='replace')
+                  code = re.sub(r'/-.*?-/', ' ', code, flags=re.DOTALL)
+                  for lineno, line in enumerate(code.split('\n'), 1):
+                      codeline = re.sub(r'--.*', '', line)
+                      if sorry_pat.search(codeline):
+                          found.append(str(p)+':'+str(lineno)+': '+line.strip()[:100])
+          if found:
+              print('FAIL: sorry found in code:')
+              for x in found[:20]:
+                  print('  '+x)
+              sys.exit(1)
+          print('PASS: 0 sorry in code')
+          PYEOF
