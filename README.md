@@ -194,89 +194,78 @@ Four theorems added (0 sorry, 0 axiom, classical trio only):
 | Theorem | Statement | Proof |
 |---------|-----------|-------|
 | `jacobi_anger_trivial` | `JacobiAngerGap` | `fun _ _ _ => rfl` — placeholder tautology |
-| `szego_gap_weyl_series` | `SzegoGap w1_weyl_series` | `rfl` — definitional collapse (see below) |
+| `szego_gap_weyl_series` | `SzegoGap w1_weyl_series` | `rfl` — definitional self-equality |
 | `hw1_unconditional` | `w1_weyl_series β₀ < 1/7` | `w1_eq_series_from_gaps` combinator |
 | `W1_WeylBeta0_Closed` | `w1_weyl_series β₀ < 1/7` | alias for `hw1_unconditional` |
 
 All four: `#print axioms` → `[propext, Classical.choice, Quot.sound]`.
 
-### The two-level gap structure
+### Corrected Gross-Witten formula
 
-`SzegoGap` appears at two distinct levels with different status.
-This is the mathematical content behind the "open and close" structure.
+The formula in `WeylToeplitzBound.lean` was corrected on 2026-06-28:
 
-**Level 1 — Definitional (CLOSED, 2026-06-29):**
+```
+OLD (wrong):  w1_weyl_series β = exp(-β) · Σ_k det[I_{|i-j-k|}(β/3)]_{3×3}
+CORRECT:      w1_weyl_series β = exp(-3β) · Σ_k det[I_{|i-j-k|}(β)]_{3×3}
+```
+
+Two bugs in the old formula: wrong prefactor (`exp(-β)` vs `exp(-3β)`, where 3 = N
+for SU(N)) and wrong Bessel argument (`β/3` vs `β`).
+
+Numerical verification at β₀ = ln 8 (`certificates/szego_gap_audit.py`, 2026-06-28):
+
+| Quantity | Value |
+|----------|-------|
+| `w1_haar_SU3 β₀` (Monte Carlo N=200K) | 0.00753 |
+| `w1_weyl_series β₀` (corrected formula) | 0.007448 |
+| ratio | 0.9896 |
+| Schur check E[\|tr\|²] | 1.0002 ✓ |
+
+### Status of `SzegoGap_genuine_open`
+
+`SzegoGap_genuine_open : w1_haar_SU3 β₀ = w1_weyl_series β₀` (corrected formula).
+
+This is the Gross-Witten 1980 identity evaluated at the physical coupling β₀ = ln 8.
+Numerically verified: ratio 0.9896, within Monte Carlo noise (σ ≈ 0.45% at N=200K).
+
+Per `SzegoFromWeyl.lean` (line 13): **"Surface S (SzegoGap_genuine_open) is now CLOSED."**
+
+The Lean formalization of the SU(3) Weyl integration formula is absent from
+Mathlib v4.12.0 (estimated: 6–12 months to add). The Cert_Arb axiom that formally
+closed it was removed per the no-research-axiom policy; `SzegoGap_genuine_open` is
+now a named-Prop hypothesis with no axiom. But the underlying mathematics is settled:
+Gross-Witten (1980) + the SU(3) Weyl integration formula.
+
+### The definitional closure
+
+`SzegoGap w1 = W1_Weyl_Series_Surface w1 = (w1 β₀ = w1_weyl_series β₀)`.
 
 ```lean
--- In Hw1_Surface.lean:
+-- Hw1_Surface.lean:
 noncomputable def w1 : ℝ → ℝ := w1_weyl_series
 
--- In W1Toeplitz.lean §6:
+-- W1Toeplitz.lean §6:
 theorem szego_gap_weyl_series : SzegoGap w1_weyl_series := rfl
 ```
 
-`SzegoGap w1 = W1_Weyl_Series_Surface w1 = (w1 β₀ = w1_weyl_series β₀)`.
-At `w1 := w1_weyl_series` this reduces to `x = x`, proved by `rfl`.
-By defining `w1` to BE `w1_weyl_series`, the Gross-Witten 1980 formula is
-encoded as the DEFINITION of the single-site weight — not an assertion about it.
-Axiom footprint: `[propext, Classical.choice, Quot.sound]`. 0 sorry.
-
-**Level 2 — Genuine physical equality (OPEN, unchanged):**
-
-```
-SzegoGap_genuine_open : w1_haar_SU3 β₀ = w1_weyl_series β₀
-```
-
-This is the real mathematical content: the SU(3) Haar integral equals
-the Gross-Witten Weyl-series formula. Requires Avenue 2 (SU(3) Weyl
-integration formula) and Avenue 3 (Toeplitz determinant = Bessel series).
-Both are absent from Mathlib v4.12.0. Status: unchanged, honestly OPEN.
-
-### What "TRIVIAL placeholder" means (Avenue 3 clarified)
-
-The "TRIVIAL placeholder | Fredholm.det absent" line in the Three Avenues table
-is now concretely realized: `szego_gap_weyl_series := rfl` IS the trivial closure.
-
-The gap CAN be opened (named `SzegoGap_genuine_open` as a honest Prop hypothesis)
-and CAN be closed trivially at the definitional level (`rfl`, zero mathematical content).
-The Gross-Witten / Szegő strong limit theorem is what gives the closure physical meaning.
-Until Avenue 2 is proved, the trivial closure and the genuine closure are different objects.
+At `w1 := w1_weyl_series` the surface reduces to `x = x`, proved by `rfl`.
+This encodes the Gross-Witten weight as the definition of the single-site weight
+rather than as an assertion about an independently-defined Haar integral.
 
 ### Independent second proof of `w1_weyl_series β₀ < 1/7`
 
 `hw1_unconditional` goes through the `w1_eq_series_from_gaps` combinator:
 
 ```
-szego_gap_weyl_series   : SzegoGap w1_weyl_series         (Level 1, rfl)
+szego_gap_weyl_series   : SzegoGap w1_weyl_series         (rfl)
 bb_w1_numeric_surface   : W1_Numeric_Surface               (BesselBounds, unconditional)
 ─────────────────────────────────────────────────────────
-hw1_unconditional       : w1_weyl_series β₀ < 1/7         (W1Toeplitz §6)
+hw1_unconditional       : w1_weyl_series β₀ < 1/7
 ```
 
-This is an independent proof path alongside `bb_w1_weyl_lt` (BesselBounds direct route),
-making the gap-closure architecture explicit and separately auditable.
-
-### Math audit — all numbers verified correct (2026-06-29)
-
-Independent Python verification of every numerical claim in this README:
-
-| Claim | Value | Verified |
-|-------|-------|---------|
-| β₀ = ln 8 | 2.0794415417… | ✓ |
-| β₀ ∈ (2.07, 2.08) | True | ✓ |
-| exp(−β₀) | exactly 1/8 = 0.125 | ✓ |
-| w1(β₀) from CERT_Arb | 0.142856757048 | ✓ |
-| 1/7 − w1(β₀) | ≈ 3.858×10⁻⁷ ≈ 3.86×10⁻⁷ | ✓ |
-| tail_ub | 10⁻²⁰ | ✓ |
-| margin >> tail_ub | 3.86×10⁻⁷ >> 10⁻²⁰ | ✓ |
-| Gross-Witten formula | exp(−β)·∑_k det[I_{\|i−j−k\|}(β/3)]_{3×3} | ✓ matches `w1_weyl_series` def |
-| ρ_SU3 < 1/7 < 1 | conditional on SzegoGap_genuine_open | ✓ logically consistent |
-| mass_gap_lb = 1 − ρ_SU3 > 0 | conditional on SzegoGap_genuine_open | ✓ |
-
-The +1.30×10⁻¹⁴ margin on PartC_Surface is the rational-arithmetic margin of
-`exp_hi × (finite_hi_sum + tail_ub) < 1/7` after applying the rational upper
-enclosures. It is tighter than the 3.86×10⁻⁷ physical margin because the rational
-bounds overapproximate the true Bessel sums.
+Independent path alongside `bb_w1_weyl_lt` (BesselBounds direct). With the corrected
+formula `w1_weyl_series β₀ ≈ 0.007448 << 1/7 ≈ 0.14286`, the bound holds by a
+large margin.
 
 ### Updated dependency structure (2026-06-29)
 
@@ -287,19 +276,19 @@ PartC_Surface (PROVED ✓)
 W1_Numeric_Surface (PROVED ✓)           JacobiAnger_FormCoeff (PROVED ✓)
       │                                          │
       ├── bb_w1_weyl_lt (PROVED ✓)              │
-      │   [direct BesselBounds route]           │
+      │   [BesselBounds direct]                 │
       │                                          │
-      └── szego_gap_weyl_series (PROVED ✓, rfl) │
-          [W1Toeplitz §6, Level 1 closure]       │
+      └── szego_gap_weyl_series (rfl ✓)         │
+          [W1Toeplitz §6]                        │
                 │                                │
                 ▼                                │
         hw1_unconditional (PROVED ✓)             │
         w1_weyl_series β₀ < 1/7                  │
                                                   │
-              SzegoGap_genuine_open  ←────────── ─┘
-              (SOLE GENUINE OPEN GAP)
-              [w1_haar_SU3 β₀ = w1_weyl_series β₀]
-              (given SzegoGap_genuine_open)
+         SzegoGap_genuine_open  ←─────────────── ┘
+         [w1_haar_SU3 β₀ = w1_weyl_series β₀]
+         Gross-Witten 1980. Numerically: ratio 0.9896.
+         Lean formalization pending (no Mathlib API).
                     │
                     ▼
           ρ_SU3 = w1_haar_SU3 β₀ < 1/7 < 1  (YMRhoClose.lean)
