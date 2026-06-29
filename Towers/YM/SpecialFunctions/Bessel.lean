@@ -282,12 +282,13 @@ theorem bb_w1_numeric_surface : W1_Numeric_Surface :=
 
 /-! ## §15  Main conclusion -/
 
-/-- **`w1_weyl_series β₀ < 1/7`** — classical trio only.
+/-- **`w1_weyl_series β₀ < 1/7`** — conditional on `W1_WeylBeta0_Open`.
 
 `#print axioms bb_w1_weyl_lt` should yield only:
-  [propext, Classical.choice, Quot.sound] -/
-theorem bb_w1_weyl_lt : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
-  w1_weyl_series_lt bb_w1_numeric_surface
+  [propext, Classical.choice, Quot.sound]
+(W1_WeylBeta0_Open is a free hypothesis, not an axiom). -/
+theorem bb_w1_weyl_lt (hw : W1_WeylBeta0_Open) : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
+  w1_weyl_series_lt bb_w1_numeric_surface hw
 
 end TheoremaAureum.Towers.YM.BesselBounds
 
