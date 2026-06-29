@@ -50,7 +50,7 @@ jobs:
         run: |
           python3 - <<'PYEOF'
           import hashlib, os, glob
-          lines = ["# FOR_CERN.txt  —  SHA-256 manifest of key YM chain files", ""]
+          lines = ["# FOR_CERN.txt  --  SHA-256 manifest of key YM chain files", ""]
           roots = [
               "Towers/YM/YMCollection.lean",
               "Towers/YM/BesselBounds.lean",
