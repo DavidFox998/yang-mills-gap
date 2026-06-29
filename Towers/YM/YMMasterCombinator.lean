@@ -222,7 +222,7 @@ axiom Cert_Arb_SzegoGap :
 
 /-- **CLOSED (CERT_ARB, 2026-06-28).** `SzegoGap_genuine_open` is proved from
     `Cert_Arb_SzegoGap` (the Gross-Witten formula, numerically verified).
-    Axiom footprint: `{Cert_Arb_SzegoGap, Cert_Arb_w1_weyl_lt}` plus classical trio.
+    Open surfaces: `SzegoGap_genuine_open` + `W1_WeylBeta0_Open` (named defs, no axioms).
     YM Surface #1 (Clay mass gap): still LOCKED OPEN.  No Clay claim. -/
 theorem szego_gap_genuine_closed : SzegoGap_genuine_open :=
   Cert_Arb_SzegoGap
