@@ -159,7 +159,7 @@ Proof:
 4. ∑ qⁿ = (1−q)⁻¹  (tsum_geometric_of_lt_one); multiply by 6·C_exp³·q²⁴
 5. Bound: C_exp³≤(3/2)³, q²⁴≤(1/8)²⁴, (1-q)⁻¹≤8/7
 6. 2·6·(3/2)³·(1/8)²⁴·(8/7) = 324/(7·8²⁴) ≤ 1/10²⁰  (norm_num) -/
-private lemma compl_g_tsum_le :
+lemma compl_g_tsum_le :
     ∑' k : ↥((↑S26 : Set ℤ))ᶜ, g (k : ℤ) ≤ 1 / 10 ^ 20 := by
   rw [compl_S26_eq]
   -- Step 1: disjointness and summability on each half
