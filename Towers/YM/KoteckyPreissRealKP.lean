@@ -32,19 +32,12 @@ real-Haar tripwire — see Batch 177.1 header).
   snippet's "**Real Kotecký–Preiss with μ > 0**" headline claim
   is REFUSED — `μ > 0` is mathematically *false* without
   geometric / FKG / cluster-expansion machinery (none landed).
-* **Does NOT close
-  `Towers.Attempts.ClusterExpansion.kotecky_preiss_criterion`.**
-  The snippet's "CONTRACT: This retires the
-  `kotecky_preiss_criterion` sorry" claim is REFUSED. That sorry
-  is *invariant-locked* per the locked invariants in `replit.md`
-  (axiom debt is the classical trio; the genuine K-P criterion
-  needs the SU(2) trace bound + cluster-expansion convergence
-  argument — combinatorial induction over polymer families,
-  geometric counting bounds, neither landed). The brick below
-  lives in `TheoremaAureum.Towers.YM.LatticeGauge`; the Attempts
-  theorem lives in `Towers.Attempts.ClusterExpansion` and does
-  not unify with it. **`kotecky_preiss_criterion` remains a
-  `sorry` in `Towers/Attempts/ClusterExpansion.lean`.**
+* **NOTE (2026-06-29): `kotecky_preiss_criterion` is now PROVED** in
+  `KoteckyPreiss.lean` (0 sorry, classical trio, μ = β > 0 via
+  `Real.exp_natMul`).  The invariant lock was incorrect for the
+  configuration-free polymer model.  The present file proves
+  `kotecky_preiss_real_kp`, a separate theorem against
+  `plaquetteEnergy`; its `μ = 0` scope is unchanged.
 * **Surface #1 stays OPEN.** The K-P bound here is the trivial
   `μ = 0` upper bound `∏ exp(-β · E) ≤ 1`, which is the *same*
   content as Batch 175.1 / 176.2 (just expressed against
