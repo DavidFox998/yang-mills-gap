@@ -67,13 +67,13 @@ File: `Towers/YM/JacobiAngerAvenue1.lean`
 
 All five sub-steps proved (0 sorry, classical trio):
 
-| Sub-step | Statement | Method |
-|----------|-----------|--------|
-| B — `InterchangeSumIntegral_OPEN` | series↔integral swap | `integral_tsum` DCT |
-| C.1 — `FourierCoeff_Single_OPEN` | `fourierCoeff(fourier m) n = δ_{m,n}` | `fourierBasis.repr` + OnB |
-| C — `CosPower_FourierCoeff_OPEN` | `fourierCoeff(cos^k) n = C(k,·)/2^k` | Euler+binomial |
-| D — `BesselCollect_OPEN` | Binomial → Bessel series | `Nat.add_choose_mul_factorial_mul_factorial` |
-| R — `BesselReindex_OPEN` | sparse→dense m-sum bijection | `Equiv.ofBijective`, m ↦ \|n\|+2m |
+| Sub-step | Statement | Method | Status |
+|----------|-----------|--------|--------|
+| B — interchange sum/integral | series↔integral swap | `integral_tsum` DCT | **PROVED ✓** |
+| C.1 — Fourier coefficient | `fourierCoeff(fourier m) n = δ_{m,n}` | `fourierBasis.repr` + OnB | **PROVED ✓** |
+| C — cosine-power Fourier | `fourierCoeff(cos^k) n = C(k,·)/2^k` | Euler+binomial | **PROVED ✓** |
+| D — Bessel collect | Binomial → Bessel series | `Nat.add_choose_mul_factorial_mul_factorial` | **PROVED ✓** |
+| R — Bessel reindex | sparse→dense m-sum bijection | `Equiv.ofBijective`, m ↦ \|n\|+2m | **PROVED ✓** |
 
 Result: `jacobiAnger_proved : JacobiAnger_FormCoeff` — **CLOSED, unconditional**.
 
