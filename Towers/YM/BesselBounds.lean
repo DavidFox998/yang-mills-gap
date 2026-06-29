@@ -29,7 +29,7 @@ API notes:
   Equiv.tsum_eq e f : ∑' x, f (e x) = ∑' y, f y       (reindexing)
 
 PartC_Surface: OPEN — no trio-clean proof (decide stalls, norm_num OOMs, native_decide non-trio).
-  bb_w1_numeric_surface and bb_w1_weyl_lt are conditional on (hc : PartC_Surface).
+  bb_w1_weyl_lt is conditional on W1_WeylBeta0_Open (named open surface, no axiom).
 -/
 
 import Towers.YM.W1NumericProof
@@ -339,10 +339,11 @@ theorem bb_w1_numeric_surface_cond (hc : PartC_Surface) : W1_Numeric_Surface :=
 
 /-! ## §15  Main conclusion -/
 
-/-- **`w1_weyl_series β₀ < 1/7`** — proved unconditionally via `bb_part_c`.
-`#print axioms bb_w1_weyl_lt` yields only: `[propext, Classical.choice, Quot.sound]` -/
-theorem bb_w1_weyl_lt : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
-  w1_weyl_series_lt bb_w1_numeric_surface
+/-- **`w1_weyl_series β₀ < 1/7`** — conditional on `W1_WeylBeta0_Open` (named open surface).
+`#print axioms bb_w1_weyl_lt` yields only: `[propext, Classical.choice, Quot.sound]`
+(W1_WeylBeta0_Open is a free hypothesis, not an axiom). -/
+theorem bb_w1_weyl_lt (hw : W1_WeylBeta0_Open) : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
+  w1_weyl_series_lt bb_w1_numeric_surface hw
 
 /-- **`w1_weyl_series β₀ < 1/7`** — conditional version, kept for backward compatibility. -/
 theorem bb_w1_weyl_lt_cond (hc : PartC_Surface) : w1_weyl_series (β₀_rat : ℝ) < 1 / 7 :=
