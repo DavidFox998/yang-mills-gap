@@ -1,0 +1,9 @@
+name: minimal-test
+on:
+  push:
+    branches: [main]
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "CI works!"
