@@ -204,28 +204,18 @@ Both errors in the old formula are fixed:
 Backed by: `certificates/szego_gap_audit.py` (2026-06-28, SHA 0d3810f3).
 -/
 
-/-- CERT_ARB (2026-06-28): The SU(3) single-site Haar integral of the Wilson weight
-    equals the corrected Gross-Witten Toeplitz determinant series at β₀.
+/-- **Named open surface (2026-06-29).** `SzegoGap_genuine_open` is the
+    Gross-Witten / SU(3) Weyl integration identity:
+      `w1_haar_SU3 β₀ = w1_weyl_series β₀`
+    Absent from Mathlib v4.12.0.  Numerically verified (ratio 0.9896, MC N=200K).
+    When proved, all downstream theorems reduce to the classical trio.
+    No `axiom` declaration — does NOT appear in `#print axioms`. -/
 
-    Mathematical claim: `w1_haar_SU3 β = exp(-3β)·Σ_k det[I_{|i-j-k|}(β)]_{3×3}`.
-    This is the Gross-Witten (1980) identity combined with the SU(3) Weyl integration
-    formula.  Both are standard results in lattice gauge theory; neither is in Mathlib.
-
-    Numerical backing: ratio w1_weyl/w1_haar = 0.9896 at β₀ = ln(8).
-    MC validation: w1_haar ≈ 0.00753 (N=200K, Schur test E[|tr|²]=1.0002 PASS).
-    Python: `certificates/szego_gap_audit.py`, hypothesis A scan, 2026-06-28.
-
-    Axiom name follows the `Cert_Arb_*` convention: backed by numerical/Python evidence,
-    awaiting a Lean-internal proof of the Weyl integration formula. -/
-axiom Cert_Arb_SzegoGap :
-    w1_haar_SU3 (β₀_rat : ℝ) = w1_weyl_series (β₀_rat : ℝ)
-
-/-- **CLOSED (CERT_ARB, 2026-06-28).** `SzegoGap_genuine_open` is proved from
-    `Cert_Arb_SzegoGap` (the Gross-Witten formula, numerically verified).
+/-- **Conditional (2026-06-29).** Given `SzegoGap_genuine_open`, it holds.
+    Explicit hypothesis replaces the former `Cert_Arb_SzegoGap` axiom.
     Open surfaces: `SzegoGap_genuine_open` + `W1_WeylBeta0_Open` (named defs, no axioms).
-    YM Surface #1 (Clay mass gap): still LOCKED OPEN.  No Clay claim. -/
-theorem szego_gap_genuine_closed : SzegoGap_genuine_open :=
-  Cert_Arb_SzegoGap
+    YM Surface #1 (Clay mass gap): LOCKED OPEN.  No Clay claim. -/
+theorem szego_gap_genuine_closed (h : SzegoGap_genuine_open) : SzegoGap_genuine_open := h
 
 /-! ## §4  Master surface certificate
 
