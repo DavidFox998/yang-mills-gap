@@ -2,7 +2,6 @@ import Lake
 open Lake DSL
 
 package «yang-mills-gap» where
-  name := "yang-mills-gap"
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @ "v4.12.0"
