@@ -309,6 +309,51 @@ YM Surface #1 (LOCKED OPEN — Clay)
 
 ---
 
+### Phase 88-YM — WeylFormulaCorrection (2026-07-01)
+
+File: `Towers/YM/WeylFormulaCorrection.lean` (v3, commit 265859fb)
+
+**Corrected Weyl constant:** Previous surfaces used C=1/6 (wrong by factor 36·(2π)²).
+Correct: `∫_{T²} f·Δ dθ = 6·(2π)²·∫_{SU(3)} f dμ`.
+
+**Numerical audit (Python N=300², 2026-07-01):**
+- `∫∫ wilson·Δ dθ = 1.7641` ✓
+- `6·(2π)²·w1_weyl_series β₀ = 1.7641` ✓
+- `∫∫ Δ dθ = 236.87 = 6·(2π)²` ✓
+
+#### 4 unconditional bricks (classical trio, 0 sorry, 0 axiom)
+
+| Brick | Theorem | Statement | Clay Status |
+|-------|---------|-----------|-------------|
+| M1′ | `normSq_exp_diff` | `‖eⁱθ − eⁱφ‖² = 2 − 2·cos(θ−φ)` | `CLAY_VALID` |
+| M2′ | `weyl_denominator_formula` | `Δ(θ₁,θ₂) = (2−2cosΔθ)·(2−2cos(2θ₁+θ₂))·(2−2cos(θ₁+2θ₂))` | `CLAY_VALID` |
+| M3′ | `trace_torusElt` | `Re(tr(torusElt θ₁ θ₂)) = cosθ₁ + cosθ₂ + cos(θ₁+θ₂)` | `CLAY_VALID` |
+| M4′ | `wilson_weight_factored` | `ww β (torusElt) = exp(−3β)·exp(βcosθ₁)·exp(βcosθ₂)·exp(βcos(θ₁+θ₂))` | `CLAY_VALID` |
+
+All four bricks: 0 sorry, 0 axiom, classical trio only.
+
+#### 2 corrected named open surfaces
+
+| Surface | Correct constant | Blocked by | Clay Status |
+|---------|-----------------|-----------|-------------|
+| `TorusIntegralWilson_Corrected β` | `6·(2π)²·w1_weyl_series β` | Andreief identity absent from Mathlib v4.12.0 | `CLAY_OPEN` |
+| `SU3_WeylIntFormula_Corrected f` | `6·(2π)²·∫_{SU(3)} f dμ` | G/T quotient-measure disintegration absent from Mathlib v4.12.0 | `CLAY_OPEN` |
+
+These replace the numerically false `TorusIntegralWilson_OPEN` (=w1_weyl/6) and
+`SU3_WeylIntFormula_OPEN` (C=1/6) in `SzegoFromWeyl.lean`.
+
+#### Corrected conditional combinator
+
+| Theorem | Hypotheses | Conclusion | Clay Status |
+|---------|-----------|-----------|-------------|
+| `szego_from_corrected_gates` | `TorusIntegralWilson_Corrected β₀` ∧ `SU3_WeylIntFormula_Corrected ww` | `SzegoGap_genuine_open` | `CLAY_CONDITIONAL` |
+
+Proof: cancel 6·(2π)² > 0 via `mul_left_cancel₀` + `simpa`. 0 sorry, classical trio.
+
+**`Cert_Arb_SzegoGap`** in `SzegoGapCert.lean` UNCHANGED (Gross-Witten 1980).
+Old surfaces in `SzegoFromWeyl.lean` retained as historical named-open props.
+
+
 ## BSD Tower — Birch and Swinnerton-Dyer Conjecture
 
 ### Proved Surfaces (classical trio, 0 sorry)
