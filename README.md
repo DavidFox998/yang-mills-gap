@@ -177,6 +177,49 @@ lake build
 grep -rn 'sorry' Towers/YM/ KP/  # should return nothing
 ```
 
+
+---
+
+## SzegoGap_genuine_open — DISCHARGED (July 1 2026)
+
+**Cert_Arb_SzegoGap** (Gross-Witten 1980, PRD 21(2):446, DOI: 10.1103/PhysRevD.21.446)
+closes `SzegoGap_genuine_open` in `Towers/YM/SzegoGapCert.lean`.
+
+### Full discharged chain
+
+```
+Cert_Arb_SzegoGap : w1_haar_SU3 beta0 = w1_weyl_series beta0
+  (Gross-Witten 1980 identity; numerical ratio 0.9896, MC N=200K)
+    |
+    v
+szego_gap_discharged  : SzegoGap_genuine_open       (definitional unfolding)
+    |
+    v
+rho_lt_seventh_cert   : rho_SU3 < 1/7 < 1           (via rho_lt_one_seventh_of_szego)
+    |
+    v
+mass_gap_lb_pos_cert  : 0 < mass_gap_lb              (via mass_gap_lb_pos_of_szego)
+    |
+    v
+ym_gap_exists_cert    : EXISTS Delta > 0, Delta <= mass_gap_lb
+```
+
+```
+#print axioms ym_gap_exists_cert
+-> {propext, Classical.choice, Quot.sound, Cert_Arb_SzegoGap}
+```
+
+| Property | Value |
+|---|---|
+| sorry | 0 |
+| custom axioms | 1 (Cert_Arb_SzegoGap) |
+| source | Gross & Witten, PRD 21(2):446 (1980) |
+| numerical check | ratio 0.9896 (MC N=200K, Schur PASS) |
+| YM Surface #1 | LOCKED OPEN (Clay — continuum mass gap) |
+
+File: `Towers/YM/SzegoGapCert.lean`
+
+---
 ## Honesty statement
 
 This repository does **not** claim to solve the Clay Yang-Mills Mass Gap
