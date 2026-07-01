@@ -92,11 +92,12 @@ YM Surface #1 (mass gap): LOCKED OPEN. No Clay claim.
 
 ---
 
-## Current state (2026-06-29)
+## Current state (2026-07-01)
 
 **Unconditional:** `w1_weyl_series β₀ < 1/7` proved (classical trio, 0 sorry).
 **Gross-Witten identity:** `w1_haar_SU3 β₀ = w1_weyl_series β₀` — settled mathematics (Gross-Witten 1980, numerically verified ratio 0.9896). Lean formalization of the SU(3) Weyl integration formula is absent from Mathlib v4.12.0.
 **Full chain:** `ρ_SU3 < 1/7 < 1`, `mass_gap_lb > 0` — proved from Gross-Witten identity (YMRhoClose.lean, 0 sorry, classical trio).
+**Phase 88-YM (2026-07-01):** 4 new unconditional bricks proved + Weyl formula constant corrected to 6·(2π)² (was 1/6). File: `Towers/YM/WeylFormulaCorrection.lean` (v3, 0 sorry, 0 axiom, classical trio). Two corrected named-open surfaces (`TorusIntegralWilson_Corrected`, `SU3_WeylIntFormula_Corrected`) and corrected combinator `szego_from_corrected_gates`. `Cert_Arb_SzegoGap` (Gross-Witten 1980) unchanged.
 
 ---
 
@@ -121,6 +122,10 @@ YM Surface #1 (mass gap): LOCKED OPEN. No Clay claim.
 | `wilson_rotateConfig_const_one` | `RotationInvariance.lean` | OS-2 at const-1 |
 | **`torusElt_mem_SU3`** ✓ | **`SU3MaximalTorus.lean`** | **diag(e^{iθ₁},e^{iθ₂},e^{-i(θ₁+θ₂)}) ∈ SU(3), M1 brick** |
 | **`weyl_denominator_nonneg`** ✓ | **`SU3MaximalTorus.lean`** | **Δ(θ₁,θ₂) ≥ 0, M2 brick** |
+| **`normSq_exp_diff`** ✓ | **`WeylFormulaCorrection.lean`** | **|eⁱθ−eⁱφ|²=2−2cos(θ−φ), Phase 88-YM M1′** |
+| **`weyl_denominator_formula`** ✓ | **`WeylFormulaCorrection.lean`** | **Δ=product of 3 cosine terms, Phase 88-YM M2′** |
+| **`trace_torusElt`** ✓ | **`WeylFormulaCorrection.lean`** | **Re(tr(torusElt))=cosθ₁+cosθ₂+cos(θ₁+θ₂), Phase 88-YM M3′** |
+| **`wilson_weight_factored`** ✓ | **`WeylFormulaCorrection.lean`** | **ww=exp(−3β)·∏exp(βcosθᵢ), Phase 88-YM M4′** |
 | `torusElt_comm`, `torusElt_mul` | `SU3MaximalTorus.lean` | T abelian, closed under param addition |
 
 ## Full chain — Gross-Witten identity (classical trio, 0 sorry)
