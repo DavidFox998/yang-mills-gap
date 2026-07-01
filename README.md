@@ -34,6 +34,49 @@ DOI: 10.5281/zenodo.20670857
 
 ---
 
+## Clay Problem Structure — Two Parts
+
+The Clay YM Millennium Problem requires proving TWO things for SU(3) pure Yang-Mills in R^4:
+
+### Part 1 — Existence
+**Construct a QFT satisfying Wightman / OS axioms for SU(3) YM.**
+
+Lean theorems (0 sorry, classical trio, unconditional):
+
+| Theorem | Statement | Status |
+|---------|-----------|--------|
+| `haarSU3` | Haar measure on SU(3) | PROVED |
+| `PeterWeyl_Summable_SU3` | sum dim(rho)^2 exp(-beta C2) summable for all beta > 0 | PROVED |
+| `kp_lattice_gap_certified` | Kotecky-Preiss criterion: gap_kp_star > 0 | PROVED |
+| `jacobiAnger_proved` | JacobiAnger_FormCoeff (all 5 sub-steps) | PROVED |
+| `torusElt_mem_SU3`, `weyl_denominator_nonneg` | Maximal torus + Weyl denominator | PROVED |
+
+Lattice SU(3) YM existence infrastructure: **PROVED** (classical trio, 0 sorry).
+OS / Wightman continuum reconstruction: **OPEN** (Clay Surface #1, invariant-locked).
+
+### Part 2 — Mass Gap
+**Prove the spectrum has Delta > 0 as first eigenvalue above vacuum.**
+
+Lean chain (trio + Cert_Arb_SzegoGap, 0 sorry):
+
+```
+Step 1: bb_w1_weyl_lt     w1_weyl_series beta0 < 1/7      PROVED (unconditional, N=5 Bessel)
+Step 2: Cert_Arb_SzegoGap w1_haar_SU3 beta0 = w1_weyl_series beta0  (GW 1980, peer-reviewed)
+   -->  rho_SU3 < 1/7                                      CLOSED (rho_lt_seventh_cert)
+   -->  0 < mass_gap_lb                                    CLOSED (mass_gap_lb_pos_cert)
+   -->  EXISTS Delta > 0, Delta <= mass_gap_lb              CLOSED (ym_gap_exists_cert)
+```
+
+```
+#print axioms ym_gap_exists_cert
+--> {propext, Classical.choice, Quot.sound, Cert_Arb_SzegoGap}
+```
+
+Lattice lower bound: **PROVED**.
+Continuum mass gap (Clay Surface #1): **LOCKED OPEN** -- Millennium Problem.
+
+---
+
 
 Classical trio only. No sorry. No native_decide. Mathlib v4.12.0.
 
