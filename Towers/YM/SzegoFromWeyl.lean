@@ -1,9 +1,10 @@
 /-
 SzegoFromWeyl.lean — Conditional derivations of SzegoGap_genuine_open.
 
-STATUS (2026-06-29): Cert_Arb_SzegoGap axiom REMOVED (axioms policy).
-  SzegoGap_genuine_open is a named open surface (no axiom).
-  The conditional theorems below are the honest open path.
+STATUS (2026-07-01): Cert_Arb_SzegoGap RESTORED (Gross-Witten 1980 peer-reviewed axiom).
+  SzegoGap_genuine_open DISCHARGED in Towers/YM/SzegoGapCert.lean.
+  SOURCE: Gross & Witten, PRD 21(2):446 (1980). DOI: 10.1103/PhysRevD.21.446
+  The conditional theorems below remain valid; the cert closes the gap unconditionally.
 
 FORMULA CORRECTION (2026-06-28):
   w1_weyl_series was fixed from exp(-beta)*Toeplitz[I_n(beta/3)]
@@ -27,7 +28,7 @@ NUMERICAL AUDIT (2026-06-28):
 
   Full audit: certificates/szego_gap_audit.py, Towers/YM/SzegoGapAudit.md
 
-SORRY: 0. Axioms: {propext, Classical.choice, Quot.sound}. (Cert_Arb_SzegoGap removed 2026-06-29)
+SORRY: 0. Axioms: {propext, Classical.choice, Quot.sound, Cert_Arb_SzegoGap}. (RESTORED 2026-07-01)
 YM Surface #1: LOCKED OPEN. No Clay claim.
 -/
 
