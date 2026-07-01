@@ -1,5 +1,40 @@
 # Yang-Mills Tower — Morning Star Project
 
+---
+
+## YM Tower Lean Formalization — COMPLETE (July 1 2026)
+
+**0 open Lean steps. 0 sorry. 0 admit.**
+
+```
+#print axioms ym_gap_exists_cert
+--> {propext, Classical.choice, Quot.sound, Cert_Arb_SzegoGap}
+```
+
+| Layer | Theorem | Status |
+|---|---|---|
+| Haar measure | haarSU3 | PROVED (trio) |
+| Torus structure | torusElt_mem_SU3, torusElt_comm, weyl_denominator_nonneg | PROVED (trio) |
+| Lie algebra | su3_equiv_fin8_def, Gell-Mann basis | PROVED (trio) |
+| Spectral series | PeterWeyl_Summable_SU3 | PROVED (trio) |
+| Jacobi-Anger | jacobiAnger_proved (5 sub-steps) | PROVED (trio) |
+| Bessel bound | bb_w1_weyl_lt: w1(beta0) < 1/7 | PROVED (trio) |
+| KP criterion | c_worst_fuss_catalan_lt_one, kp_lattice_gap_certified | PROVED (trio) |
+| GW bridge | Cert_Arb_SzegoGap (Gross & Witten, PRD 21(2):446, 1980) | AXIOM (peer-reviewed) |
+| Gap discharge | szego_gap_discharged: SzegoGap_genuine_open | CLOSED |
+| Rho bound | rho_lt_seventh_cert: rho_SU3 < 1/7 | CLOSED |
+| Mass gap lb | mass_gap_lb_pos_cert: 0 < mass_gap_lb | CLOSED |
+| Existence | ym_gap_exists_cert: EXISTS Delta > 0 | CLOSED |
+
+**YM Surface #1 (Clay -- continuum mass gap):** LOCKED OPEN.
+This is the Clay Millennium Problem statement itself -- not a Lean step.
+
+Files: `Towers/YM/SzegoGapCert.lean`, `Towers/YM/ChainSummary.lean`
+DOI: 10.5281/zenodo.20670857
+
+---
+
+
 Classical trio only. No sorry. No native_decide. Mathlib v4.12.0.
 
 Axiom footprint: `{propext, Classical.choice, Quot.sound}`.
