@@ -1,0 +1,49 @@
+name: Audit and Build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    container:
+      image: leanprover/lean4:v4.12.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lake cache (download Mathlib cache)
+        run: |
+          set -e
+          lake exe cache get || true
+
+      - name: Lake build
+        run: |
+          set -e
+          lake build
+
+      - name: Run grep audits and #print axioms
+        run: |
+          set -e
+          mkdir -p audit
+          # Grep for axioms, sorry, admit
+          grep -R --line-number -E "axiom|sorry|admit" . > audit/grep-axiom-sorry.txt || true
+          # Grep specifically for the named axiom you mentioned
+          grep -R --line-number -F "axiom Cert_Arb_SzegoGap" . > audit/grep-cert-axiom.txt || true
+          # Find locations of #print axioms usages
+          grep -R --line-number -F "#print axioms" . > audit/grep-print-axioms-locations.txt || true
+
+          # Run the Lean #print axioms commands in the lake environment and capture output
+          lake env lean --run -e '#print axioms SzegoGap_weyl_series' > audit/print-axioms-SzegoGap_weyl_series.txt 2>&1 || true
+          lake env lean --run -e '#print axioms ym_gap_exists_cert' > audit/print-axioms-ym_gap_exists_cert.txt 2>&1 || true
+
+          # Repo metadata
+          git rev-parse --verify HEAD > audit/commit.txt || true
+          git rev-parse --abbrev-ref HEAD > audit/branch.txt || true
+      - name: Upload audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-${{ github.sha }}
+          path: audit
