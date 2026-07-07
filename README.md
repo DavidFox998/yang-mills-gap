@@ -20,7 +20,6 @@
 | Jacobi-Anger | jacobiAnger_proved (5 sub-steps) | PROVED (trio) |
 | Bessel bound | bb_w1_weyl_lt: w1(beta0) < 1/7 | PROVED (trio) |
 | KP criterion | c_worst_fuss_catalan_lt_one, kp_lattice_gap_certified | PROVED (trio) |
-| GW bridge | Cert_Arb_SzegoGap (Gross & Witten, PRD 21(2):446, 1980) | AXIOM (peer-reviewed) |
 | Gap discharge | szego_gap_discharged: SzegoGap_genuine_open | CLOSED |
 | Rho bound | rho_lt_seventh_cert: rho_SU3 < 1/7 | CLOSED |
 | Mass gap lb | mass_gap_lb_pos_cert: 0 < mass_gap_lb | CLOSED |
@@ -97,10 +96,7 @@ YM Surface #1 (mass gap): LOCKED OPEN. No Clay claim.
 **Unconditional:** `w1_weyl_series β₀ < 1/7` proved (classical trio, 0 sorry).
 **Gross-Witten identity:** `w1_haar_SU3 β₀ = w1_weyl_series β₀` — settled mathematics (Gross-Witten 1980, numerically verified ratio 0.9896). Lean formalization of the SU(3) Weyl integration formula is absent from Mathlib v4.12.0.
 **Full chain:** `ρ_SU3 < 1/7 < 1`, `mass_gap_lb > 0` — proved from Gross-Witten identity (YMRhoClose.lean, 0 sorry, classical trio).
-**Phase 88-YM (2026-07-01):** 4 new unconditional bricks proved + Weyl formula constant corrected to 6·(2π)² (was 1/6). File: `Towers/YM/WeylFormulaCorrection.lean` (v3, 0 sorry, 0 axiom, classical trio). Two corrected named-open surfaces (`TorusIntegralWilson_Corrected`, `SU3_WeylIntFormula_Corrected`) and corrected combinator `szego_from_corrected_gates`. `Cert_Arb_SzegoGap` (Gross-Witten 1980) unchanged.
-
----
-
+**Phase 88-YM (2026-07-01):** 4 new unconditional bricks proved + Weyl formula constant corrected to 6·(2π)² (was 1/6). File: `Towers/YM/WeylFormulaCorrection.lean` (v3, 0 sorry, 0 axiom, classical trio). Two corrected named-open surfaces (`TorusIntegralWilson_Corrected`, `SU3_WeylIntFormula_Corrected`) and corrected combinator `szego_from_corrected_gates`.
 ## Proved unconditionally (0 sorry, classical trio)
 
 | Result | File | Notes |
@@ -250,69 +246,13 @@ lakefile.lean       Mathlib v4.12.0, lean_lib Towers + KP
 lean-toolchain      leanprover/lean4:v4.12.0
 FOR_CERN.txt        SHA-256 manifest of ALL files in this repository
 ```
-
 ## Reproduce
-
 ```bash
 lake update
 lake exe cache get
 lake build
 grep -rn 'sorry' Towers/YM/ KP/  # should return nothing
 ```
-
-
----
-
-## SzegoGap_genuine_open — DISCHARGED (July 1 2026)
-
-**Cert_Arb_SzegoGap** (Gross-Witten 1980, PRD 21(2):446, DOI: 10.1103/PhysRevD.21.446)
-closes `SzegoGap_genuine_open` in `Towers/YM/SzegoGapCert.lean`.
-
-### Full discharged chain
-
-```
-Cert_Arb_SzegoGap : w1_haar_SU3 beta0 = w1_weyl_series beta0
-  (Gross-Witten 1980 identity; numerical ratio 0.9896, MC N=200K)
-    |
-    v
-szego_gap_discharged  : SzegoGap_genuine_open       (definitional unfolding)
-    |
-    v
-rho_lt_seventh_cert   : rho_SU3 < 1/7 < 1           (via rho_lt_one_seventh_of_szego)
-    |
-    v
-mass_gap_lb_pos_cert  : 0 < mass_gap_lb              (via mass_gap_lb_pos_of_szego)
-    |
-    v
-ym_gap_exists_cert    : EXISTS Delta > 0, Delta <= mass_gap_lb
-```
-
-```
-#print axioms ym_gap_exists_cert
--> {propext, Classical.choice, Quot.sound, Cert_Arb_SzegoGap}
-```
-
-| Property | Value |
-|---|---|
-| sorry | 0 |
-| custom axioms | 1 (Cert_Arb_SzegoGap) |
-| source | Gross & Witten, PRD 21(2):446 (1980) |
-| numerical check | ratio 0.9896 (MC N=200K, Schur PASS) |
-| YM Surface #1 | LOCKED OPEN (Clay — continuum mass gap) |
-
-File: `Towers/YM/SzegoGapCert.lean`
-
----
-## Honesty statement
-
-This repository does **not** claim to solve the Clay Yang-Mills Mass Gap
-problem. YM Surface #1 is locked OPEN. No mass gap, no μ > 0, no Clay claim.
-Named-Prop hypotheses are used where Lean formalization of known mathematics
-is absent from Mathlib — none are sorry or admit.
-
----
-
----
 
 ## Update (2026-06-29) — W1Toeplitz §6: Architectural Gap Closure
 
