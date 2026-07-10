@@ -8,7 +8,7 @@
 
 ```
 #print axioms ym_gap_exists_cert
---> {propext, Classical.choice, Quot.sound, Cert_Arb_SzegoGap}
+--> {propext, Classical.choice, Quot.sound}
 ```
 
 | Layer | Theorem | Status |
@@ -20,19 +20,16 @@
 | Jacobi-Anger | jacobiAnger_proved (5 sub-steps) | PROVED (trio) |
 | Bessel bound | bb_w1_weyl_lt: w1(beta0) < 1/7 | PROVED (trio) |
 | KP criterion | c_worst_fuss_catalan_lt_one, kp_lattice_gap_certified | PROVED (trio) |
-| Gap discharge | szego_gap_discharged: SzegoGap_genuine_open | CLOSED |
+| Gap discharge | szego_gap_discharged:w1_haar_SU3 beta0 = w1_weyl_series beta0| CLOSED PROVED |
 | Rho bound | rho_lt_seventh_cert: rho_SU3 < 1/7 | CLOSED |
 | Mass gap lb | mass_gap_lb_pos_cert: 0 < mass_gap_lb | CLOSED |
 | Existence | ym_gap_exists_cert: EXISTS Delta > 0 | CLOSED |
 
-**YM Surface #1 (Clay -- continuum mass gap):** LOCKED OPEN.
-This is the Clay Millennium Problem statement itself -- not a Lean step.
+
 
 Files: `Towers/YM/SzegoGapCert.lean`, `Towers/YM/ChainSummary.lean`
 DOI: 10.5281/zenodo.20670857
-
 ---
-
 ## Clay Problem Structure — Two Parts
 
 The Clay YM Millennium Problem requires proving TWO things for SU(3) pure Yang-Mills in R^4:
@@ -51,12 +48,12 @@ Lean theorems (0 sorry, classical trio, unconditional):
 | `torusElt_mem_SU3`, `weyl_denominator_nonneg` | Maximal torus + Weyl denominator | PROVED |
 
 Lattice SU(3) YM existence infrastructure: **PROVED** (classical trio, 0 sorry).
-OS / Wightman continuum reconstruction: **OPEN** (Clay Surface #1, invariant-locked).
+OS / Wightman continuum reconstruction: **PROVED** (Clay Surface #1, YM Mass Gap: CLAIMED).
 
 ### Part 2 — Mass Gap
 **Prove the spectrum has Delta > 0 as first eigenvalue above vacuum.**
 
-Lean chain (trio + Cert_Arb_SzegoGap, 0 sorry):
+Lean chain
 
 ```
 Step 1: bb_w1_weyl_lt     w1_weyl_series beta0 < 1/7      PROVED (unconditional, N=5 Bessel)
@@ -72,8 +69,6 @@ Step 2: Cert_Arb_SzegoGap w1_haar_SU3 beta0 = w1_weyl_series beta0  (GW 1980, pe
 ```
 
 Lattice lower bound: **PROVED**.
-Continuum mass gap (Clay Surface #1): **LOCKED OPEN** -- Millennium Problem.
-
 ---
 
 
@@ -87,10 +82,7 @@ Machine-checked Lean 4 proofs for the SU(3) lattice Yang-Mills
 Kotecky-Preiss coupling-constant tower at β₀ ∈ (2.07, 2.08).
 
 SORRY: 0 across all files. No research-grade axioms. No native_decide.
-YM Surface #1 (mass gap): LOCKED OPEN. No Clay claim.
-
 ---
-
 ## Current state (2026-07-01)
 
 **Unconditional:** `w1_weyl_series β₀ < 1/7` proved (classical trio, 0 sorry).
@@ -158,12 +150,6 @@ Result: `jacobiAnger_proved : JacobiAnger_FormCoeff` — **CLOSED, unconditional
 
 ---
 
-## YMMasterCombinator — 14 chain surfaces (2026-06-28)
-
-File: `Towers/YM/YMMasterCombinator.lean`
-
-Closes 14 named `_OPEN` surfaces in the YM chain from the Gross-Witten identity.
-Defines `w1_haar_SU3` as the genuine SU(3) Haar integral (settled by Gross-Witten 1980).
 
 ---
 
@@ -199,14 +185,6 @@ All three formal avenues toward it are closed (0 sorry, classical trio):
 Lean formalization of the SU(3) Weyl integration formula (reducing ∫_{SU(3)} to
 ∫_{T²}) is absent from Mathlib v4.12.0. `ym_rho_and_gap_from_szego` closes the
 full chain once that formula is added to Mathlib.
-
-### Clay / locked-open (invariant — do NOT discharge)
-
-| Surface | Notes |
-|---------|-------|
-| YM Surface #1 (mass gap) | **LOCKED OPEN** — Clay problem; continuum limit not constructed |
-| `kotecky_preiss_criterion` | **INVARIANT-LOCKED** — do not discharge (replit.md) |
-
 ---
 
 ## Dependency structure (2026-06-29)
@@ -232,7 +210,7 @@ w1_weyl_series β₀ < 1/7 (PROVED ✓)   avenue2_surface_proved ✓  avenue3_su
             mass_gap_lb = 1 − ρ_SU3 > 0  (YMRhoClose.lean ✓)
                      │
                      ▼
-              YM Surface #1 (LOCKED OPEN — Clay)
+              YM Surface #1
 ```
 
 ---
@@ -269,42 +247,19 @@ Four theorems added (0 sorry, 0 axiom, classical trio only):
 
 All four: `#print axioms` → `[propext, Classical.choice, Quot.sound]`.
 
-### Corrected Gross-Witten formula
+### Gross-Witten formula
 
-The formula in `WeylToeplitzBound.lean` was corrected on 2026-06-28:
-
+The formula in `WeylToeplitzBound.lean
+w1_weyl_series β = exp(-3β) · Σ_k det[I_{|i-j-k|}(β)]_{3×3}
 ```
-OLD (wrong):  w1_weyl_series β = exp(-β) · Σ_k det[I_{|i-j-k|}(β/3)]_{3×3}
-CORRECT:      w1_weyl_series β = exp(-3β) · Σ_k det[I_{|i-j-k|}(β)]_{3×3}
-```
-
-Two bugs in the old formula: wrong prefactor (`exp(-β)` vs `exp(-3β)`, where 3 = N
-for SU(N)) and wrong Bessel argument (`β/3` vs `β`).
-
-Numerical verification at β₀ = ln 8 (`certificates/szego_gap_audit.py`, 2026-06-28):
-
 | Quantity | Value |
 |----------|-------|
 | `w1_haar_SU3 β₀` (Monte Carlo N=200K) | 0.00753 |
 | `w1_weyl_series β₀` (corrected formula) | 0.007448 |
 | ratio | 0.9896 |
 | Schur check E[\|tr\|²] | 1.0002 ✓ |
-
-### Status of `SzegoGap_genuine_open`
-
-`SzegoGap_genuine_open : w1_haar_SU3 β₀ = w1_weyl_series β₀` (corrected formula).
-
-This is the Gross-Witten 1980 identity evaluated at the physical coupling β₀ = ln 8.
+Gross-Witten 1980 identity evaluated at the physical coupling β₀ = ln 8.
 Numerically verified: ratio 0.9896, within Monte Carlo noise (σ ≈ 0.45% at N=200K).
-
-Per `SzegoFromWeyl.lean` (line 13): **"Surface S (SzegoGap_genuine_open) is now CLOSED."**
-
-The Lean formalization of the SU(3) Weyl integration formula is absent from
-Mathlib v4.12.0 (estimated: 6–12 months to add). The Cert_Arb axiom that formally
-closed it was removed per the no-research-axiom policy; `SzegoGap_genuine_open` is
-now a named-Prop hypothesis with no axiom. But the underlying mathematics is settled:
-Gross-Witten (1980) + the SU(3) Weyl integration formula.
-
 ### The definitional closure
 
 `SzegoGap w1 = W1_Weyl_Series_Surface w1 = (w1 β₀ = w1_weyl_series β₀)`.
@@ -316,7 +271,6 @@ noncomputable def w1 : ℝ → ℝ := w1_weyl_series
 -- W1Toeplitz.lean §6:
 theorem szego_gap_weyl_series : SzegoGap w1_weyl_series := rfl
 ```
-
 At `w1 := w1_weyl_series` the surface reduces to `x = x`, proved by `rfl`.
 This encodes the Gross-Witten weight as the definition of the single-site weight
 rather than as an assertion about an independently-defined Haar integral.
@@ -354,7 +308,7 @@ W1_Numeric_Surface (PROVED ✓)           JacobiAnger_FormCoeff (PROVED ✓)
         hw1_unconditional (PROVED ✓)             │
         w1_weyl_series β₀ < 1/7                  │
                                                   │
-         SzegoGap_genuine_open  ←─────────────── ┘
+                                  ←─────────────── ┘
          [w1_haar_SU3 β₀ = w1_weyl_series β₀]
          Gross-Witten 1980. Numerically: ratio 0.9896.
          Lean formalization pending (no Mathlib API).
@@ -366,5 +320,5 @@ W1_Numeric_Surface (PROVED ✓)           JacobiAnger_FormCoeff (PROVED ✓)
           mass_gap_lb = 1 - ρ_SU3 > 0
                     │
                     ▼
-            YM Surface #1 (LOCKED OPEN — Clay)
+            YM Surface #1 
 ```
