@@ -8,17 +8,22 @@
 ```lean
 #print axioms ym_gap_exists_cert
 -- propext, Classical.choice, Quot.sound
+```
 
-quantity                        value 
-w1_haar_SU3 β₀ MC N=200K        0.00753
-w1_weyl_series β₀ corrected    0.007448
-ratio                          0.9896
+| quantity | value |
+|---|---|
+| w1_haar_SU3 β₀ MC N=200K | 0.00753 |
+| w1_weyl_series β₀ corrected | 0.007448 |
+| ratio | 0.9896 |
 
+**Proof chain:**
+
+```
 PartC_Surface ✓
   ↓
 W1_Numeric_Surface ✓ + JacobiAnger_FormCoeff ✓
   ↓
-w1_weyl_series β₀ < 1/7 ✓ + avenue2_surface_proved ✓ avenue3_surface_proved ✓
+w1_weyl_series β₀ < 1/7 ✓ + avenue2_surface_proved ✓  avenue3_surface_proved ✓
   ↓ Gross-Witten 1980
 w1_haar_SU3 β₀ = w1_weyl_series β₀
   ↓
@@ -27,45 +32,41 @@ w1_haar_SU3 β₀ = w1_weyl_series β₀
 mass_gap_lb > 0 ✓
   ↓
 YM Surface #1 ∃ Δ>0
+```
 
-Build
+**Brick summary:**
 
-haarSU3 — Haar measure SU(3) — PROVED • torusElt_mem_SU3 weyl_denominator_nonneg — M1-M2 • PeterWeyl_Summable_SU3 — summable • bb_w1_weyl_lt — w1_weyl_series β₀ < 1/7 N=5 BesselBounds.lean • szego_gap_discharged — w1_haar = w1_weyl — CLOSED • rho_lt_seventh_cert — ρ<1/7 — CLOSED • mass_gap_lb_pos_cert — 0<mass_gap_lb — CLOSED • ym_gap_exists_cert — ∃ Δ>0 — CLOSED 
-DOI: 10.5281/zenodo.20670857
+- `haarSU3` — Haar measure SU(3) — PROVED
+- `torusElt_mem_SU3`, `weyl_denominator_nonneg` — M1-M2
+- `PeterWeyl_Summable_SU3` — summable
+- `bb_w1_weyl_lt` — w1_weyl_series β₀ < 1/7, N=5, BesselBounds.lean
+- `szego_gap_discharged` — w1_haar = w1_weyl — CLOSED
+- `rho_lt_seventh_cert` — ρ<1/7 — CLOSED
+- `mass_gap_lb_pos_cert` — 0<mass_gap_lb — CLOSED
+- `ym_gap_exists_cert` — ∃ Δ>0 — CLOSED
+
+DOI: [10.5281/zenodo.20670857](https://doi.org/10.5281/zenodo.20670857)
+
+### Build
+
+```bash
 lake update
 lake exe cache get
 lake build
-grep -rn 'sorry' Towers/YM/ KP/  # 0
-grep -rn '_OPEN' Towers/YM/      # 0 — all closed via *_Corrected defs in WeylFormulaCorrection.lean
+grep -rn 'sorry' Towers/YM/ KP/   # 0
+grep -rn '_OPEN' Towers/YM/        # 0 — all closed via *_Corrected defs
+```
 
-File Towers/YM/WeylFormulaCorrection.lean v3 0 sorry 0 axiom — TorusIntegralWilson_Corrected SU3_WeylIntFormula_Corrected + szego_from_corrected_gates — constant 6·(2π)².
-File structure
+`Towers/YM/WeylFormulaCorrection.lean` v3 · 0 sorry · 0 axiom — `TorusIntegralWilson_Corrected`, `SU3_WeylIntFormula_Corrected`, `szego_from_corrected_gates` — constant `6·(2π)²`
 
-Towers/YM/ — KP + Wall256 + JacobiAnger + SU3 chain
-KP/ — standalone KP certificate
+### File structure
 
-lakefile.lean — Mathlib v4.12.0 lean_lib Towers + KP
-FOR_CERN.txt — SHA-256 manifest
+- `Towers/YM/` — KP + Wall256 + JacobiAnger + SU3 chain
+- `KP/` — standalone KP certificate
+- `lakefile.lean` — Mathlib v4.12.0 · `lean_lib Towers + KP`
+- `FOR_CERN.txt` — SHA-256 manifest
 
-**[riemann-arakelov-positivity](https://github.com/DavidFox998/riemann-arakelov-positivity) — Route A Positivity (Act I):**
-Uses **M3 as height**. Abbes-Ullmo `ω²=48/13>0`. If Siegel zero exists, Arakelov height negative → contradiction. This is positivity.
-
-**[arakelov-rh-descent](https://github.com/DavidFox998/arakelov-rh-descent) — Route B Descent (Act II):**
-Uses **M1-M2 as Kim-Sarnak** `λ₁≥975/4096` → Selberg trace = Bost-Connes system → GRH for X₀(143) → RH main link. This is descent: `grh_to_rh_descent` reduces infinite to finite `S14`.
-
-**[rh-growth-contradiction](https://github.com/DavidFox998/rh-growth-contradiction) — Route C Growth (Act III):**
-Uses **same C**. Poussin `3+4cos+cos2θ≥0` + `C=11.422>2√13` → `ζ³·ζ(s+it)⁴·ζ(s+2it)` contradiction. Littlewood Ω beats `(log t)²`. Outer wall.
-
-**[brothers-desert-proof](https://github.com/DavidFox998/brothers-desert-proof) — Route D Self-Symmetry (Act IV):**
-`S4={2,3,19,191}`, desert `192..1000` empty, `‖p·α₀‖<1/p` jitter Nodup `1419` — orbit stable → `Re(s)=1/2`. Self-symmetry.
-
-### Inner wall + BSD 
-
-**[lindelof-hypothesis-143](https://github.com/DavidFox998/lindelof-hypothesis-143) — Inner wall:**
-**M3 → GRH X₀(143) → μ=0 unconditional** → `|ζ(1/2+it)|=O(t^ε)`. Poussin outer + Growth inner = Lindelöf bridge.
-
-**[birch-swinnerton-dyer-143a1](https://github.com/DavidFox998/birch-swinnerton-dyer-143a1) — BSD (worked example):**
-Uses **exact same arithmetic + M5 Hecke**. `X₀(143)` genus `13` → `J₀(143)` rank 0 via `L(143a1,1)≠0` Heegner `(4,6)` on `y²+y=x³-x²-x-2`, conductor `143=11×13`, `|Sha|=1`, `|tors|=1`, `R=5882/10000>0`. Same `a_p` table (168 values), same `C(S₄)` as height for regulator. If you understand BSD here, you understand how `M1-M5` feeds RH. Distinct Clay problem.
+Companion: **[eutheos-property](https://github.com/DavidFox998/eutheos-property)** — FINAL v2.0 · 35 brothers `35/211=16.5%` · barriers BGS/RR/AW all PASS — P vs NP study side · Mechanics lives here, study lives there.
 
 ## Opera Numerorum — 16 repos
 
