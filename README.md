@@ -3,6 +3,8 @@
 **Author: David J. Fox | ORCID: 0009-0008-1290-6105**
 **Lean 4.12.0 / Mathlib v4.12.0 | 0 sorry | 0 OPEN | {propext, Classical.choice, Quot.sound}**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20670857.svg)](https://doi.org/10.5281/zenodo.20670857)
+
 ## YM Tower — COMPLETE
 
 ### Axiom check
@@ -47,7 +49,7 @@ YM Surface #1 ∃ Δ>0
 - `mass_gap_lb_pos_cert` — 0<mass_gap_lb — CLOSED
 - `ym_gap_exists_cert` — ∃ Δ>0 — CLOSED
 
-DOI: [10.5281/zenodo.20670857](https://doi.org/10.5281/zenodo.20670857)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20670857.svg)](https://doi.org/10.5281/zenodo.20670857)
 
 ### Build
 
