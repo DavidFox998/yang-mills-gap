@@ -1,5 +1,8 @@
 # Yang-Mills Tower — CLOSED July 1 2026
 
+> **Opera Numerorum ensemble** — 19 repos · chain `7472f4e5` · [REPOS.md →](https://github.com/DavidFox998/rh-p5-bridge-14/blob/main/REPOS.md)
+
+
 **Author: David J. Fox | ORCID: 0009-0008-1290-6105**
 **Lean 4.12.0 / Mathlib v4.12.0 | 0 sorry | 0 OPEN | {propext, Classical.choice, Quot.sound}**
 
