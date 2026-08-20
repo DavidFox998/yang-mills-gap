@@ -1,0 +1,43 @@
+name: H4Core synchronization
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-h4core-copy:
+    name: Verify H4Core matches opera-sieve
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare the standalone H4Core copy
+        shell: bash
+        run: |
+          set -euo pipefail
+          local_path='Towers/YM/H4Core.lean'
+          remote_repo='DavidFox998/opera-sieve'
+          remote_path='lean-proof-towers/Towers/YM/H4Core.lean'
+          remote_url="https://raw.githubusercontent.com/${remote_repo}/main/${remote_path}"
+          remote_file="$(mktemp)"
+          trap 'rm -f "$remote_file"' EXIT
+
+          curl --fail --location --retry 3 --retry-all-errors \
+            --connect-timeout 10 --max-time 60 \
+            --output "$remote_file" "$remote_url"
+
+          local_sha="$(sha256sum "$local_path" | awk '{print $1}')"
+          remote_sha="$(sha256sum "$remote_file" | awk '{print $1}')"
+          echo "Local SHA-256:  $local_sha"
+          echo "Remote SHA-256: $remote_sha"
+
+          if [[ "$local_sha" != "$remote_sha" ]]; then
+            echo "::error file=${local_path}::H4Core.lean drift detected: ${local_path} does not match ${remote_repo}/${remote_path}. Sync this standalone copy with ${remote_url}."
+            exit 1
+          fi
+
+          echo "H4Core.lean is synchronized with ${remote_repo}/${remote_path}."
