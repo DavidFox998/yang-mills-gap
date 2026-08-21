@@ -1,6 +1,6 @@
 {
-  "title": "Yang-Mills Mass Gap — SU(3) PROVED",
-  "description": "Unconditional proof of Yang-Mills mass gap for SU(3) lattice gauge theory at β₀ = ln 8. Gross-Witten identity + Jacobi-Anger + Bessel bounds prove w₁(β₀) < 1/7 → ρ < 1/7 → Δ > 0. Kotecky-Preiss criterion certified. 664 Lean 4 lemmas. 0 sorry. 0 axiom. Part of Theorema Aureum 143 / Morning Star Project.",
+  "title": "Yang-Mills Mass Gap \u2014 SU(3) formal proof in Lean 4",
+  "description": "Unconditional proof of Yang-Mills mass gap for SU(3) lattice gauge theory at \u03b2\u2080 = ln 8. Gross-Witten identity + Jacobi-Anger + Bessel bounds prove w\u2081(\u03b2\u2080) < 1/7 \u2192 \u03c1 < 1/7 \u2192 \u0394 > 0. Kotecky-Preiss criterion certified. 664 Lean 4 lemmas. 0 sorry. 0 axiom. Part of Opera Numerorum.",
   "creators": [
     {
       "name": "Fox, David J.",
@@ -8,8 +8,9 @@
       "affiliation": "Opera Numerorum"
     }
   ],
-  "license": "apache-2.0",
+  "license": "Apache-2.0",
   "upload_type": "software",
+  "access_right": "open",
   "keywords": [
     "yang-mills",
     "mass-gap",
@@ -20,7 +21,7 @@
     "formal-proof",
     "gross-witten",
     "confinement",
-    "theorema-aureum-143"
+    "opera-numerorum"
   ],
   "related_identifiers": [
     {
@@ -29,11 +30,5 @@
       "resource_type": "software"
     }
   ],
-  "communities": [
-    {
-      "identifier": "lean"
-    }
-  ],
-  "version": "v1.0-ym-mass-gap-proved-unconditional",
-  "language": "lean"
+  "version": "v1.0-ym-gap-CLOSED"
 }
