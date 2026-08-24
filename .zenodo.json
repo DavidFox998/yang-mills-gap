@@ -1,28 +1,25 @@
 {
-  "title": "Yang-Mills Mass Gap \u2014 SU(3) formal proof in Lean 4",
-  "description": "Unconditional proof of Yang-Mills mass gap for SU(3) lattice gauge theory at \u03b2\u2080 = ln 8. Gross-Witten identity + Jacobi-Anger + Bessel bounds prove w\u2081(\u03b2\u2080) < 1/7 \u2192 \u03c1 < 1/7 \u2192 \u0394 > 0. Kotecky-Preiss criterion certified. 664 Lean 4 lemmas. 0 sorry. 0 axiom. Part of Opera Numerorum.",
+  "title": "Yang–Mills Mass Gap for SU(3) — Lean 4 Formalization",
+  "upload_type": "software",
+  "description": "Lean 4 formalization of the Lean 4 formalization of the SU(3) lattice Yang–Mills mass-gap certificate, including the Bessel bound and positive spectral gap. This repository is part of David Fox's Opera Numerorum ensemble.",
   "creators": [
     {
-      "name": "Fox, David J.",
-      "orcid": "0009-0008-1290-6105",
-      "affiliation": "Opera Numerorum"
+      "name": "Fox, David",
+      "affiliation": "Opera Numerorum",
+      "orcid": "0009-0008-1290-6105"
     }
   ],
-  "license": "Apache-2.0",
-  "upload_type": "software",
-  "access_right": "open",
+  "license": "MIT",
   "keywords": [
-    "yang-mills",
-    "mass-gap",
-    "millennium-prize",
-    "lattice-gauge-theory",
-    "su3",
-    "lean4",
-    "formal-proof",
-    "gross-witten",
-    "confinement",
-    "opera-numerorum"
+    "Yang–Mills mass gap",
+    "SU(3)",
+    "lattice gauge theory",
+    "Bessel functions",
+    "Lean 4",
+    "formal verification",
+    "mathematical physics"
   ],
+  "access_right": "open",
   "related_identifiers": [
     {
       "identifier": "https://github.com/DavidFox998/yang-mills-gap",
@@ -30,5 +27,10 @@
       "resource_type": "software"
     }
   ],
-  "version": "v1.0-ym-gap-CLOSED"
+  "communities": [
+    {
+      "identifier": "lean"
+    }
+  ],
+  "language": "en"
 }
